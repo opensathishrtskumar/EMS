@@ -24,7 +24,6 @@ public abstract class ConnectionManager {
 		if (connection == null) {
 			connection = new SerialConnection(parameters);
 			connection.setTimeout(TIMEOUT[1]);
-
 			connection.open();
 		}
 
@@ -35,6 +34,7 @@ public abstract class ConnectionManager {
 			SerialConnection connection) throws ModbusException {
 		ExtendedSerialParameter extendedParams = params;
 		ModbusRequest request = getModbusRequest(params);
+		logger.info("Ping worker request : {}", request.getHexMessage());
 		ModbusResponse response = null;
 
 		ModbusSerialTransaction tran = new ModbusSerialTransaction(

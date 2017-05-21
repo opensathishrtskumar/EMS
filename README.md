@@ -1,2 +1,0 @@
-# EMS
-Energy Management System
