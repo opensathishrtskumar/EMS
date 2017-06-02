@@ -122,6 +122,7 @@ public class DBConnectionManager {
 		Connection connection = null;
 		try {
 			connection = source.getConnection();
+			connection.setAutoCommit(true);
 			logger.debug("Connection details Active : {} , Idle : {}",
 					source.getNumActive(), source.getNumIdle());
 		} catch (SQLException e) {

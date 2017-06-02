@@ -11,16 +11,17 @@ import org.slf4j.LoggerFactory;
 
 public abstract class ConcurrencyUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ConcurrencyUtils.class);
-	
-	private static ThreadPoolExecutor workers = new ThreadPoolExecutor(5, 30, 5, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());;
-	
-	public static ThreadPoolExecutor getWorkers(){
+
+	private static ThreadPoolExecutor workers = new ThreadPoolExecutor(5, 30, 5, TimeUnit.SECONDS,
+			new LinkedBlockingQueue<Runnable>());;
+
+	public static ThreadPoolExecutor getWorkers() {
 		return workers;
 	}
-	
-	public static Future<Object> execute(Callable<Object> work){
+
+	public static Future<Object> execute(Callable<Object> work) {
 		Future<Object> result = workers.submit(work);
+		logger.trace(" Task submitted for Concurrent processing...");
 		return result;
 	}
-	
 }

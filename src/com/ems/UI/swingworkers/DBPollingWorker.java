@@ -17,8 +17,7 @@ import com.ems.UI.dto.PollingDetailDTO;
 import com.ems.db.DBConnectionManager;
 
 public class DBPollingWorker implements Callable<Object> {
-	private static final Logger logger = LoggerFactory
-			.getLogger(DBPollingWorker.class);
+	private static final Logger logger = LoggerFactory.getLogger(DBPollingWorker.class);
 
 	private JTable table;
 	private ExtendedSerialParameter parameters;
@@ -58,36 +57,34 @@ public class DBPollingWorker implements Callable<Object> {
 
 		if (status) {
 			failIfInterrupted();
-			String finalResponse = processRequiredRegister(
-					parameters.getRegisteres(), parameters);
-			PollingDetailDTO dto = new PollingDetailDTO(
-					parameters.getUniqueId(), System.currentTimeMillis(),
+			String finalResponse = processRequiredRegister(parameters.getRegisteres(), parameters);
+			PollingDetailDTO dto = new PollingDetailDTO(parameters.getUniqueId(), System.currentTimeMillis(),
 					finalResponse);
 			int insert = DBConnectionManager.insertPollingDetails(dto);
-			log(" insert poll response unit : {}, status : {}",
-					parameters.getUniqueId(), insert);
+			log(" insert poll response unit : {}, status : {}", parameters.getUniqueId(), insert);
 		}
 
 		return "Polling completed...";
 	}
 
+	@SuppressWarnings("unchecked")
 	private void updateWorkerStatus(String status) {
 		JTable table = getTable();
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		@SuppressWarnings("rawtypes")
 		Vector rowVector = model.getDataVector();
 
 		// To update status of this worker
 		try {
-			Vector columnVector = (Vector) rowVector.get(parameters
-					.getRowIndex());
+			@SuppressWarnings("rawtypes")
+			Vector columnVector = (Vector) rowVector.get(parameters.getRowIndex());
 			columnVector.set(3, status);
-			/* synchronized (table) */{
+			/* synchronized (table) */ {
 				model.fireTableDataChanged();
 			}
 		} catch (Exception e) {
 			logger.error("{}", e);
-			logger.error("Polling Table mode fire event failed : {}",
-					e.getLocalizedMessage());
+			logger.error("Polling Table mode fire event failed : {}", e.getLocalizedMessage());
 		}
 	}
 }

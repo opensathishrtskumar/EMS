@@ -217,9 +217,10 @@ public abstract class EMSUtility {
 					bytes[3] = registerBytes[1];
 				}
 				
-				builder.append(reg + REPORT_KEY_SEPARATOR
-						+ String.valueOf(ModbusUtil.registersToFloat(bytes))
-						+ REPORT_RECORD_SEPARATOR);
+				//order is not implemeted, so passing null
+				String value = convertToFloatWithOrder(bytes, null);
+				//To persist in DB
+				builder.append(reg + REPORT_KEY_SEPARATOR + value + REPORT_RECORD_SEPARATOR);
 			}
 		} catch (Exception e) {
 			logger.error("{}",e);
@@ -241,13 +242,13 @@ public abstract class EMSUtility {
 		try {
 			for(int reg : requiredRegisters){
 				int registerIndex = reg - (base + 1);
-				String value = "00.000";
+				String value = "00.00";
 				
 				if(registeres != null && registerIndex < registeres.length 
 						&& registeres[registerIndex] != null){
 					
 					byte[] registerBytes = registeres[registerIndex].toBytes();
-					
+					logger.trace("Firt 16 bit  : {}", Arrays.toString(registerBytes) );
 					byte[] bytes = new byte[]{0, 0, 0, 0};
 					bytes[0] = registerBytes[0];
 					bytes[1] = registerBytes[1];
@@ -256,9 +257,11 @@ public abstract class EMSUtility {
 						registerBytes = registeres[registerIndex + 1].toBytes();
 						bytes[2] = registerBytes[0];
 						bytes[3] = registerBytes[1];
+						logger.trace("Second 16 bit  : {}", Arrays.toString(registerBytes) );
 					}
 					
-					value = String.valueOf(ModbusUtil.registersToFloat(bytes));
+					//order is not implemeted, so passing null
+					value = convertToFloatWithOrder(bytes, null);
 				}
 				
 				finalResponse.put(String.valueOf(reg), value);
@@ -322,4 +325,24 @@ public abstract class EMSUtility {
 		return groupedDevice;
 	}
 	
+	
+	/**
+	 * @param bytes - read from Modbus slave
+	 * @param order - the order of which registeres to be processed
+	 * @return
+	 */
+	public static String convertToFloatWithOrder(byte[] bytes, String order){
+		byte[] byteOrder = new byte[4];
+		
+		//Form the byteorder based on @param 'order'
+		byteOrder[0] = bytes[2];
+		byteOrder[1] = bytes[3];
+		byteOrder[2] = bytes[0];
+		byteOrder[3] = bytes[1];
+		
+		String value = String.format("%.2f", 
+				ModbusUtil.registersToFloat(byteOrder));
+		
+		return value;
+	}
 }

@@ -39,7 +39,8 @@ public class ManagePassword extends JDialog {
 	 */
 	public ManagePassword(Frame parent) {
 		super(parent, "Login", true);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ManagePassword.class.getResource("/com/ems/resources/change_password.png")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(ManagePassword.class.getResource("/com/ems/resources/change_password.png")));
 
 		setBounds(100, 100, 340, 193);
 		getContentPane().setLayout(new BorderLayout());
@@ -85,43 +86,38 @@ public class ManagePassword extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				if(checkNullEmpty(passwordFieldOld.getText()) ||
-						checkNullEmpty(passwordFieldNew.getText()) ||
-						checkNullEmpty(passwordFieldConfirm.getText())){
-					JOptionPane.showMessageDialog(getMe(),
-							"Please fill all fields!", "Change password",
+				if (checkNullEmpty(passwordFieldOld.getText()) || checkNullEmpty(passwordFieldNew.getText())
+						|| checkNullEmpty(passwordFieldConfirm.getText())) {
+					JOptionPane.showMessageDialog(getMe(), "Please fill all fields!", "Change password",
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
-				if(!passwordFieldNew.getText().equals(passwordFieldConfirm.getText())){
-					JOptionPane.showMessageDialog(getMe(),
-							"New and Confirm password are not same!", "Change password",
+
+				if (!passwordFieldNew.getText().equals(passwordFieldConfirm.getText())) {
+					JOptionPane.showMessageDialog(getMe(), "New and Confirm password are not same!", "Change password",
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
+
 				Properties mainConfig = retrieveTempConfig(MAIN_CONFIG);
 				String confPassword = mainConfig.getProperty(PASSWORD_KEY, "INVALID");
-				
-				if(confPassword.equals(passwordFieldOld.getText())){
+
+				if (confPassword.equals(passwordFieldOld.getText())) {
 					mainConfig.put(PASSWORD_KEY, passwordFieldConfirm.getText());
 					writeTempConfig(mainConfig, MAIN_CONFIG);
-					JOptionPane.showMessageDialog(getMe(),
-							"Password changed successfully", "Change password",
+					JOptionPane.showMessageDialog(getMe(), "Password changed successfully", "Change password",
 							JOptionPane.INFORMATION_MESSAGE);
 					passwordFieldOld.setText("");
 					passwordFieldNew.setText("");
 					passwordFieldConfirm.setText("");
-					
+
 				} else {
-					JOptionPane.showMessageDialog(getMe(),
-							"Invalid old password!", "Change password",
+					JOptionPane.showMessageDialog(getMe(), "Invalid old password!", "Change password",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
-		
+
 		okButton.setActionCommand("OK");
 		buttonPane.add(okButton);
 		getRootPane().setDefaultButton(okButton);
@@ -134,12 +130,12 @@ public class ManagePassword extends JDialog {
 		cancelButton.setActionCommand("Cancel");
 		buttonPane.add(cancelButton);
 
-		//pack();
-        setResizable(false);
+		// pack();
+		setResizable(false);
 		setLocationRelativeTo(parent);
-	}	
-	
-	public JDialog getMe(){
+	}
+
+	public JDialog getMe() {
 		return this;
 	}
 }

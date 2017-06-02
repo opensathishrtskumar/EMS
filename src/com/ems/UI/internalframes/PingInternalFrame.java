@@ -14,11 +14,13 @@ import static com.ems.util.EMSSwingUtils.getNumericListener;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
@@ -30,9 +32,10 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -40,16 +43,10 @@ import javax.swing.event.InternalFrameEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.swingworkers.PingSwingWorker;
 import com.ems.util.EMSSwingUtils;
 import com.ems.util.EMSUtility;
-import javax.swing.ImageIcon;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
-import java.awt.Font;
-import javax.swing.SwingConstants;
 
 public class PingInternalFrame extends JInternalFrame implements AbstractIFrame {
 
