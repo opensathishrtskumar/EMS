@@ -29,6 +29,7 @@ import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -52,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import com.ems.UI.chart.ExtendedChartPanel;
 import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.PollingDetailDTO;
+import com.ems.constants.EmsConstants;
 import com.ems.constants.LimitConstants;
 import com.ems.constants.MessageConstants;
 import com.ems.constants.QueryConstants;
@@ -64,7 +66,7 @@ import com.ems.util.Helper;
 import com.ems.util.MyJDateComponentFactory;
 import javax.swing.DefaultComboBoxModel;
 
-public class ReportsIFrame extends JInternalFrame {
+public class ReportsIFrame extends JInternalFrame implements ActionListener{
 	private static final Logger logger = LoggerFactory
 			.getLogger(ReportsIFrame.class);
 	private static final long serialVersionUID = 6606072613952247592L;
@@ -75,7 +77,10 @@ public class ReportsIFrame extends JInternalFrame {
 	private List<DeviceDetailsDTO> deviceList;
 	private Map<String, DeviceDetailsDTO> deviceMap;
 	private JPanel panelChart;
-
+	
+	private JPanel seriesControlPanel;
+	private ExtendedChartPanel extendedChart;
+	
 	/**
 	 * Create the frame.
 	 */
@@ -86,7 +91,7 @@ public class ReportsIFrame extends JInternalFrame {
 						.getResource("/com/ems/resources/system_16x16.gif")));
 		setTitle("Reports");
 		setClosable(true);
-		setBounds(100, 100, 949, 602);
+		setBounds(100, 100, 949, 680);
 		centerFrame(getMe());
 		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 
@@ -284,23 +289,52 @@ public class ReportsIFrame extends JInternalFrame {
 		panel.add(comboRecordCount);
 
 		panelChart = new JPanel();
-		panelChart.setBorder(new TitledBorder(new CompoundBorder(new CompoundBorder(), new EtchedBorder(EtchedBorder.LOWERED, null, null)), "Chart", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panelChart.setBorder(new TitledBorder(
+				new CompoundBorder(new CompoundBorder(), new EtchedBorder(EtchedBorder.LOWERED, null, null)), "Chart",
+				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panelChart.setBounds(0, 90, 933, 480);
 		getContentPane().add(panelChart);
 		panelChart.setLayout(new BorderLayout(0, 0));
-
+		
+		seriesControlPanel = new JPanel();
+		seriesControlPanel.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)), "Report criteria", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		seriesControlPanel.setBounds(0, 575, 933, 80);
+		getContentPane().add(seriesControlPanel);
+		
 		loadAvailableActiveDevices(comboBoxDevice);
 	}
 
+	public JPanel getSeriesControlPanel(){
+		return seriesControlPanel;
+	}
+	
 	private void createChart(long deviceUniqueId, long startTime, long endTime,
 			DeviceDetailsDTO device) {
 		Connection connection = DBConnectionManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		
+		Properties memoryMapping = EMSUtility.loadProperties(device
+				.getMemoryMapping());
+		
+		//Remove existing content
+		JPanel seriesControlPanel = getSeriesControlPanel();
+		seriesControlPanel.removeAll();
+		
+		int index = 0;
+		for(Entry<Object, Object> entry : memoryMapping.entrySet()){
+			//Skip memory mapping record whose value is "NoMap"
+			if(!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().toString().trim())){
+				JCheckBox box = new JCheckBox(entry.getValue().toString());
+				box.setActionCommand(String.valueOf(index++));
+				box.addActionListener(this);
+				box.setSelected(true);
+				seriesControlPanel.add(box);
+			}
+		}
+		
 		try {
-			Properties memoryMapping = EMSUtility.loadProperties(device
-					.getMemoryMapping());
-
+			
 			ps = connection
 					.prepareStatement(QueryConstants.RETRIEVE_DEVICE_STATE4CHART);
 			ps.setLong(1, deviceUniqueId);
@@ -310,10 +344,10 @@ public class ReportsIFrame extends JInternalFrame {
 			logger.debug(" Chart query executed ...");
 			CategoryDataset dataset = createDataset(rs, memoryMapping);
 			logger.info("Category dataset created for chart...");
-			ExtendedChartPanel chart = new ExtendedChartPanel(
+			extendedChart = new ExtendedChartPanel(
 					device.getDeviceName(), dataset);
-
-			panelChart.add(chart);
+			
+			panelChart.add(extendedChart);
 			panelChart.repaint();
 			panelChart.updateUI();
 		} catch (Exception e) {
@@ -429,14 +463,20 @@ public class ReportsIFrame extends JInternalFrame {
 			PollingDetailDTO dto) {
 		Properties props = EMSUtility.loadProperties(dto.getUnitresponse());
 		for (Entry<Object, Object> entry : props.entrySet()) {
-			logger.trace(
-					"Reading: {} Series : {} Time : {}",
-					entry.getValue().toString(),
-					dto.getDeviceReading().getProperty(
-							entry.getKey().toString()),dto.getFormattedDate());
-			dataset.addValue(Float.parseFloat(entry.getValue().toString())/*Reading*/, 
-					dto.getDeviceReading().getProperty(entry.getKey().toString())/*Series name*/,
-					dto.getFormattedDate()/*Time*/);
+			
+			String seriesName = dto.getDeviceReading().getProperty(
+					entry.getKey().toString());
+			
+			//Skip memory mapping record whose value is "NoMap"
+			if(!EmsConstants.NO_MAP.equalsIgnoreCase(seriesName.trim())){
+				logger.trace(
+						"Reading: {} Series : {} Time : {}",
+						entry.getValue().toString(),
+						seriesName,dto.getFormattedDate());
+				
+				dataset.addValue(Float.parseFloat(entry.getValue().toString())/*Reading*/, 
+						seriesName/*Series name*/, dto.getFormattedDate()/*Time*/);
+			}
 		}
 	}
 
@@ -535,5 +575,19 @@ public class ReportsIFrame extends JInternalFrame {
 	
 	public static int getRecordsPerHour(){
 		return Integer.parseInt(comboRecordCount.getSelectedItem().toString());
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent action) {
+		
+		String commad = action.getActionCommand();
+		
+		if(commad != null && !commad.trim().isEmpty()){
+			int serieNumber = Integer.parseInt(commad);
+			
+			boolean visible = this.extendedChart.getCategoryRenderer().getItemVisible(serieNumber, 0);
+			this.extendedChart.getCategoryRenderer().setSeriesVisible(serieNumber, new Boolean(!visible));
+		}
+		
 	}
 }

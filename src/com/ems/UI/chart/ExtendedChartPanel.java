@@ -22,6 +22,7 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.SlidingCategoryDataset;
@@ -39,12 +40,18 @@ public class ExtendedChartPanel extends MyChartPanel implements ChangeListener {
 			Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.GREEN,
 			Color.YELLOW };
 
+	private CategoryItemRenderer categoryRenderer;
+	
 	public ExtendedChartPanel(String charTitle, CategoryDataset dataset) {
 		super(new BorderLayout());
 		this.slidingdataset = new SlidingCategoryDataset(dataset, 0, 10);
 
 		JFreeChart chart = createChart(this.slidingdataset, charTitle);
 		addChart(chart);
+		
+		CategoryPlot plot = (CategoryPlot) chart.getPlot();
+		categoryRenderer = plot.getRenderer();
+		
 		ChartPanel cp1 = new ChartPanel(chart);
 		cp1.setPreferredSize(new Dimension(400, 400));
 		logger.debug("dataset row count : {}", dataset.getColumnCount());
@@ -127,4 +134,9 @@ public class ExtendedChartPanel extends MyChartPanel implements ChangeListener {
 	public void stateChanged(ChangeEvent e) {
 		this.slidingdataset.setFirstCategoryIndex(this.scroller.getValue());
 	}
+
+	public CategoryItemRenderer getCategoryRenderer() {
+		return categoryRenderer;
+	}
+	
 }
