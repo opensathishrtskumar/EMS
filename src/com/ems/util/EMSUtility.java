@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -93,8 +94,12 @@ public abstract class EMSUtility {
 		return response;
 	}
 
+	/**
+	 * @param propertiesString
+	 * @returns Properties with keys in order which it is loaded
+	 */
 	public static Properties loadProperties(String propertiesString){
-		Properties mappings = new Properties();
+		Properties mappings = new OrderedProperties();
 
 		try {
 			mappings.load(new ByteArrayInputStream(propertiesString.getBytes()));
@@ -298,6 +303,8 @@ public abstract class EMSUtility {
 		parameters.setUnitId(devices.getDeviceId());
 		parameters.setUniqueId(devices.getUniqueId());
 		parameters.setRowIndex(devices.getRowIndex());
+		Properties memoryProps = loadProperties(devices.getMemoryMapping());
+		parameters.setProps(memoryProps);
 		parameters.setMemoryMappings(loadMemoryMappingDetails(devices.getMemoryMapping()));
 		parameters.setPortName(devices.getPort());
 		
@@ -344,5 +351,31 @@ public abstract class EMSUtility {
 				ModbusUtil.registersToFloat(byteOrder));
 		
 		return value;
+	}
+	
+	
+	public static Map<String, String> getOrderedProperties(Properties props){
+		Map<String, String> map = new LinkedHashMap<String,String>();
+		
+		if(props instanceof OrderedProperties){
+			OrderedProperties orderProp = (OrderedProperties) props;
+			Enumeration<Object> list = orderProp.keys();
+			
+			while(list.hasMoreElements()){
+				Object key = list.nextElement();
+				Object value = props.get(key);
+				String val = null;
+				
+				if(value != null)
+					val = value.toString();
+				
+				map.put(key.toString(), val);
+			}
+			
+		} else {
+			map.putAll((Map)props);
+		}
+		
+		return map;
 	}
 }

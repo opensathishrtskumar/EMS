@@ -5,6 +5,7 @@ import static com.ems.util.EMSUtility.getRegisterCount;
 import static com.ems.util.EMSUtility.getRegisterReference;
 
 import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.JScrollPane;
 
@@ -28,6 +29,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private Register[] registeres;
 	private boolean status;
 	private JScrollPane panel;
+	private Properties props;
 	
 	public ExtendedSerialParameter(String portName, int baudRate,
 			int flowControlIn, int flowControlOut, int databits, int stopbits,
@@ -170,6 +172,14 @@ public class ExtendedSerialParameter  extends SerialParameters{
 
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+
+	public Properties getProps() {
+		return props;
+	}
+
+	public void setProps(Properties props) {
+		this.props = props;
 	}
 }
 

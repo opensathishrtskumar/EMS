@@ -50,7 +50,6 @@ import com.ems.UI.swingworkers.GroupedDeviceWorker;
 import com.ems.db.DBConnectionManager;
 import com.ems.response.handlers.DashboardResponseHandler;
 import com.ems.tmp.datamngr.TempDataManager;
-import com.ems.util.ConfigHelper;
 import com.ems.util.EMSSwingUtils;
 
 public class DashboardFrame extends JInternalFrame {

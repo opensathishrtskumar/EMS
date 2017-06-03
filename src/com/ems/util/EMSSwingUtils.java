@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.internalframes.PingInternalFrame;
+import com.ems.constants.EmsConstants;
 import com.ems.db.DBConnectionManager;
 
 public abstract class EMSSwingUtils {
@@ -171,13 +172,16 @@ public abstract class EMSSwingUtils {
 		builder.append("margin: 1px;text-align:center;}table#table{width:100%;margin-left:20%;margin-right:15%;}tr{background-color: #B3B3C4;color: black;font-family: Times New Roman, Georgia, Serif; font-size: 16pt;}</style></head><body>");
 		builder.append("<div><h3>" + device.getDeviceName() + "</h3><hr><center><table id='table'>");
 		
-		Map<Long, String> mappings = device.getMemoryMappings();
+		Map<String, String> mappings = EMSUtility.getOrderedProperties(device.getProps());
 		Map<String, String> registerValue = processRegistersForDashBoard(device);
 		
-		for(Entry<Long, String> memory : mappings.entrySet()){
-			builder.append("<tr><td align='center'>");
-			builder.append(memory.getValue() + "(" + memory.getKey() + ")");
-			builder.append("</td><td align='center'>" + registerValue.get(String.valueOf(memory.getKey())) + "</td></tr>");
+		for(Entry<String, String> memory : mappings.entrySet()){
+			//Skip memory mapping record whose value is "NoMap"
+			if(!EmsConstants.NO_MAP.equalsIgnoreCase(memory.getValue().trim())){
+				builder.append("<tr><td align='center'>");
+				builder.append(memory.getValue() + "(" + memory.getKey() + ")");
+				builder.append("</td><td align='center'>" + registerValue.get(memory.getKey()) + "</td></tr>");
+			}
 		}
 		builder.append("</table></center></div></body></html>");
 		logger.trace("prepared device label : {}",builder.toString());

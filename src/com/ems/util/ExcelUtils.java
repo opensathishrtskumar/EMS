@@ -1,6 +1,6 @@
 package com.ems.util;
 
-import static com.ems.util.EMSUtility.loadProperties;
+import static com.ems.util.EMSUtility.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ems.constants.EmsConstants;
 
 public abstract class ExcelUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
@@ -47,16 +49,19 @@ public abstract class ExcelUtils {
 		header.setFont(font);
 		
 		for(Entry<String, String> entry : headers.entrySet()){
-			sheet.autoSizeColumn(column);
-			HSSFCell cell = row.createCell(column);
-			StringBuilder builder = new StringBuilder();
-			builder.append(entry.getValue());
-			builder.append("(");
-			builder.append(entry.getKey());
-			builder.append(")");
-			cell.setCellValue(builder.toString());
-			cell.setCellStyle(header);
-			column += 1;
+			//Skip memory mapping record whose value is "NoMap"
+			if(!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().trim())){
+				sheet.autoSizeColumn(column);
+				HSSFCell cell = row.createCell(column);
+				StringBuilder builder = new StringBuilder();
+				builder.append(entry.getValue());
+				builder.append("(");
+				builder.append(entry.getKey());
+				builder.append(")");
+				cell.setCellValue(builder.toString());
+				cell.setCellStyle(header);
+				column += 1;
+			}
 		}
 		
 		return workBook;
@@ -64,7 +69,8 @@ public abstract class ExcelUtils {
 	
 	public static Workbook writeReadingsToWorkBook(String filePath,
 			String sheetName, Properties mappings, ResultSet result) throws IOException {
-		Map<String, String> memoryMap = getMap(mappings);
+		//Keep the order of properties
+		Map<String, String> memoryMap = getOrderedProperties(mappings);
 		
 		Map<String, String> headers = new LinkedHashMap<>();
 		headers.put("Polled on","Date");
@@ -106,9 +112,12 @@ public abstract class ExcelUtils {
 		
 		Properties readingMap = loadProperties(builder.toString());
 		for(Entry<String, String> entry : headers.entrySet()){
-			HSSFCell readingCell = row.createCell(columnIndex);
-			readingCell.setCellValue(readingMap.getProperty(entry.getKey(), "0.0"));
-			columnIndex += 1;
+			//Skip memory mapping record whose value is "NoMap"
+			if(!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().trim())){
+				HSSFCell readingCell = row.createCell(columnIndex);
+				readingCell.setCellValue(readingMap.getProperty(entry.getKey(), "0.0"));
+				columnIndex += 1;
+			}
 		}
 	}
 }

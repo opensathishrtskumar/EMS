@@ -35,4 +35,6 @@ public abstract class EmsConstants {
 	public static final int REGISTERCOUNT = 10;
 	
 	public static final int GAP_BETWEEN_REQUEST = 150;
+	
+	public static final String NO_MAP = "NoMap";
 }
