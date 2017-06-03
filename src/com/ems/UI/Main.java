@@ -357,7 +357,7 @@ public class Main {
 
 		desktopPane = new JDesktopPane(){
 			private static final long serialVersionUID = -6668135361372162932L;
-			ImageIcon icon = new ImageIcon(Main.class.getResource("/com/ems/resources/images_desk.png"));
+			ImageIcon icon = new ImageIcon(Main.class.getResource("/com/ems/resources/saratha-engineering-services-120x120.png"));
             Image image = icon.getImage();
             Image scaledimage = image.getScaledInstance(435, 414, Image.SCALE_SMOOTH);
             @Override
