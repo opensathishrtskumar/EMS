@@ -104,6 +104,7 @@ public class DBConnectionManager {
 		// Initialize at very first time
 		if (source.getInitialSize() == 0) {
 			logger.debug("Connection initialized...");
+			source.setDefaultAutoCommit(true);
 			source.setUrl(getConnectionURL(props));
 			source.setDriverClassName("com.mysql.jdbc.Driver");
 			source.setUsername(props.getProperty(USERNAME));
@@ -122,7 +123,6 @@ public class DBConnectionManager {
 		Connection connection = null;
 		try {
 			connection = source.getConnection();
-			connection.setAutoCommit(true);
 			logger.debug("Connection details Active : {} , Idle : {}",
 					source.getNumActive(), source.getNumIdle());
 		} catch (SQLException e) {
@@ -362,6 +362,24 @@ public class DBConnectionManager {
 		
 		return DASHBOARD_DEVICES.replace(IN_PLACEHOLDER, nQueryParam(array.length));
 	}
+	
+	public static int getConfiguredDeviceCount(){
+		int count = 0;
+		
+		try (Connection con = getConnection(); 
+				Statement stmt = con.createStatement() ; 
+				ResultSet result = stmt.executeQuery(QueryConstants.CONFIGURED_DEVICE_COUNT);){
+			if(result.next())
+				count =  result.getInt("COUNT");
+		} catch (Exception e) {
+			logger.error("{}",e);
+			logger.error("Failed to get available device count : {}", e.getLocalizedMessage());
+		} finally {
+			
+		}
+		return count;
+	}
+	
 	
 	@Override
 	protected void finalize() throws Throwable {

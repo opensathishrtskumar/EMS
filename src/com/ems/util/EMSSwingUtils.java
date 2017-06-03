@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.internalframes.PingInternalFrame;
+import com.ems.db.DBConnectionManager;
 
 public abstract class EMSSwingUtils {
 
@@ -183,5 +184,17 @@ public abstract class EMSSwingUtils {
 		JLabel label = new JLabel(builder.toString());
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		return label;
+	}
+	
+	public static String getAvlConfigureDevicesString(){
+		int configured = DBConnectionManager.getConfiguredDeviceCount();
+		int total = ConfigHelper.getDefaultDevices();
+		StringBuilder builder = new StringBuilder();
+		builder.append(configured);
+		builder.append("/");
+		builder.append(total);
+		builder.append(" Device Configured");
+		
+		return builder.toString();
 	}
 }

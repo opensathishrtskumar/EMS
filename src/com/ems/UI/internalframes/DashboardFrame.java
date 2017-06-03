@@ -50,6 +50,8 @@ import com.ems.UI.swingworkers.GroupedDeviceWorker;
 import com.ems.db.DBConnectionManager;
 import com.ems.response.handlers.DashboardResponseHandler;
 import com.ems.tmp.datamngr.TempDataManager;
+import com.ems.util.ConfigHelper;
+import com.ems.util.EMSSwingUtils;
 
 public class DashboardFrame extends JInternalFrame {
 	private static final Logger logger = LoggerFactory
@@ -71,6 +73,8 @@ public class DashboardFrame extends JInternalFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		String companyName = config.getProperty(COMPANYNAME_KEY,DEFAULT_COMPANY_NAME);
 		StringBuilder builder = new StringBuilder();
+		builder.append(companyName);
+		builder.append(" ");
 		builder.append("Dashboard" );
 		setTitle(builder.toString());
 		setBounds(100, 100, 856, 631);
@@ -101,10 +105,11 @@ public class DashboardFrame extends JInternalFrame {
 		panel.add(lblTime);
 		
 		String today = getFormattedDate(DASHBOARD_FMT);
-		JLabel lblToday = new JLabel("Date " + today);
-		lblToday.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		String devices = EMSSwingUtils.getAvlConfigureDevicesString();
+		JLabel lblToday = new JLabel(devices);
+		lblToday.setFont(new Font("Tahoma", Font.BOLD, 10));
 		lblToday.setHorizontalAlignment(SwingConstants.CENTER);
-		lblToday.setBounds(10, 11, 100, 22);
+		lblToday.setBounds(10, 11, 130, 25);
 		panel.add(lblToday);
 		
 		panelDevice = new JPanel();

@@ -48,6 +48,8 @@ import com.ems.response.handlers.Events;
 import com.ems.tmp.datamngr.TempDataManager;
 import com.ems.util.EMSSwingUtils;
 
+import static com.ems.util.ConfigHelper.*;
+
 public class Main {
 
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -145,7 +147,7 @@ public class Main {
 		frmManageEnergy.setAlwaysOnTop(false);
 		frmManageEnergy.setResizable(true);
 		frmManageEnergy
-				.setTitle(BUNDLE.getString("Main.frmManageEnergy.title")); //$NON-NLS-1$
+				.setTitle(BUNDLE.getString("Main.frmManageEnergy.title") + getCompanyName()); //$NON-NLS-1$
 		/*frmManageEnergy.setExtendedState(JFrame.MAXIMIZED_BOTH);*/
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		frmManageEnergy.setSize(dimension);

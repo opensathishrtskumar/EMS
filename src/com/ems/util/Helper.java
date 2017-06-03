@@ -10,22 +10,17 @@ import static com.ems.constants.MessageConstants.DASHBOARD_DEVICESCOUNT_KEY;
 import static com.ems.constants.MessageConstants.DASHBOARD_DEVICES_KEY;
 import static com.ems.constants.MessageConstants.DASHBOARD_REFRESHFREQUENCY_KEY;
 import static com.ems.constants.MessageConstants.DEFAULTPORT_KEY;
+import static com.ems.constants.MessageConstants.NUMBER_OF_DEVICES_KEY;
 import static com.ems.constants.MessageConstants.PASSWORD_KEY;
 import static com.ems.constants.MessageConstants.USERNAME_KEY;
-import static com.ems.constants.MessageConstants.NUMBER_OF_DEVICES_KEY;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ems.constants.MessageConstants;
-import com.ems.tmp.datamngr.TempDataManager;
 
 public abstract class Helper {
 	private static final Logger logger = LoggerFactory

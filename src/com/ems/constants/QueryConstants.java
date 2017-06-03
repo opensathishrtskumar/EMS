@@ -39,4 +39,5 @@ public abstract class QueryConstants {
 			"stopbit,parity,memorymapping,status,createdtime,modifiedtime FROM setup.devicedetails " +
 			"WHERE deviceuniqueid IN (" + IN_PLACEHOLDER + ") AND STATUS = TRUE ORDER BY deviceuniqueid ASC").toString();
 	
+	public static final String CONFIGURED_DEVICE_COUNT = "SELECT COUNT(*) AS COUNT FROM SETUP.DEVICEDETAILS";
 }
