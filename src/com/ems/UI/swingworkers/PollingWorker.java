@@ -1,7 +1,9 @@
 package com.ems.UI.swingworkers;
 
 import static com.ems.constants.EmsConstants.MUTEX;
-import static com.ems.util.EMSUtility.*;
+import static com.ems.util.EMSUtility.getHHmm;
+import static com.ems.util.EMSUtility.processRequiredRegister;
+
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
@@ -44,8 +46,11 @@ public class PollingWorker implements Callable<Object> {
 		logger.debug(log, obj);
 	}
 
-	private static void failIfInterrupted() throws InterruptedException {
+	private void failIfInterrupted() throws InterruptedException {
 		if (Thread.currentThread().isInterrupted()) {
+			if(connection != null){
+				connection.close();
+			}
 			throw new InterruptedException(" Stopping worker...");
 		}
 	}

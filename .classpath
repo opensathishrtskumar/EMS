@@ -19,6 +19,7 @@
 	<classpathentry kind="lib" path="lib/commons-collections4-4.1.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.8.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

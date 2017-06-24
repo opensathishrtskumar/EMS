@@ -172,6 +172,7 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 
 	private void failIfInterrupted() throws InterruptedException {
 		if (Thread.currentThread().isInterrupted() || isCancelled()) {
+			closeSerialConnnection(this.connection);
 			throw new InterruptedException("Dashboard worker Stopped...");
 		}
 	}

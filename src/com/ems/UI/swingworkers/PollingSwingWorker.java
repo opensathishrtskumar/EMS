@@ -1,10 +1,6 @@
 package com.ems.UI.swingworkers;
 
-import static com.ems.constants.EmsConstants.ENCODING;
-import static com.ems.constants.EmsConstants.RETRYCOUNT;
-import static com.ems.constants.EmsConstants.TIMEOUT;
 import static com.ems.constants.QueryConstants.SELECT_ENABLED_ENDEVICES;
-import static com.ems.util.EMSUtility.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +33,7 @@ public class PollingSwingWorker extends SwingWorker<Object, Object> {
 
 	private void failIfInterrupted() throws InterruptedException {
 		if (Thread.currentThread().isInterrupted() || isCancelled()) {
+			stopPolling();
 			throw new InterruptedException(" Stopping worker...");
 		}
 	}
