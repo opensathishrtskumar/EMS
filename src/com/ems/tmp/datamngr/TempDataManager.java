@@ -107,7 +107,7 @@ public abstract class TempDataManager {
 		return tmpDir;
 	}
 	
-	//log4j takes care of Single instance
+	//launch4j takes care of Single instance
 	public static boolean frameLockExist() {
 		/*File temp = getTempFolder();
 		File frameLock = new File(temp.getAbsolutePath() + FRAME_LOCK);

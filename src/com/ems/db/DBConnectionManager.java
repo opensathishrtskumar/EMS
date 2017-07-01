@@ -6,11 +6,12 @@ import static com.ems.constants.DBConstants.PORT;
 import static com.ems.constants.DBConstants.USERNAME;
 import static com.ems.constants.LimitConstants.DEFAULT_COMPORT;
 import static com.ems.constants.MessageConstants.DEFAULTPORT_KEY;
+import static com.ems.constants.QueryConstants.DASHBOARD_DEVICES;
 import static com.ems.constants.QueryConstants.INSERT_DEVICE;
+import static com.ems.constants.QueryConstants.IN_PLACEHOLDER;
 import static com.ems.constants.QueryConstants.SELECT_DEVICES;
-import static com.ems.constants.QueryConstants.*;
-
-import static com.ems.tmp.datamngr.TempDataManager.*;
+import static com.ems.constants.QueryConstants.UPDATE_DEVICE;
+import static com.ems.tmp.datamngr.TempDataManager.MAIN_CONFIG;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

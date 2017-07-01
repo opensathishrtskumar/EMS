@@ -29,10 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.ExtendedSerialParameter;
+import com.ems.UI.dto.GroupsDTO;
 import com.ems.constants.EmsConstants;
 import com.fazecast.jSerialComm.SerialPort;
 import com.ghgande.j2mod.modbus.procimg.Register;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public abstract class EMSUtility {
 
@@ -281,7 +284,7 @@ public abstract class EMSUtility {
 	
 	public static List<ExtendedSerialParameter> mapDevicesToSerialParams(List<DeviceDetailsDTO> devices){
 		List<ExtendedSerialParameter> paramList = new ArrayList<ExtendedSerialParameter>();
-
+		
 		for(DeviceDetailsDTO device : devices){
 			paramList.add(mapDeviceToSerialParam(device));
 		}
@@ -377,5 +380,17 @@ public abstract class EMSUtility {
 		}
 		
 		return map;
+	}
+	
+	public static GroupsDTO fetchGroupedDevices(){
+		String groupingDetails = ConfigHelper.getGroupingDetails();
+		logger.debug("Grouped devices from prop : " + groupingDetails);
+		Gson gson = new GsonBuilder().create();
+		GroupsDTO groups = gson.fromJson(groupingDetails, GroupsDTO.class);
+		return groups;
+	}
+	
+	public static boolean isNullEmpty(String value){
+		return value == null || value.trim().isEmpty();
 	}
 }

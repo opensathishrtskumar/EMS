@@ -24,4 +24,7 @@ public abstract class MessageConstants {
 	public static final String DEFAULTPORT_KEY = "defaultcomport";
 	
 	public static final String NUMBER_OF_DEVICES_KEY = "numberofdevices";
+	
+	//Device grouping
+	public static final String DEVICES_GROUPING_KEY = "deViceGroupIngKeY";
 }

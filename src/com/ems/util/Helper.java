@@ -10,6 +10,7 @@ import static com.ems.constants.MessageConstants.DASHBOARD_DEVICESCOUNT_KEY;
 import static com.ems.constants.MessageConstants.DASHBOARD_DEVICES_KEY;
 import static com.ems.constants.MessageConstants.DASHBOARD_REFRESHFREQUENCY_KEY;
 import static com.ems.constants.MessageConstants.DEFAULTPORT_KEY;
+import static com.ems.constants.MessageConstants.DEVICES_GROUPING_KEY;
 import static com.ems.constants.MessageConstants.NUMBER_OF_DEVICES_KEY;
 import static com.ems.constants.MessageConstants.PASSWORD_KEY;
 import static com.ems.constants.MessageConstants.USERNAME_KEY;
@@ -87,6 +88,10 @@ public abstract class Helper {
 		mainConfig.put(COMPANYNAME_KEY,DEFAULT_COMPANY_NAME);
 		mainConfig.put(DEFAULTPORT_KEY,DEFAULT_COMPORT);
 		mainConfig.put(NUMBER_OF_DEVICES_KEY,String.valueOf(DEFAULT_NUMBER_OF_DEVICES));
+		
+		//Device grouping
+		mainConfig.put(DEVICES_GROUPING_KEY,"{}");
+		
 		logger.info("Initiatal setup is completed...");
 		return mainConfig;
 	}
@@ -130,17 +135,14 @@ public abstract class Helper {
 		return selected;
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args)throws Exception {
 		/*Properties prop = getInitialMainConfig();
 		prop.put(PASSWORD_KEY, "admin");
 		prop.list(System.out);
 		TempDataManager.writeTempConfig(prop, TempDataManager.MAIN_CONFIG);*/
 		
 		/*Properties props = TempDataManager.retrieveTempConfig(TempDataManager.MAIN_CONFIG);
-		props.list(System.out);
-		String[] a = props.getProperty(MessageConstants.DASHBOARD_DEVICES_KEY).split(";");
-		List<String> list = Arrays.asList(a);
-		System.out.println(Arrays.toString(a));
-		System.out.println(list.contains("100"));*/
+		props.put(DEVICES_GROUPING_KEY,new String(Files.readAllBytes(new File("C:\\Users\\Gokul.m\\Desktop\\json.txt").toPath())));
+		TempDataManager.writeTempConfig(props, TempDataManager.MAIN_CONFIG);*/
 	}
 }

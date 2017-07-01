@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -18,12 +19,18 @@ import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.ExtendedSerialParameter;
+import com.ems.UI.dto.GroupDTO;
+import com.ems.UI.dto.GroupsDTO;
 import com.ems.UI.internalframes.PingInternalFrame;
 import com.ems.constants.EmsConstants;
 import com.ems.db.DBConnectionManager;
@@ -201,4 +208,30 @@ public abstract class EMSSwingUtils {
 		
 		return builder.toString();
 	}
+	
+	public static GroupsDTO getAllGroupNodes(JTree tree){
+		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+	    DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+	    
+	    GroupsDTO groups = (GroupsDTO)root.getUserObject();
+	    groups.setGroups(new ArrayList<GroupDTO>());
+	    
+	    int childCount = root.getChildCount();
+	    for(int i=0;i<childCount;i++){
+	    	DefaultMutableTreeNode groupNode = (DefaultMutableTreeNode)root.getChildAt(i);
+	    	GroupDTO group = (GroupDTO)groupNode.getUserObject();
+	    	group.setDevices(new ArrayList<DeviceDetailsDTO>());
+	    	groups.getGroups().add(group);
+	    	
+	    	int leafCount = groupNode.getChildCount();
+	    	for(int j = 0;j<leafCount ;j++){
+	    		DefaultMutableTreeNode child = (DefaultMutableTreeNode)groupNode.getChildAt(j);
+	    		DeviceDetailsDTO device = (DeviceDetailsDTO)child.getUserObject();
+	    		group.getDevices().add(device);
+	    	}
+	    }
+	    
+	    return groups;
+	}
+	
 }

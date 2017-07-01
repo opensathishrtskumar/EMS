@@ -36,4 +36,9 @@ public class GroupDTO implements Serializable {
 	public void setDevices(List<DeviceDetailsDTO> devices) {
 		this.devices = devices;
 	}
+
+	@Override
+	public String toString() {
+		return  groupName;
+	}
 }

@@ -1,5 +1,7 @@
 package com.ems.UI;
 
+import static com.ems.util.ConfigHelper.getCompanyName;
+
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
@@ -38,6 +40,8 @@ import com.ems.UI.custom.components.PreferencesDialog;
 import com.ems.UI.internalframes.AbstractIFrame;
 import com.ems.UI.internalframes.DBConfigurer;
 import com.ems.UI.internalframes.DashboardFrame;
+import com.ems.UI.internalframes.GroupDevices;
+import com.ems.UI.internalframes.GroupedDevices;
 import com.ems.UI.internalframes.ManageDeviceIFrame;
 import com.ems.UI.internalframes.PingInternalFrame;
 import com.ems.UI.internalframes.PollingIFrame;
@@ -47,8 +51,6 @@ import com.ems.response.handlers.EventHandler;
 import com.ems.response.handlers.Events;
 import com.ems.tmp.datamngr.TempDataManager;
 import com.ems.util.EMSSwingUtils;
-
-import static com.ems.util.ConfigHelper.*;
 
 public class Main {
 
@@ -336,6 +338,28 @@ public class Main {
 		mntmView.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
 				InputEvent.ALT_MASK));
 		mnReports.add(mntmView);
+		
+		JMenuItem mntmGroupDevice = new JMenuItem(BUNDLE.getString("Main.mntmGroupDevice.text")); //$NON-NLS-1$
+		mntmGroupDevice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Show grouping feauture
+				GroupDevices dialog = new GroupDevices(getMe());
+				dialog.setModal(true);
+				dialog.setVisible(true);
+			}
+		});
+		mnReports.add(mntmGroupDevice);
+		
+		JMenuItem mntmGroupedDevices = new JMenuItem(BUNDLE.getString("Main.mntmGroupedDevices.text")); //$NON-NLS-1$
+		mntmGroupedDevices.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Show grouped devices
+				GroupedDevices dialog = new GroupedDevices(getMe());
+				dialog.setModal(true);
+				dialog.setVisible(true);
+			}
+		});
+		mnReports.add(mntmGroupedDevices);
 
 		JMenu mnHelp = new JMenu(BUNDLE.getString("Main.mnHelp.text")); //$NON-NLS-1$
 		mnHelp.setMnemonic('H');
@@ -357,7 +381,7 @@ public class Main {
 
 		desktopPane = new JDesktopPane(){
 			private static final long serialVersionUID = -6668135361372162932L;
-			ImageIcon icon = new ImageIcon(Main.class.getResource("/com/ems/resources/saratha-engineering-services-120x120.png"));
+			ImageIcon icon = new ImageIcon(Main.class.getResource("/com/ems/resources/images_desk.png"));
             Image image = icon.getImage();
             Image scaledimage = image.getScaledInstance(435, 414, Image.SCALE_SMOOTH);
             @Override

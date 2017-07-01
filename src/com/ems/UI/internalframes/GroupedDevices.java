@@ -1,8 +1,5 @@
 package com.ems.UI.internalframes;
 
-import static com.ems.constants.LimitConstants.DASHBOARD_REFRESH_FREQUENCY;
-import static com.ems.constants.MessageConstants.DASHBOARD_REFRESHFREQUENCY_KEY;
-import static com.ems.tmp.datamngr.TempDataManager.MAIN_CONFIG;
 import static com.ems.util.EMSSwingUtils.getDeviceDetailLabel;
 import static com.ems.util.EMSUtility.groupDeviceForPolling;
 import static com.ems.util.EMSUtility.mapDevicesToSerialParams;
@@ -12,13 +9,9 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -31,21 +24,20 @@ import javax.swing.WindowConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ems.UI.custom.components.LoginDialog;
 import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.GroupDTO;
 import com.ems.UI.dto.GroupsDTO;
 import com.ems.UI.swingworkers.GroupedDeviceWorker;
 import com.ems.response.handlers.DashboardResponseHandler;
-import com.ems.tmp.datamngr.TempDataManager;
+import com.ems.util.ConfigHelper;
+import com.ems.util.EMSUtility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class GroupedDevices extends JDialog {
 	private static final Logger logger = LoggerFactory.getLogger(GroupedDevices.class);
 	private static final long serialVersionUID = 1L;
-	private Properties config = TempDataManager.retrieveTempConfig(MAIN_CONFIG);
 	private GroupedDeviceWorker worker = null;
 
 	/**
@@ -86,7 +78,7 @@ public class GroupedDevices extends JDialog {
 		});
 		
 		setTitle("Grouped Devices");
-		setBounds(100, 100, 839, 495);
+		setBounds(100, 100, 1000, 600);
 		getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
 
 		JPanel panel = new JPanel();
@@ -102,8 +94,7 @@ public class GroupedDevices extends JDialog {
 
 	private void addContent(JTabbedPane tabbedPane){
 
-		GroupsDTO groups = fetchGroupedDevices();
-
+		GroupsDTO groups = EMSUtility.fetchGroupedDevices();
 		boolean groupConfigured = false;
 
 		if(groups != null){
@@ -132,14 +123,17 @@ public class GroupedDevices extends JDialog {
 					groupConfigured = true;
 				}
 				
+				logger.debug("Grouped devices added for polling ");
+				
 				Map<String, List<ExtendedSerialParameter>> groupedDevices = groupDeviceForPolling(mainList);
-				String refreshFreq = config.getProperty(DASHBOARD_REFRESHFREQUENCY_KEY, String.valueOf(DASHBOARD_REFRESH_FREQUENCY));
+				String refreshFreq = ConfigHelper.getDashboardFrequency();
 				worker = new GroupedDeviceWorker(groupedDevices);
 				worker.setRefreshFrequency(Integer.parseInt(refreshFreq) * 60 * 1000);
 				DashboardResponseHandler handler = new DashboardResponseHandler();
 				worker.setResponseHandler(handler);
 				worker.execute();
 				
+				logger.debug("Poller initiated for Grouped Devices screen");
 			}
 		}
 
@@ -155,79 +149,6 @@ public class GroupedDevices extends JDialog {
 		JLabel label = getDeviceDetailLabel(device);
 		JScrollPane scrollPane = new JScrollPane(label);
 		return scrollPane;
-	}
-
-	private GroupsDTO fetchGroupedDevices(){
-
-		List<GroupDTO> group = new ArrayList<GroupDTO>();
-
-		String deviceJson = null;
-
-		try {
-			byte[] bytes = Files.readAllBytes(new File("C:\\Users\\Gokul.m\\Desktop\\json.txt").toPath());
-			deviceJson = new String(bytes);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		Gson gson = new GsonBuilder().create();
-
-		for(int i=0;i<5;i++){
-			GroupDTO g = new GroupDTO();
-			g.setGroupName("Group " + i);
-			g.setGroupDescription("description of group " + i);
-			ArrayList<DeviceDetailsDTO>  devices = new ArrayList<DeviceDetailsDTO>();
-
-			DeviceDetailsDTO d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + i);
-			d.setDeviceId(3);
-			devices.add(d);
-
-			d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + i);
-			d.setDeviceId(4);
-			devices.add(d);
-
-			/*d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + i);
-			d.setDeviceId(5);
-			devices.add(d);
-
-			d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + i);
-			d.setDeviceId(6);
-			devices.add(d);
-
-			d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + i);
-			d.setDeviceId(6);
-			devices.add(d);
-
-			d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + (i + 2));
-			d.setDeviceId(6);
-			devices.add(d);
-
-			d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + (i + 2));
-			d.setDeviceId(6);
-			devices.add(d);
-
-			d = gson.fromJson(deviceJson, DeviceDetailsDTO.class);
-			d.setDeviceName("Device " + (i + 2));
-			d.setDeviceId(6);
-			devices.add(d);*/
-
-			g.setDevices(devices);
-			group.add(g);
-		}
-
-		GroupsDTO groups = new GroupsDTO();
-		groups.setGroups(group);
-		groups.setTimestamp(System.currentTimeMillis());
-
-		return groups;
 	}
 
 	private void killWorker(){
