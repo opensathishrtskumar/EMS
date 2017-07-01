@@ -4,6 +4,7 @@ import static com.ems.constants.EmsConstants.BAUDRATES;
 import static com.ems.constants.EmsConstants.PARITY;
 import static com.ems.constants.EmsConstants.STOPBIT;
 import static com.ems.constants.EmsConstants.WORDLENGTH;
+import static com.ems.constants.EmsConstants.REG_MAPPING;
 import static com.ems.util.EMSSwingUtils.centerFrame;
 import static com.ems.util.EMSUtility.convertObjectArray;
 
@@ -220,32 +221,33 @@ public class ManageDeviceIFrame extends JInternalFrame {
 
 		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] {
 				"UNIQUEID", "DEVICEID", "DEVICENAME", "BAUDRATE", "WORDLENGTH",
-				"PARITY", "STOPBIT", "MEMORY MAPPING", "ENABLED" }) {
+				"PARITY", "STOPBIT", "MEMORY MAPPING", "ENABLED", "MSRF/LSRF" }) {
 			private static final long serialVersionUID = 1L;
 			Class[] columnTypes = new Class[] { Integer.class, Integer.class,
 					String.class, Integer.class, Short.class, Short.class,
-					Short.class, String.class, Boolean.class };
+					Short.class, String.class, Boolean.class , String.class};
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 
 			boolean[] columnEditables = new boolean[] { false, true, true,
-					true, true, true, true, true, true };
+					true, true, true, true, true, true, true };
 
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
 			}
 
 		});
-		table.getColumnModel().getColumn(0).setPreferredWidth(90);
-		table.getColumnModel().getColumn(1).setPreferredWidth(90);
-		table.getColumnModel().getColumn(2).setPreferredWidth(150);
+		table.getColumnModel().getColumn(0).setPreferredWidth(80);
+		table.getColumnModel().getColumn(1).setPreferredWidth(80);
+		table.getColumnModel().getColumn(2).setPreferredWidth(130);
 		table.getColumnModel().getColumn(3).setPreferredWidth(90);
 		table.getColumnModel().getColumn(4).setPreferredWidth(90);
 		table.getColumnModel().getColumn(5).setPreferredWidth(90);
 		table.getColumnModel().getColumn(6).setPreferredWidth(90);
-		table.getColumnModel().getColumn(7).setPreferredWidth(200);
+		table.getColumnModel().getColumn(7).setPreferredWidth(140);
+		table.getColumnModel().getColumn(8).setPreferredWidth(100);
 
 		table.setRowHeight(30);
 
@@ -291,6 +293,7 @@ public class ManageDeviceIFrame extends JInternalFrame {
 			logger.info("Updated Mapping : {}",tableModel.getValueAt(rowIndex, 7));
 			dto.setMemoryMapping(columnVector.get(7).toString());
 			dto.setEnabled(columnVector.get(8).toString());
+			dto.setRegisterMapping(getSelectedValue((MyComboModel) columnVector.get(9)));
 
 			list.add(dto);
 			rowIndex += 1;
@@ -313,7 +316,11 @@ public class ManageDeviceIFrame extends JInternalFrame {
 				new MyComboModel(convertObjectArray(BAUDRATES), BAUDRATES[6]),
 				new MyComboModel(convertObjectArray(WORDLENGTH), WORDLENGTH[1]),
 				new MyComboModel(convertObjectArray(PARITY), PARITY[2]),
-				new MyComboModel(convertObjectArray(STOPBIT),STOPBIT[0]), "", false };
+				new MyComboModel(convertObjectArray(STOPBIT),STOPBIT[0]), 
+				"", 
+				false, 
+				new MyComboModel(convertObjectArray(REG_MAPPING),REG_MAPPING[0])
+				};
 	}
 
 	private void populateDBDeviceDetails(final JTable table){
@@ -339,7 +346,8 @@ public class ManageDeviceIFrame extends JInternalFrame {
 						new MyComboModel(convertObjectArray(PARITY), device.getParity()),
 						new MyComboModel(convertObjectArray(STOPBIT), device.getStopbit()), 
 						device.getMemoryMapping(),
-						new Boolean(device.getEnabled())};
+						new Boolean(device.getEnabled()),
+						new MyComboModel(convertObjectArray(REG_MAPPING), device.getRegisterMapping())};
 
 				tableModel.insertRow(device.getRowIndex() ,deviceRow);
 			}
@@ -386,6 +394,11 @@ public class ManageDeviceIFrame extends JInternalFrame {
 		column.setCellRenderer(new TextAreaRenderer());
 		column.setCellEditor(new TextAreaEditor());
 
+		// MSRF/LSRF column
+		column = table.getColumnModel().getColumn(9);
+		column.setCellEditor(new JcomboEditor());
+		column.setCellRenderer(new JComboRenderer());
+		
 		table.getModel().addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent event) {

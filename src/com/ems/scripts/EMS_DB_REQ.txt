@@ -2,8 +2,26 @@ DB Env setup :
 	1. Create Scheme		
 		1.1 CREATE DATABASE `setup`;
 		1.2	CREATE DATABASE `polling`;
-			
-		2.3 CREATE TABLE `setup`.`devicedetails`( `deviceuniqueid` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, `unitid` VARCHAR(5) NOT NULL, `devicealiasname` VARCHAR(50) NOT NULL, `baudrate` INT UNSIGNED NOT NULL, `wordlength` SMALLINT UNSIGNED NOT NULL, `stopbit` SMALLINT UNSIGNED NOT NULL, `parity` VARCHAR(10) NOT NULL, `memorymapping` VARCHAR(1000) NOT NULL, `status` BOOL NOT NULL, `createdtime` BIGINT UNSIGNED NOT NULL, `modifiedtime` BIGINT UNSIGNED NOT NULL, PRIMARY KEY (`deviceuniqueid`) ); 		
-		2.5 CREATE TABLE `polling`.`pollingdetails`( `deviceuniqueid` BIGINT UNSIGNED NOT NULL, `polledon` BIGINT UNSIGNED NOT NULL, `unitresponse` VARCHAR(2000), KEY (`deviceuniqueid`)); 
+			commit;
+				
+		2.3 CREATE TABLE `setup`.`devicedetails`( `deviceuniqueid` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, 
+					`unitid` VARCHAR(5) NOT NULL, `devicealiasname` VARCHAR(50) NOT NULL, 
+					`baudrate` INT UNSIGNED NOT NULL, 
+					`wordlength` SMALLINT UNSIGNED NOT NULL, 
+					`stopbit` SMALLINT UNSIGNED NOT NULL, 
+					`parity` VARCHAR(10) NOT NULL, 
+					`memorymapping` VARCHAR(1000) NOT NULL, 
+					`status` BOOL NOT NULL, 
+					`registermapping` VARCHAR(5) DEFAULT 'MSRF' NOT NULL,
+					`createdtime` BIGINT UNSIGNED NOT NULL, 
+					`modifiedtime` BIGINT UNSIGNED NOT NULL, PRIMARY KEY (`deviceuniqueid`) );
+					
+			ALTER TABLE `setup`.`devicedetails`   
+  			ADD COLUMN `registermapping` VARCHAR(5) DEFAULT 'MSRF' NOT NULL AFTER `status`;		
+					 		
+		
+		2.5 CREATE TABLE `polling`.`pollingdetails`( `deviceuniqueid` BIGINT UNSIGNED NOT NULL, 
+					`polledon` BIGINT UNSIGNED NOT NULL, 
+					`unitresponse` VARCHAR(2000), KEY (`deviceuniqueid`)); 
 		
 

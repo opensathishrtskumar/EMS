@@ -30,6 +30,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private boolean status;
 	private JScrollPane panel;
 	private Properties props;
+	private String registerMapping;
 	
 	public ExtendedSerialParameter(String portName, int baudRate,
 			int flowControlIn, int flowControlOut, int databits, int stopbits,
@@ -180,6 +181,14 @@ public class ExtendedSerialParameter  extends SerialParameters{
 
 	public void setProps(Properties props) {
 		this.props = props;
+	}
+
+	public String getRegisterMapping() {
+		return registerMapping;
+	}
+
+	public void setRegisterMapping(String registerMapping) {
+		this.registerMapping = registerMapping;
 	}
 }
 

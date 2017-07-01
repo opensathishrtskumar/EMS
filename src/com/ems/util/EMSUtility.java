@@ -225,8 +225,8 @@ public abstract class EMSUtility {
 					bytes[3] = registerBytes[1];
 				}
 				
-				//order is not implemeted, so passing null
-				String value = convertToFloatWithOrder(bytes, null);
+				//register ordering is implemeted
+				String value = convertToFloatWithOrder(bytes, parameters.getRegisterMapping());
 				//To persist in DB
 				builder.append(reg + REPORT_KEY_SEPARATOR + value + REPORT_RECORD_SEPARATOR);
 			}
@@ -268,8 +268,8 @@ public abstract class EMSUtility {
 						logger.trace("Second 16 bit  : {}", Arrays.toString(registerBytes) );
 					}
 					
-					//order is not implemeted, so passing null
-					value = convertToFloatWithOrder(bytes, null);
+					//register order is implemeted
+					value = convertToFloatWithOrder(bytes, parameters.getRegisterMapping());
 				}
 				
 				finalResponse.put(String.valueOf(reg), value);
@@ -312,6 +312,8 @@ public abstract class EMSUtility {
 		parameters.setPortName(devices.getPort());
 		
 		parameters.setDeviceName(devices.getDeviceName());
+		parameters.setRegisterMapping(devices.getRegisterMapping());
+		
 
 		return parameters;
 	}
@@ -342,13 +344,19 @@ public abstract class EMSUtility {
 	 * @return
 	 */
 	public static String convertToFloatWithOrder(byte[] bytes, String order){
-		byte[] byteOrder = new byte[4];
+		byte[] byteOrder = null;
 		
-		//Form the byteorder based on @param 'order'
+		if(order.equals(EmsConstants.REG_MAPPING[0])){
+			byteOrder = bytes;
+		} else {
+			byteOrder = new byte[]{bytes[2],bytes[3],bytes[0],bytes[1]};
+		}
+		
+		/*//Form the byteorder based on @param 'order'
 		byteOrder[0] = bytes[2];
 		byteOrder[1] = bytes[3];
 		byteOrder[2] = bytes[0];
-		byteOrder[3] = bytes[1];
+		byteOrder[3] = bytes[1];*/
 		
 		String value = String.format("%.2f", 
 				ModbusUtil.registersToFloat(byteOrder));

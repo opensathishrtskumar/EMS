@@ -14,6 +14,8 @@ public abstract class EmsConstants {
 	public static final String[] PARITY = { "none", "odd", "even", "mark", "space" };
 
 	public static final int[] STOPBIT = { 1, 2 };
+	
+	public static final String[] REG_MAPPING = { "MSRF", "LSRF" };
 
 	public static final String[] POINTYPE = { "01 - COIL STATUS",
 			"02 - INPUT STATUS", "03 - HOLDING REGISTERS",

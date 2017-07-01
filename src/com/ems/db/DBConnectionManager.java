@@ -172,7 +172,8 @@ public class DBConnectionManager {
 		statement.setBoolean(8, new Boolean(device.getEnabled()));
 		statement.setLong(9, time);
 		statement.setLong(10, time);
-
+		statement.setString(11, device.getRegisterMapping());
+		
 		int insert = 0;
 		try {
 			insert = statement.executeUpdate();
@@ -202,7 +203,9 @@ public class DBConnectionManager {
 		statement.setString(7, device.getMemoryMapping());
 		statement.setBoolean(8, new Boolean(device.getEnabled()));
 		statement.setLong(9, time);
-		statement.setLong(10, device.getUniqueId());
+		statement.setString(10, device.getRegisterMapping());
+		statement.setLong(11, device.getUniqueId());
+		
 		int update = 0;
 
 		try {
@@ -312,6 +315,7 @@ public class DBConnectionManager {
 				details.setMemoryMapping(resultSet.getString("memorymapping"));
 				details.setEnabled(resultSet.getBoolean("status") ? "true"
 						: "false");
+				details.setRegisterMapping(resultSet.getString("registermapping"));
 				logger.trace(" Device from DB : {}", details);
 				list.add(details);
 			}

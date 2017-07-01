@@ -18,6 +18,9 @@ public class DeviceDetailsDTO implements Serializable{
 	private String port;
 	private int pollDelay;
 	private int rowIndex;
+	//Set default mapping as "MSRF"
+	private String registerMapping;
+	
 	
 	public DeviceDetailsDTO() {
 	}
@@ -116,6 +119,14 @@ public class DeviceDetailsDTO implements Serializable{
 
 	public void setRowIndex(int rowIndex) {
 		this.rowIndex = rowIndex;
+	}
+	
+	public String getRegisterMapping() {
+		return registerMapping;
+	}
+
+	public void setRegisterMapping(String registerMapping) {
+		this.registerMapping = registerMapping;
 	}
 
 	public String getGroupKey(){
