@@ -340,6 +340,9 @@ public class Main {
 		mnReports.add(mntmView);
 		
 		JMenuItem mntmGroupDevice = new JMenuItem(BUNDLE.getString("Main.mntmGroupDevice.text")); //$NON-NLS-1$
+		mntmGroupDevice.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/group.png")));
+		mntmGroupDevice.setMnemonic('G');
+		mntmGroupDevice.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mntmGroupDevice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//Show grouping feauture
@@ -351,6 +354,9 @@ public class Main {
 		mnReports.add(mntmGroupDevice);
 		
 		JMenuItem mntmGroupedDevices = new JMenuItem(BUNDLE.getString("Main.mntmGroupedDevices.text")); //$NON-NLS-1$
+		mntmGroupedDevices.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/group.png")));
+		mntmGroupedDevices.setMnemonic('R');
+		mntmGroupedDevices.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mntmGroupedDevices.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Show grouped devices
