@@ -182,12 +182,24 @@ public abstract class EMSSwingUtils {
 		Map<String, String> mappings = EMSUtility.getOrderedProperties(device.getProps());
 		Map<String, String> registerValue = processRegistersForDashBoard(device);
 		
+		logger.trace("Processed register : {} Mapping : {}", registerValue,mappings);
+		
 		for(Entry<String, String> memory : mappings.entrySet()){
 			//Skip memory mapping record whose value is "NoMap"
 			if(!EmsConstants.NO_MAP.equalsIgnoreCase(memory.getValue().trim())){
 				builder.append("<tr><td align='center'>");
 				builder.append(memory.getValue() + "(" + memory.getKey() + ")");
-				builder.append("</td><td align='center'>" + registerValue.get(memory.getKey()) + "</td></tr>");
+				String value = null;
+				
+				try {
+					value = registerValue.get(String.valueOf(Integer.valueOf(memory.getKey())));
+					logger.trace("looked up values : {}", value);
+				} catch (Exception e) {
+					logger.error("{}",e.getLocalizedMessage());
+					logger.error("{}",e);
+				}
+				
+				builder.append("</td><td align='center'>" + (value == null ? "0.00" : value) + "</td></tr>");
 			}
 		}
 		builder.append("</table></center></div></body></html>");

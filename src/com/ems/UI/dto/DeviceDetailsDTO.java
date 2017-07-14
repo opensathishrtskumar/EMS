@@ -20,6 +20,7 @@ public class DeviceDetailsDTO implements Serializable{
 	private int rowIndex;
 	//Set default mapping as "MSRF"
 	private String registerMapping;
+	private String method;
 	
 	
 	public DeviceDetailsDTO() {
@@ -128,9 +129,18 @@ public class DeviceDetailsDTO implements Serializable{
 	public void setRegisterMapping(String registerMapping) {
 		this.registerMapping = registerMapping;
 	}
+	
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
 
 	public String getGroupKey(){
 		StringBuilder builder = new StringBuilder();
+		builder.append(getPort());
 		builder.append(getBaudRate());
 		builder.append(getWordLength());
 		builder.append(getParity());

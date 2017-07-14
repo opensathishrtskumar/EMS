@@ -4,12 +4,13 @@ import static com.ems.util.EMSUtility.getPersistRegisters;
 import static com.ems.util.EMSUtility.getRegisterCount;
 import static com.ems.util.EMSUtility.getRegisterReference;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.JScrollPane;
 
-import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 public class ExtendedSerialParameter  extends SerialParameters{
@@ -26,11 +27,13 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private Map<Long,String> memoryMappings;
 	private int[] requiredRegisters;
 	private String deviceName;
-	private Register[] registeres;
+	private InputRegister[] registeres;
 	private boolean status;
 	private JScrollPane panel;
 	private Properties props;
 	private String registerMapping;
+	private String port;
+	private String method;
 	
 	public ExtendedSerialParameter(String portName, int baudRate,
 			int flowControlIn, int flowControlOut, int databits, int stopbits,
@@ -128,6 +131,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 
 	public String getGroupKey(){
 		StringBuilder builder = new StringBuilder();
+		builder.append(getPort());
 		builder.append(getBaudRate());
 		builder.append(getDatabits());
 		builder.append(getParity());
@@ -151,11 +155,11 @@ public class ExtendedSerialParameter  extends SerialParameters{
 		this.deviceName = deviceName;
 	}
 
-	public Register[] getRegisteres() {
+	public InputRegister[] getRegisteres() {
 		return registeres;
 	}
 
-	public void setRegisteres(Register[] registeres) {
+	public void setRegisteres(InputRegister[] registeres) {
 		this.registeres = registeres;
 	}
 
@@ -190,5 +194,33 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	public void setRegisterMapping(String registerMapping) {
 		this.registerMapping = registerMapping;
 	}
+
+	public String getPort() {
+		super.setPortName(port);
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
+	@Override
+	public String toString() {
+		return "ExtendedSerialParameter [unitId=" + unitId + ", retries=" + retries + ", timeout=" + timeout
+				+ ", reference=" + reference + ", count=" + count + ", pointType=" + pointType + ", pollDelay="
+				+ pollDelay + ", uniqueId=" + uniqueId + ", rowIndex=" + rowIndex + ", requiredRegisters="
+				+ Arrays.toString(requiredRegisters) + ", deviceName=" + deviceName + ", registeres="
+				+ Arrays.toString(registeres) + ", status=" + status + ", props=" + props + ", registerMapping="
+				+ registerMapping + ", port=" + port + ", method=" + method + "]";
+	}
+	
 }
 

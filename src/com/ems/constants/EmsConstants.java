@@ -39,4 +39,6 @@ public abstract class EmsConstants {
 	public static final int GAP_BETWEEN_REQUEST = 150;
 	
 	public static final String NO_MAP = "NoMap";
+	
+	public static final String[] READ_METHOD = { "3", "4" };
 }

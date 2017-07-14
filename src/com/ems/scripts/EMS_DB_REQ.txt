@@ -13,11 +13,14 @@ DB Env setup :
 					`memorymapping` VARCHAR(1000) NOT NULL, 
 					`status` BOOL NOT NULL, 
 					`registermapping` VARCHAR(5) DEFAULT 'MSRF' NOT NULL,
+					`port` VARCHAR(5) DEFAULT 'COM3' NOT NULL,
+					`method` VARCHAR(5) DEFAULT '3' NOT NULL,
 					`createdtime` BIGINT UNSIGNED NOT NULL, 
 					`modifiedtime` BIGINT UNSIGNED NOT NULL, PRIMARY KEY (`deviceuniqueid`) );
 					
-			ALTER TABLE `setup`.`devicedetails`   
-  			ADD COLUMN `registermapping` VARCHAR(5) DEFAULT 'MSRF' NOT NULL AFTER `status`;		
+			
+			ALTER TABLE `setup`.`devicedetails` ADD COLUMN `port` VARCHAR(5) DEFAULT 'COM3' NOT NULL AFTER `registermapping`;
+			ALTER TABLE `setup`.`devicedetails` ADD COLUMN `method` VARCHAR(5) DEFAULT '3' NOT NULL AFTER `registermapping`;		
 					 		
 		
 		2.5 CREATE TABLE `polling`.`pollingdetails`( `deviceuniqueid` BIGINT UNSIGNED NOT NULL, 

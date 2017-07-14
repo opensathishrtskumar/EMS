@@ -1,6 +1,7 @@
 package com.ems.util;
 
-import static com.ems.util.EMSUtility.*;
+import static com.ems.util.EMSUtility.getOrderedProperties;
+import static com.ems.util.EMSUtility.loadProperties;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +116,7 @@ public abstract class ExcelUtils {
 			//Skip memory mapping record whose value is "NoMap"
 			if(!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().trim())){
 				HSSFCell readingCell = row.createCell(columnIndex);
-				readingCell.setCellValue(readingMap.getProperty(entry.getKey(), "0.0"));
+				readingCell.setCellValue(readingMap.getProperty(String.valueOf(Integer.valueOf(entry.getKey())), "0.0"));
 				columnIndex += 1;
 			}
 		}

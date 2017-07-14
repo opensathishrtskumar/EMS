@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -64,7 +65,6 @@ import com.ems.util.EMSUtility;
 import com.ems.util.ExcelUtils;
 import com.ems.util.Helper;
 import com.ems.util.MyJDateComponentFactory;
-import javax.swing.DefaultComboBoxModel;
 
 public class ReportsIFrame extends JInternalFrame implements ActionListener{
 	private static final Logger logger = LoggerFactory
@@ -283,7 +283,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		panel.add(lblNewLabel_1);
 
 		comboRecordCount = new JComboBox<String>();
-		comboRecordCount.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "4", "6"}));
+		comboRecordCount.setModel(new DefaultComboBoxModel<String>(new String[] {"1", "2", "4", "6"}));
 		comboRecordCount.setSelectedIndex(1);
 		comboRecordCount.setBounds(791, 14, 73, 23);
 		panel.add(comboRecordCount);
@@ -401,7 +401,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 				}
 			}
 
-			logger.debug("");
+			logger.debug("Report added to view");
 
 		} catch (Exception e) {
 			logger.error("{}",e);

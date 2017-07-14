@@ -50,10 +50,8 @@ import com.ems.util.EMSUtility;
 
 public class PingInternalFrame extends JInternalFrame implements AbstractIFrame {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PingSwingWorker.class);
-	private static final ResourceBundle BUNDLE = ResourceBundle
-			.getBundle("com.ems.UI.messages"); //$NON-NLS-1$
+	private static final Logger logger = LoggerFactory.getLogger(PingSwingWorker.class);
+	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com.ems.UI.messages"); //$NON-NLS-1$
 
 	private static final long serialVersionUID = 1L;
 	private JTextField txtFieldAddress;
@@ -91,7 +89,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 			public void internalFrameClosing(InternalFrameEvent arg0) {
 				logger.info("Closing internal frame... Release resource");
 
-				if(pingWorker != null)
+				if (pingWorker != null)
 					pingWorker.cancel(true);
 
 				super.internalFrameClosing(arg0);
@@ -99,7 +97,8 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		});
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)), "", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)),
+				"", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		getContentPane().add(panel);
 		panel.setLayout(new GridLayout(2, 1, 0, 0));
 
@@ -108,14 +107,12 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		panel_7.setLayout(new GridLayout(1, 0, 0, 0));
 
 		JPanel panel_9 = new JPanel();
-		panel_9.setBorder(new TitledBorder(null, BUNDLE
-				.getString("PingInternalFrame.panel_9.borderTitle"),
-				TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
+		panel_9.setBorder(new TitledBorder(null, BUNDLE.getString("PingInternalFrame.panel_9.borderTitle"),
+				TitledBorder.LEADING, TitledBorder.TOP, null, null)); // $NON-NLS-1$
 		panel_7.add(panel_9);
 		panel_9.setLayout(null);
 
-		JLabel lblNewLabel_6 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_6.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_6 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_6.text")); //$NON-NLS-1$
 		lblNewLabel_6.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_6.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_6.setBounds(6, 16, 97, 24);
@@ -142,8 +139,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		panel_7.add(panel_8);
 		panel_8.setLayout(null);
 
-		JLabel lblTimeout = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblTimeout.text")); //$NON-NLS-1$
+		JLabel lblTimeout = new JLabel(BUNDLE.getString("PingInternalFrame.lblTimeout.text")); //$NON-NLS-1$
 		lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblTimeout.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimeout.setBounds(10, 11, 72, 23);
@@ -154,8 +150,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		EMSSwingUtils.addItemsComboBox(comboBoxTimeout, 0, TIMEOUT);
 		panel_8.add(comboBoxTimeout);
 
-		JLabel lblNewLabel_12 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_12.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_12 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_12.text")); //$NON-NLS-1$
 		lblNewLabel_12.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_12.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_12.setBounds(10, 47, 72, 14);
@@ -163,8 +158,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 
 		txtFieldPollDelay = new JTextField();
 		txtFieldPollDelay.addKeyListener(getNumericListener());
-		txtFieldPollDelay.setText(BUNDLE
-				.getString("PingInternalFrame.textField.text")); //$NON-NLS-1$
+		txtFieldPollDelay.setText(BUNDLE.getString("PingInternalFrame.textField.text")); //$NON-NLS-1$
 		txtFieldPollDelay.setBounds(107, 43, 100, 20);
 		panel_8.add(txtFieldPollDelay);
 		txtFieldPollDelay.setColumns(10);
@@ -182,8 +176,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		panel_6.add(panel_11);
 		panel_11.setLayout(null);
 
-		JLabel lblAddress = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblAddress.text")); //$NON-NLS-1$
+		JLabel lblAddress = new JLabel(BUNDLE.getString("PingInternalFrame.lblAddress.text")); //$NON-NLS-1$
 		lblAddress.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblAddress.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAddress.setBounds(10, 10, 67, 14);
@@ -191,14 +184,12 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 
 		txtFieldAddress = new JTextField();
 		txtFieldAddress.addKeyListener(getNumericListener());
-		txtFieldAddress.setText(BUNDLE
-				.getString("PingInternalFrame.txtFieldAddress.text")); //$NON-NLS-1$
+		txtFieldAddress.setText(BUNDLE.getString("PingInternalFrame.txtFieldAddress.text")); //$NON-NLS-1$
 		txtFieldAddress.setBounds(96, 11, 86, 18);
 		panel_11.add(txtFieldAddress);
 		txtFieldAddress.setColumns(10);
 
-		JLabel lblNewLabel_7 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_7.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_7 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_7.text")); //$NON-NLS-1$
 		lblNewLabel_7.setHorizontalTextPosition(SwingConstants.LEADING);
 		lblNewLabel_7.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_7.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -212,16 +203,14 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		spinnerLength.setEditor(new JSpinner.DefaultEditor(spinnerLength));
 		panel_11.add(spinnerLength);
 
-		JLabel lblNewLabel_9 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_9.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_9 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_9.text")); //$NON-NLS-1$
 		lblNewLabel_9.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_9.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_9.setBounds(460, 10, 74, 14);
 		panel_11.add(lblNewLabel_9);
 
 		txtFieldDeviceId = new JTextField();
-		txtFieldDeviceId.setText(BUNDLE
-				.getString("PingInternalFrame.txtFieldDeviceId.text")); //$NON-NLS-1$
+		txtFieldDeviceId.setText(BUNDLE.getString("PingInternalFrame.txtFieldDeviceId.text")); //$NON-NLS-1$
 		txtFieldDeviceId.addKeyListener(getNumericListener());
 		txtFieldDeviceId.setBounds(557, 11, 86, 18);
 		panel_11.add(txtFieldDeviceId);
@@ -238,15 +227,13 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		EMSSwingUtils.addItemsComboBox(comboBoxPointType, 2, POINTYPE);
 		panel_12.add(comboBoxPointType);
 
-		JLabel lblModbusPointType = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblModbusPointType.text")); //$NON-NLS-1$
+		JLabel lblModbusPointType = new JLabel(BUNDLE.getString("PingInternalFrame.lblModbusPointType.text")); //$NON-NLS-1$
 		lblModbusPointType.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblModbusPointType.setHorizontalAlignment(SwingConstants.CENTER);
 		lblModbusPointType.setBounds(39, 11, 122, 13);
 		panel_12.add(lblModbusPointType);
 
-		JLabel lblNewLabel_11 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_11.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_11 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_11.text")); //$NON-NLS-1$
 		lblNewLabel_11.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_11.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_11.setBounds(373, 9, 83, 17);
@@ -259,7 +246,8 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		panel_12.add(comboBoxEncoding);
 
 		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)), "Config", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0))); //$NON-NLS-2$
+		panel_1.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)),
+				"Config", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0))); // $NON-NLS-2$
 		getContentPane().add(panel_1);
 		panel_1.setLayout(null);
 
@@ -269,8 +257,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		panel_1.add(panel_2);
 		panel_2.setLayout(null);
 
-		JLabel lblNewLabel = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel.text")); //$NON-NLS-1$
+		JLabel lblNewLabel = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel.text")); //$NON-NLS-1$
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(0, 11, 104, 20);
@@ -283,8 +270,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		EMSSwingUtils.addItemsComboBox(comboBoxBaudRate, 6, BAUDRATES);
 		panel_2.add(comboBoxBaudRate);
 
-		JLabel lblNewLabel_2 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_2.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_2 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_2.text")); //$NON-NLS-1$
 		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_2.setBounds(0, 42, 104, 20);
@@ -295,8 +281,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		EMSSwingUtils.addItemsComboBox(comboBoxWordLength, 1, WORDLENGTH);
 		panel_2.add(comboBoxWordLength);
 
-		JLabel lblNewLabel_3 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_3.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_3 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_3.text")); //$NON-NLS-1$
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_3.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_3.setBounds(0, 73, 104, 20);
@@ -308,8 +293,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		EMSSwingUtils.addItemsComboBox(comboBoxParity, 2, PARITY);
 		panel_2.add(comboBoxParity);
 
-		JLabel lblNewLabel_1 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_1.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_1 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_1.text")); //$NON-NLS-1$
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setBounds(0, 104, 104, 20);
@@ -324,21 +308,18 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		JPanel panel_3 = new JPanel();
 		panel_3.setBounds(243, 16, 235, 153);
 		panel_3.setEnabled(false);
-		panel_3.setBorder(new TitledBorder(
-				null,
-				BUNDLE.getString("PingInternalFrame.panel_3.borderTitle"), TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
+		panel_3.setBorder(new TitledBorder(null, BUNDLE.getString("PingInternalFrame.panel_3.borderTitle"), //$NON-NLS-1$
+				TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel_1.add(panel_3);
 		panel_3.setLayout(null);
 
-		JLabel lblNewLabel_8 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_8.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_8 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_8.text")); //$NON-NLS-1$
 		lblNewLabel_8.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_8.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_8.setBounds(10, 21, 76, 14);
 		panel_3.add(lblNewLabel_8);
 
-		JLabel lblNewLabel_10 = new JLabel(
-				BUNDLE.getString("PingInternalFrame.lblNewLabel_10.text")); //$NON-NLS-1$
+		JLabel lblNewLabel_10 = new JLabel(BUNDLE.getString("PingInternalFrame.lblNewLabel_10.text")); //$NON-NLS-1$
 		lblNewLabel_10.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_10.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_10.setBounds(10, 60, 76, 14);
@@ -358,46 +339,39 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 
 		JPanel panel_4 = new JPanel();
 		panel_4.setBounds(480, 16, 235, 153);
-		panel_4.setBorder(new TitledBorder(
-				null,
-				BUNDLE.getString("PingInternalFrame.panel_4.borderTitle"), TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
+		panel_4.setBorder(new TitledBorder(null, BUNDLE.getString("PingInternalFrame.panel_4.borderTitle"), //$NON-NLS-1$
+				TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel_1.add(panel_4);
 		panel_4.setLayout(null);
 
-		JButton btnStartPolling = new JButton(
-				BUNDLE.getString("PingInternalFrame.btnStartPolling.text")); //$NON-NLS-1$
+		JButton btnStartPolling = new JButton(BUNDLE.getString("PingInternalFrame.btnStartPolling.text")); //$NON-NLS-1$
 		btnStartPolling.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnStartPolling.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JInternalFrame frame = getMe();
-				ExtendedSerialParameter params = EMSSwingUtils
-						.getSerialParameters(frame);
-				if(pingWorker != null)
+				ExtendedSerialParameter params = EMSSwingUtils.getSerialParameters(frame);
+				if (pingWorker != null)
 					pingWorker.cancel(true);
 
-				pingWorker = new PingSwingWorker(params,
-						getTextAreaPollingResult());
+				pingWorker = new PingSwingWorker(params, getTextAreaPollingResult());
 				pingWorker.execute();
 			}
 		});
 		btnStartPolling.setBounds(67, 32, 117, 23);
 		panel_4.add(btnStartPolling);
 
-		JButton btnStopPolling = new JButton(
-				BUNDLE.getString("PingInternalFrame.btnStopPolling.text")); //$NON-NLS-1$
+		JButton btnStopPolling = new JButton(BUNDLE.getString("PingInternalFrame.btnStopPolling.text")); //$NON-NLS-1$
 		btnStopPolling.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnStopPolling.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (pingWorker == null) {
-					JOptionPane.showMessageDialog(getMe(),
-							"No Ping action is initiated", "Ping",
+					JOptionPane.showMessageDialog(getMe(), "No Ping action is initiated", "Ping",
 							JOptionPane.INFORMATION_MESSAGE);
 				} else {
 					pingWorker.cancel(true);
 					pingWorker = null;
-					
-					JOptionPane.showMessageDialog(getMe(),
-							"Ping operation interruped", "Ping interrupted",
+
+					JOptionPane.showMessageDialog(getMe(), "Ping operation interruped", "Ping interrupted",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
@@ -406,7 +380,8 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		panel_4.add(btnStopPolling);
 
 		JPanel panel_5 = new JPanel();
-		panel_5.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)), "Result", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0))); //$NON-NLS-1$
+		panel_5.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)),
+				"Result", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0))); //$NON-NLS-1$
 		getContentPane().add(panel_5);
 		panel_5.setLayout(new GridLayout(1, 0, 0, 0));
 
@@ -447,8 +422,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 	}
 
 	public int getComboBoxBaudRate() {
-		int baudRate = Integer.parseInt(comboBoxBaudRate.getSelectedItem()
-				.toString());
+		int baudRate = Integer.parseInt(comboBoxBaudRate.getSelectedItem().toString());
 		return baudRate;
 	}
 
@@ -456,13 +430,12 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 		String serialPort = "";
 		if (comboBoxPorts.getSelectedIndex() != -1) {
 			serialPort = comboBoxPorts.getSelectedItem().toString();
-		}			
+		}
 		return serialPort;
 	}
 
 	public int getComboBoxWordLength() {
-		int dataBits = Integer.parseInt(comboBoxWordLength.getSelectedItem()
-				.toString());
+		int dataBits = Integer.parseInt(comboBoxWordLength.getSelectedItem().toString());
 		return dataBits;
 	}
 
@@ -471,8 +444,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 	}
 
 	public int getComboBoxStopBit() {
-		int stopBits = Integer.parseInt(comboBoxStopBit.getSelectedItem()
-				.toString());
+		int stopBits = Integer.parseInt(comboBoxStopBit.getSelectedItem().toString());
 		return stopBits;
 	}
 
@@ -490,8 +462,7 @@ public class PingInternalFrame extends JInternalFrame implements AbstractIFrame 
 	}
 
 	public int getComboBoxTimeout() {
-		int timeout = Integer.parseInt(comboBoxTimeout.getSelectedItem()
-				.toString());
+		int timeout = Integer.parseInt(comboBoxTimeout.getSelectedItem().toString());
 		return timeout;
 	}
 

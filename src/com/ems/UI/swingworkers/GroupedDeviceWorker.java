@@ -14,9 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.response.handlers.ResponseHandler;
+import com.ems.util.EMSUtility;
 import com.ghgande.j2mod.modbus.io.ModbusSerialTransaction;
-import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersRequest;
-import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersResponse;
+import com.ghgande.j2mod.modbus.msg.ModbusRequest;
+import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 
 public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
@@ -25,7 +26,7 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 			.getLogger(GroupedDeviceWorker.class);
 
 	private Map<String, List<ExtendedSerialParameter>> groupedDevices = null;
-	private ReadMultipleRegistersResponse response = null;
+	private ModbusResponse response = null;
 	private SerialConnection connection = null;
 	private int refreshFrequency = DASHBOARD_REFRESH_FREQUENCY * 1000 * 60;
 	private ResponseHandler responseHandler = null;
@@ -91,6 +92,7 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 						try {
 							//Create connection in sync environment
 							synchronized (MUTEX) {
+								logger.debug("connection using parameters : {}", connectionParam);
 								connection = new SerialConnection(connectionParam);
 								connection.setTimeout(connectionParam.getTimeout());
 								logger.trace("Trying to obtain connection : {}, {}", Thread
@@ -104,8 +106,11 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 									try {
 										ModbusSerialTransaction tran = new ModbusSerialTransaction(
 												connection);
-										ReadMultipleRegistersRequest request = new ReadMultipleRegistersRequest(
+										logger.trace("Reading values for {}", device);
+										ModbusRequest request = EMSUtility.getRequest(device.getMethod(),
 												device.getReference(), device.getCount());
+										logger.debug("Function code {},Hex Request {}", request.getFunctionCode(),
+												request.getHexMessage());
 										logger.trace(
 												"Polling worker Hex request : {}, Ref : {}, Count : {}",
 												request.getHexMessage(), device.getReference(),
@@ -114,10 +119,10 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 										tran.setRequest(request);
 										tran.setRetries(device.getRetries());
 										tran.execute();
-										response = (ReadMultipleRegistersResponse) tran.getResponse();
+										response =  tran.getResponse();
 										tran = null;
 										logger.trace("Dashboard device response : {} ", response.getHexMessage());
-										device.setRegisteres(response.getRegisters());
+										device.setRegisteres(EMSUtility.getResponseRegisters(response));
 										device.setStatus(true);
 									} catch (Exception e) {
 										logger.error("{}",e);

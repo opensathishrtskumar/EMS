@@ -149,10 +149,6 @@ public class PollingIFrame extends JInternalFrame implements AbstractIFrame{
 				List<DeviceDetailsDTO> availableDevices = DBConnectionManager
 						.getAvailableDevices(SELECT_ENABLED_ENDEVICES);
 				
-				for(DeviceDetailsDTO device : availableDevices){
-					device.setPort(port);
-				}
-				
 				List<ExtendedSerialParameter> devices = mapDevicesToSerialParams(availableDevices);
 				Map<String, List<ExtendedSerialParameter>> groupedDevices = groupDeviceForPolling(devices);
 				
@@ -257,6 +253,7 @@ public class PollingIFrame extends JInternalFrame implements AbstractIFrame{
 				"UNIQUEID", "DEVICEID", "DEVICE NAME", "STATUS"
 			}
 		) {
+			private static final long serialVersionUID = 1L;
 			Class[] columnTypes = new Class[] {
 				String.class, String.class, String.class, String.class
 			};

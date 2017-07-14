@@ -173,6 +173,8 @@ public class DBConnectionManager {
 		statement.setLong(9, time);
 		statement.setLong(10, time);
 		statement.setString(11, device.getRegisterMapping());
+		statement.setString(12, device.getPort());
+		statement.setString(13, device.getMethod());
 		
 		int insert = 0;
 		try {
@@ -204,7 +206,9 @@ public class DBConnectionManager {
 		statement.setBoolean(8, new Boolean(device.getEnabled()));
 		statement.setLong(9, time);
 		statement.setString(10, device.getRegisterMapping());
-		statement.setLong(11, device.getUniqueId());
+		statement.setString(11, device.getPort());
+		statement.setString(12, device.getMethod());
+		statement.setLong(13, device.getUniqueId());
 		
 		int update = 0;
 
@@ -280,6 +284,8 @@ public class DBConnectionManager {
 				details.setMemoryMapping(resultSet.getString("memorymapping"));
 				details.setEnabled(resultSet.getBoolean("status") ? "true"
 						: "false");
+				details.setPort(resultSet.getString("port"));
+				details.setMethod(resultSet.getString("method"));
 				logger.trace(" Device from DB : {}", details);
 			}
 		} catch (SQLException e) {
@@ -303,8 +309,6 @@ public class DBConnectionManager {
 			while (resultSet.next()) {
 				DeviceDetailsDTO details = new DeviceDetailsDTO();
 				details.setRowIndex(rowIndex++);
-				//Set default Port to connect with
-				details.setPort(port);
 				details.setUniqueId(resultSet.getLong("deviceuniqueid"));
 				details.setDeviceId(resultSet.getInt("unitid"));
 				details.setDeviceName(resultSet.getString("devicealiasname"));
@@ -316,6 +320,9 @@ public class DBConnectionManager {
 				details.setEnabled(resultSet.getBoolean("status") ? "true"
 						: "false");
 				details.setRegisterMapping(resultSet.getString("registermapping"));
+				details.setPort(resultSet.getString("port"));
+				details.setMethod(resultSet.getString("method"));
+				
 				logger.trace(" Device from DB : {}", details);
 				list.add(details);
 			}

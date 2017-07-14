@@ -69,8 +69,7 @@ public class PollingSwingWorker extends SwingWorker<Object, Object> {
 					availableDevices.size());
 			
 			for (DeviceDetailsDTO devices : availableDevices) {
-				devices.setPort(port);
-				
+				//devices.setPort(port);
 				ExtendedSerialParameter parameters = EMSUtility
 						.mapDeviceToSerialParam(devices);
 				

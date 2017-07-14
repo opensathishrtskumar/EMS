@@ -16,18 +16,19 @@ import org.slf4j.LoggerFactory;
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.PollingDetailDTO;
 import com.ems.db.DBConnectionManager;
+import com.ems.util.EMSUtility;
 import com.ghgande.j2mod.modbus.io.ModbusSerialTransaction;
-import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersRequest;
+import com.ghgande.j2mod.modbus.msg.ModbusRequest;
+import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersResponse;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 
 public class PollingWorker implements Callable<Object> {
-	private static final Logger logger = LoggerFactory
-			.getLogger(PollingWorker.class);
+	private static final Logger logger = LoggerFactory.getLogger(PollingWorker.class);
 
 	private JTable table;
 	private ExtendedSerialParameter parameters;
-	private ReadMultipleRegistersResponse response = null;
+	private ModbusResponse response = null;
 	private SerialConnection connection = null;
 
 	public PollingWorker(ExtendedSerialParameter parameters) {
@@ -48,7 +49,7 @@ public class PollingWorker implements Callable<Object> {
 
 	private void failIfInterrupted() throws InterruptedException {
 		if (Thread.currentThread().isInterrupted()) {
-			if(connection != null){
+			if (connection != null) {
 				connection.close();
 			}
 			throw new InterruptedException(" Stopping worker...");
@@ -65,36 +66,37 @@ public class PollingWorker implements Callable<Object> {
 			try {
 				connection = new SerialConnection(parameters);
 				connection.setTimeout(parameters.getTimeout());
-				log("Trying to obtain connection : {}, {}", Thread
-						.currentThread().getName(), parameters);
+				log("Trying to obtain connection : {}, {}", Thread.currentThread().getName(), parameters);
 
 				failIfInterrupted();
 				connection.open();
-				ModbusSerialTransaction tran = new ModbusSerialTransaction(
-						connection);
-				ReadMultipleRegistersRequest request = new ReadMultipleRegistersRequest(
-						parameters.getReference(), parameters.getCount());
-				logger.debug(
-						"Polling worker Hex request : {}, Ref : {}, Count : {}",
-						request.getHexMessage(), parameters.getReference(),
+				ModbusSerialTransaction tran = new ModbusSerialTransaction(connection);
+
+				ModbusRequest request = EMSUtility.getRequest(parameters.getMethod(), parameters.getReference(),
 						parameters.getCount());
+				logger.debug("Function code {},Hex Request {}", request.getFunctionCode(), request.getHexMessage());
+
+				/*
+				 * ReadMultipleRegistersRequest request = new
+				 * ReadMultipleRegistersRequest( parameters.getReference(),
+				 * parameters.getCount());
+				 */
+				logger.debug("Polling worker Hex request : {}, Ref : {}, Count : {}", request.getHexMessage(),
+						parameters.getReference(), parameters.getCount());
 				request.setUnitID(parameters.getUnitId());
 				tran.setRequest(request);
 				tran.setRetries(parameters.getRetries());
 				tran.execute();
 				response = (ReadMultipleRegistersResponse) tran.getResponse();
-				log("Got response for unit {} = {}", parameters.getUnitId(),
-						response.getHexMessage());
+				log("Got response for unit {} = {}", parameters.getUnitId(), response.getHexMessage());
 				status = true;
-				//parameters.setRegisteres(response.getRegisters());
+				// parameters.setRegisteres(response.getRegisters());
 				updateWorkerStatus("Poll Success - " + getHHmm());
 			} catch (Exception e) {
-				log("eception in connection : {}, device info : {}, Port Name : {}",
-						e.getLocalizedMessage(),
-						parameters.getUniqueId() + " "
-								+ parameters.getReference() + " "
-								+ parameters.getCount(),parameters.getPortName());
-				logger.error("{}",e);
+				log("eception in connection : {}, device info : {}, Port Name : {}", e.getLocalizedMessage(),
+						parameters.getUniqueId() + " " + parameters.getReference() + " " + parameters.getCount(),
+						parameters.getPortName());
+				logger.error("{}", e);
 				updateWorkerStatus("Poll Failed - " + getHHmm());
 			} finally {
 				if (connection != null && connection.isOpen())
@@ -104,14 +106,11 @@ public class PollingWorker implements Callable<Object> {
 
 		if (status) {
 			failIfInterrupted();
-			String finalResponse = processRequiredRegister(
-					response.getRegisters(), parameters);
-			PollingDetailDTO dto = new PollingDetailDTO(
-					parameters.getUniqueId(), System.currentTimeMillis(),
+			String finalResponse = processRequiredRegister(EMSUtility.getResponseRegisters(response), parameters);
+			PollingDetailDTO dto = new PollingDetailDTO(parameters.getUniqueId(), System.currentTimeMillis(),
 					finalResponse);
 			int insert = DBConnectionManager.insertPollingDetails(dto);
-			log(" insert poll response unit : {}, status : {}",
-					parameters.getUniqueId(), insert);
+			log(" insert poll response unit : {}, status : {}", parameters.getUniqueId(), insert);
 		}
 
 		return "Polling completed...";
@@ -124,14 +123,13 @@ public class PollingWorker implements Callable<Object> {
 
 		// To update status of this worker
 		try {
-			Vector columnVector = (Vector) rowVector.get(parameters
-					.getRowIndex());
+			Vector columnVector = (Vector) rowVector.get(parameters.getRowIndex());
 			columnVector.set(3, status);
 			synchronized (table) {
 				model.fireTableDataChanged();
 			}
 		} catch (Exception e) {
-			logger.error("{}",e);
+			logger.error("{}", e);
 		}
 	}
 }

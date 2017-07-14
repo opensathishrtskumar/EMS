@@ -14,7 +14,7 @@ import com.ems.modbus.actions.ConnectionManager;
 import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersResponse;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
-import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.procimg.InputRegister;
 
 public class PingSwingWorker extends SwingWorker<Object, Object> {
 
@@ -85,7 +85,7 @@ public class PingSwingWorker extends SwingWorker<Object, Object> {
 	}
 
 	private String prepareResponse(ExtendedSerialParameter params,
-			Register[] regs, String error) {
+			InputRegister[] regs, String error) {
 		StringBuilder builder = new StringBuilder();
 
 		if (error == null && regs != null && params.getCount() == regs.length) {

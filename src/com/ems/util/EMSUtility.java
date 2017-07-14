@@ -32,7 +32,14 @@ import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.GroupsDTO;
 import com.ems.constants.EmsConstants;
 import com.fazecast.jSerialComm.SerialPort;
-import com.ghgande.j2mod.modbus.procimg.Register;
+import com.ghgande.j2mod.modbus.Modbus;
+import com.ghgande.j2mod.modbus.msg.ModbusRequest;
+import com.ghgande.j2mod.modbus.msg.ModbusResponse;
+import com.ghgande.j2mod.modbus.msg.ReadInputRegistersRequest;
+import com.ghgande.j2mod.modbus.msg.ReadInputRegistersResponse;
+import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersRequest;
+import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersResponse;
+import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,21 +51,21 @@ public abstract class EMSUtility {
 	public static final String hh_mma = "hh:mma";
 	public static final String DASHBOARD_FMT = "dd-MMM,yyyy";
 	public static final String DASHBOARD_POLLED_FMT = "dd-MMM,yy hh:mm a";
-	
+
 	/**
 	 * return Available Serial ports as array
 	 */
-	public static String[] getAvailablePort(){
+	public static String[] getAvailablePort() {
 		String[] availablePorts = {};
 
 		try {
 			SerialPort[] ports = SerialPort.getCommPorts();
 
-			if(ports != null){
+			if (ports != null) {
 				availablePorts = new String[ports.length];
 			}
 
-			for(int i = 0;i < ports.length ; i++){
+			for (int i = 0; i < ports.length; i++) {
 				availablePorts[i] = ports[i].getSystemPortName();
 			}
 		} catch (Exception e) {
@@ -74,24 +81,24 @@ public abstract class EMSUtility {
 	 * @param portName
 	 * @return Extract only port name from descriptive name
 	 */
-	public static String extractPortName(String portName){
+	public static String extractPortName(String portName) {
 		Matcher matcher = pattern.matcher(portName);
-		if(matcher.find())
+		if (matcher.find())
 			portName = matcher.group();
 		return portName;
 	}
 
-	public static Object[] convertObjectArray(int...arg){
+	public static Object[] convertObjectArray(int... arg) {
 		Object[] response = new Object[arg.length];
-		for(int i = 0; i < arg.length; i++){
+		for (int i = 0; i < arg.length; i++) {
 			response[i] = String.valueOf(arg[i]);
 		}
 		return response;
 	}
 
-	public static Object[] convertObjectArray(String...arg){
+	public static Object[] convertObjectArray(String... arg) {
 		Object[] response = new Object[arg.length];
-		for(int i = 0; i < arg.length; i++){
+		for (int i = 0; i < arg.length; i++) {
 			response[i] = arg[i];
 		}
 		return response;
@@ -101,140 +108,139 @@ public abstract class EMSUtility {
 	 * @param propertiesString
 	 * @returns Properties with keys in order which it is loaded
 	 */
-	public static Properties loadProperties(String propertiesString){
+	public static Properties loadProperties(String propertiesString) {
 		Properties mappings = new OrderedProperties();
 
 		try {
 			mappings.load(new ByteArrayInputStream(propertiesString.getBytes()));
 		} catch (Exception e) {
 			logger.error("error loading memory mapping : {}", e.getLocalizedMessage());
-			logger.error("{}",e);
+			logger.error("{}", e);
 		}
 
 		return mappings;
 	}
 
-	public static Map<Long,String> loadMemoryMappingDetails(String mappingDetails){
+	public static Map<Long, String> loadMemoryMappingDetails(String mappingDetails) {
 		long startingRegister = EmsConstants.DEFAULTREGISTER;
 		int count = EmsConstants.REGISTERCOUNT;
 
-		Map<Long,String> registerMapping = new TreeMap<Long,String>();
+		Map<Long, String> registerMapping = new TreeMap<Long, String>();
 
 		try {
 			Properties memoryMappings = loadProperties(mappingDetails);
 
-			for(Entry<Object, Object> entry : memoryMappings.entrySet()){
-				registerMapping.put(Long.parseLong(entry.getKey().toString()),
-						entry.getValue().toString());
+			for (Entry<Object, Object> entry : memoryMappings.entrySet()) {
+				registerMapping.put(Long.parseLong(entry.getKey().toString()), entry.getValue().toString());
 			}
 		} catch (Exception e) {
 			logger.error("error extracting reference and count : {}", e.getLocalizedMessage());
-			logger.error("{}",e);
+			logger.error("{}", e);
 
 			registerMapping.put(startingRegister, "start");
 			registerMapping.put(startingRegister + count, "end");
-		} 
+		}
 		logger.trace("Memory mapping details : {}", registerMapping);
 		return registerMapping;
 	}
 
-	public static long getRegisterReference(Map<Long,String> mappings){
+	public static long getRegisterReference(Map<Long, String> mappings) {
 		long startingRegister = EmsConstants.DEFAULTREGISTER;
 
 		try {
-			TreeMap<Long,String> tMap = (TreeMap<Long,String>)mappings;
-			NavigableMap<Long,String> nMap = tMap.descendingMap();
-			logger.trace("{}",nMap);
+			TreeMap<Long, String> tMap = (TreeMap<Long, String>) mappings;
+			NavigableMap<Long, String> nMap = tMap.descendingMap();
+			logger.trace("{}", nMap);
 			startingRegister = nMap.lastKey() - 1;
 		} catch (Exception e) {
-			logger.error("{}",e);
+			logger.error("{}", e);
 			logger.error("Failed to get register reference : {}", e.getLocalizedMessage());
 		}
 
 		return startingRegister;
 	}
 
-	public static int getRegisterCount(Map<Long,String> mappings){
+	public static int getRegisterCount(Map<Long, String> mappings) {
 		int count = EmsConstants.REGISTERCOUNT;
 		try {
-			TreeMap<Long,String> tMap = (TreeMap<Long,String>)mappings;
-			NavigableMap<Long,String> nMap = tMap.descendingMap();
+			TreeMap<Long, String> tMap = (TreeMap<Long, String>) mappings;
+			NavigableMap<Long, String> nMap = tMap.descendingMap();
 			long countLong = nMap.firstKey() - nMap.lastKey();
-			count = (int)(countLong + 1);
-			//Make count is even , so that floating point value calculated
-			
-			logger.trace("Register Map : {} - Count : {}",nMap,countLong);
+			count = (int) (countLong + 1);
+			// Make count is even , so that floating point value calculated
+
+			logger.trace("Register Map : {} - Count : {}", nMap, countLong);
 		} catch (Exception e) {
-			logger.error("{}",e);
+			logger.error("{}", e);
 			logger.error("Failed to get register count : {}", e.getLocalizedMessage());
 		}
 
 		return count;
 	}
 
-	public static String getHHmm(){
+	public static String getHHmm() {
 		return getFormattedDate("hh:mm a");
 	}
 
-	public static String getFormattedDate(String format){
+	public static String getFormattedDate(String format) {
 		SimpleDateFormat formater = new SimpleDateFormat(format);
 		return formater.format(new Date(System.currentTimeMillis()));
 	}
-	
-	public static String getFormattedTime(long timeInMilli, String dateFormat){
+
+	public static String getFormattedTime(long timeInMilli, String dateFormat) {
 		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 		return format.format(new Date(timeInMilli));
 	}
 
-	public static int[] getPersistRegisters(Set<Long> set){
+	public static int[] getPersistRegisters(Set<Long> set) {
 		int[] registers = new int[set.size()];
 		try {
 			int index = 0;
-			for(Long register : set){
+			for (Long register : set) {
 				registers[index++] = register.intValue();
 			}
 			Arrays.sort(registers);
 
 		} catch (Exception e) {
-			logger.error("{}",e);
+			logger.error("{}", e);
 		}
 
 		return registers;
 	}
 
-	public static String processRequiredRegister(Register[] registeres,
-			ExtendedSerialParameter parameters) {
+	public static String processRequiredRegister(InputRegister[] registeres, ExtendedSerialParameter parameters) {
 		StringBuilder builder = new StringBuilder();
 		int[] requiredRegisters = parameters.getRequiredRegisters();
 		int base = parameters.getReference();
 		try {
-			for(int reg : requiredRegisters){
+			for (int reg : requiredRegisters) {
 				int registerIndex = reg - (base + 1);
-				logger.trace(
-						"Required register : {}, Base : {}, Register : {}, Registers Count : {}",
+				logger.trace("Required register : {}, Base : {}, Register : {}, Registers Count : {}",
 						requiredRegisters, base, reg, registeres.length);
-				
+
 				byte[] registerBytes = registeres[registerIndex].toBytes();
-				byte[] bytes = new byte[]{0, 0, 0, 0};
+				byte[] bytes = new byte[] { 0, 0, 0, 0 };
 				bytes[0] = registerBytes[0];
 				bytes[1] = registerBytes[1];
-				
-				if(registerIndex + 1 < registeres.length){
+
+				if (registerIndex + 1 < registeres.length) {
 					registerBytes = registeres[registerIndex + 1].toBytes();
 					bytes[2] = registerBytes[0];
 					bytes[3] = registerBytes[1];
 				}
-				
-				//register ordering is implemeted
+
+				// register ordering is implemeted
 				String value = convertToFloatWithOrder(bytes, parameters.getRegisterMapping());
-				//To persist in DB
+				// To persist in DB
 				builder.append(reg + REPORT_KEY_SEPARATOR + value + REPORT_RECORD_SEPARATOR);
 			}
 		} catch (Exception e) {
-			logger.error("{}",e);
-			logger.error("Mapping error : {}",e.getLocalizedMessage());
+			logger.error("{}", e);
+			logger.error("Mapping error : {}", e.getLocalizedMessage());
 		}
 
+		logger.trace("Response for device {} is {}", parameters.getUnitId(), builder.toString());
+		
 		return builder.toString();
 	}
 
@@ -244,59 +250,56 @@ public abstract class EMSUtility {
 	public static Map<String, String> processRegistersForDashBoard(ExtendedSerialParameter parameters) {
 		int[] requiredRegisters = parameters.getRequiredRegisters();
 		int base = parameters.getReference();
-		Register[] registeres = parameters.getRegisteres();
-		
+		InputRegister[] registeres = parameters.getRegisteres();
+
 		Map<String, String> finalResponse = new LinkedHashMap<String, String>();
 		try {
-			for(int reg : requiredRegisters){
+			for (int reg : requiredRegisters) {
 				int registerIndex = reg - (base + 1);
 				String value = "00.00";
-				
-				if(registeres != null && registerIndex < registeres.length 
-						&& registeres[registerIndex] != null){
-					
+
+				if (registeres != null && registerIndex < registeres.length && registeres[registerIndex] != null) {
+
 					byte[] registerBytes = registeres[registerIndex].toBytes();
-					logger.trace("Firt 16 bit  : {}", Arrays.toString(registerBytes) );
-					byte[] bytes = new byte[]{0, 0, 0, 0};
+					logger.trace("Firt 16 bit  : {}", Arrays.toString(registerBytes));
+					byte[] bytes = new byte[] { 0, 0, 0, 0 };
 					bytes[0] = registerBytes[0];
 					bytes[1] = registerBytes[1];
-					
-					if(registerIndex + 1 < registeres.length){
+
+					if (registerIndex + 1 < registeres.length) {
 						registerBytes = registeres[registerIndex + 1].toBytes();
 						bytes[2] = registerBytes[0];
 						bytes[3] = registerBytes[1];
-						logger.trace("Second 16 bit  : {}", Arrays.toString(registerBytes) );
+						logger.trace("Second 16 bit  : {}", Arrays.toString(registerBytes));
 					}
-					
-					//register order is implemeted
+
+					// register order is implemeted
 					value = convertToFloatWithOrder(bytes, parameters.getRegisterMapping());
 				}
-				
+
 				finalResponse.put(String.valueOf(reg), value);
 			}
 		} catch (Exception e) {
-			logger.error("{}",e);
-			logger.error("Dashboard Mapping error : {}",e.getLocalizedMessage());
+			logger.error("{}", e);
+			logger.error("Dashboard Mapping error : {}", e.getLocalizedMessage());
 		}
 
 		return finalResponse;
 	}
-	
-	public static List<ExtendedSerialParameter> mapDevicesToSerialParams(List<DeviceDetailsDTO> devices){
+
+	public static List<ExtendedSerialParameter> mapDevicesToSerialParams(List<DeviceDetailsDTO> devices) {
 		List<ExtendedSerialParameter> paramList = new ArrayList<ExtendedSerialParameter>();
-		
-		for(DeviceDetailsDTO device : devices){
+
+		for (DeviceDetailsDTO device : devices) {
 			paramList.add(mapDeviceToSerialParam(device));
 		}
 
 		return paramList;
 	}
 
+	public static ExtendedSerialParameter mapDeviceToSerialParam(DeviceDetailsDTO devices) {
 
-	public static ExtendedSerialParameter mapDeviceToSerialParam(DeviceDetailsDTO devices){
-
-		ExtendedSerialParameter parameters = new ExtendedSerialParameter(
-				devices.getPort(), devices.getBaudRate(), 0, 0,
+		ExtendedSerialParameter parameters = new ExtendedSerialParameter(devices.getPort(), devices.getBaudRate(), 0, 0,
 				devices.getWordLength(), devices.getStopbit(), 0, false);
 
 		parameters.setParity(devices.getParity());
@@ -310,95 +313,107 @@ public abstract class EMSUtility {
 		parameters.setProps(memoryProps);
 		parameters.setMemoryMappings(loadMemoryMappingDetails(devices.getMemoryMapping()));
 		parameters.setPortName(devices.getPort());
-		
+
 		parameters.setDeviceName(devices.getDeviceName());
 		parameters.setRegisterMapping(devices.getRegisterMapping());
-		
+		parameters.setPort(devices.getPort());
+		parameters.setMethod(devices.getMethod());
 
 		return parameters;
 	}
-	
+
 	/**
-	 * Group device by connection param, so that single connection can be reused to set of devices
+	 * Group device by connection param, so that single connection can be reused
+	 * to set of devices
 	 */
-	public static Map<String, List<ExtendedSerialParameter>> groupDeviceForPolling(List<ExtendedSerialParameter> paramsList){
+	public static Map<String, List<ExtendedSerialParameter>> groupDeviceForPolling(
+			List<ExtendedSerialParameter> paramsList) {
 		Map<String, List<ExtendedSerialParameter>> groupedDevice = new HashMap<String, List<ExtendedSerialParameter>>();
-		
-		for(ExtendedSerialParameter device : paramsList){
+
+		for (ExtendedSerialParameter device : paramsList) {
 			List<ExtendedSerialParameter> group = groupedDevice.get(device.getGroupKey());
-			
-			if(group == null){
+
+			if (group == null) {
 				group = new ArrayList<ExtendedSerialParameter>();
 				groupedDevice.put(device.getGroupKey(), group);
 			}
-			
+
 			group.add(device);
 		}
 		return groupedDevice;
 	}
-	
-	
+
 	/**
-	 * @param bytes - read from Modbus slave
-	 * @param order - the order of which registeres to be processed
+	 * @param bytes
+	 *            - read from Modbus slave
+	 * @param order
+	 *            - the order of which registeres to be processed
 	 * @return
 	 */
-	public static String convertToFloatWithOrder(byte[] bytes, String order){
+	public static String convertToFloatWithOrder(byte[] bytes, String order) {
 		byte[] byteOrder = null;
-		
-		if(order.equals(EmsConstants.REG_MAPPING[0])){
+
+		if (order.equals(EmsConstants.REG_MAPPING[0])) {
 			byteOrder = bytes;
 		} else {
-			byteOrder = new byte[]{bytes[2],bytes[3],bytes[0],bytes[1]};
+			byteOrder = new byte[] { bytes[2], bytes[3], bytes[0], bytes[1] };
 		}
-		
-		/*//Form the byteorder based on @param 'order'
-		byteOrder[0] = bytes[2];
-		byteOrder[1] = bytes[3];
-		byteOrder[2] = bytes[0];
-		byteOrder[3] = bytes[1];*/
-		
-		String value = String.format("%.2f", 
-				ModbusUtil.registersToFloat(byteOrder));
-		
+
+		String value = String.format("%.2f", ModbusUtil.registersToFloat(byteOrder));
+
 		return value;
 	}
-	
-	
-	public static Map<String, String> getOrderedProperties(Properties props){
-		Map<String, String> map = new LinkedHashMap<String,String>();
-		
-		if(props instanceof OrderedProperties){
+
+	public static Map<String, String> getOrderedProperties(Properties props) {
+		Map<String, String> map = new LinkedHashMap<String, String>();
+
+		if (props instanceof OrderedProperties) {
 			OrderedProperties orderProp = (OrderedProperties) props;
 			Enumeration<Object> list = orderProp.keys();
-			
-			while(list.hasMoreElements()){
+
+			while (list.hasMoreElements()) {
 				Object key = list.nextElement();
 				Object value = props.get(key);
 				String val = null;
-				
-				if(value != null)
+
+				if (value != null)
 					val = value.toString();
-				
+
 				map.put(key.toString(), val);
 			}
-			
+
 		} else {
-			map.putAll((Map)props);
+			map.putAll((Map) props);
 		}
-		
+
 		return map;
 	}
-	
-	public static GroupsDTO fetchGroupedDevices(){
+
+	public static GroupsDTO fetchGroupedDevices() {
 		String groupingDetails = ConfigHelper.getGroupingDetails();
 		logger.debug("Grouped devices from prop : " + groupingDetails);
 		Gson gson = new GsonBuilder().create();
 		GroupsDTO groups = gson.fromJson(groupingDetails, GroupsDTO.class);
 		return groups;
 	}
-	
-	public static boolean isNullEmpty(String value){
+
+	public static boolean isNullEmpty(String value) {
 		return value == null || value.trim().isEmpty();
+	}
+
+	public static ModbusRequest getRequest(String method, int reference, int count) {
+		if (method.equals(String.valueOf(Modbus.READ_MULTIPLE_REGISTERS))) {
+			return new ReadMultipleRegistersRequest(reference, count);
+		} else {
+			return new ReadInputRegistersRequest(reference, count);
+		}
+	}
+	
+	public static InputRegister[] getResponseRegisters(ModbusResponse response) {
+		if (response instanceof ReadMultipleRegistersResponse) {
+			return ((ReadMultipleRegistersResponse)response).getRegisters();
+		} else {
+			return ((ReadInputRegistersResponse)response).getRegisters();
+		}
 	}
 }
