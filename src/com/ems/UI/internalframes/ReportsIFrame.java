@@ -66,9 +66,8 @@ import com.ems.util.ExcelUtils;
 import com.ems.util.Helper;
 import com.ems.util.MyJDateComponentFactory;
 
-public class ReportsIFrame extends JInternalFrame implements ActionListener{
-	private static final Logger logger = LoggerFactory
-			.getLogger(ReportsIFrame.class);
+public class ReportsIFrame extends JInternalFrame implements ActionListener {
+	private static final Logger logger = LoggerFactory.getLogger(ReportsIFrame.class);
 	private static final long serialVersionUID = 6606072613952247592L;
 	private JDatePickerImpl datePickerStart;
 	private JDatePickerImpl datePickerEnd;
@@ -77,18 +76,16 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 	private List<DeviceDetailsDTO> deviceList;
 	private Map<String, DeviceDetailsDTO> deviceMap;
 	private JPanel panelChart;
-	
+
 	private JPanel seriesControlPanel;
 	private ExtendedChartPanel extendedChart;
-	
+
 	/**
 	 * Create the frame.
 	 */
 	public ReportsIFrame() {
 		setIconifiable(true);
-		setFrameIcon(new ImageIcon(
-				ReportsIFrame.class
-						.getResource("/com/ems/resources/system_16x16.gif")));
+		setFrameIcon(new ImageIcon(ReportsIFrame.class.getResource("/com/ems/resources/system_16x16.gif")));
 		setTitle("Reports");
 		setClosable(true);
 		setBounds(100, 100, 949, 680);
@@ -99,8 +96,8 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 
 			@Override
 			public void internalFrameClosing(InternalFrameEvent arg0) {
-				int option = JOptionPane.showConfirmDialog(getMe(),
-						"Confirm Close?", "Exit", JOptionPane.YES_NO_OPTION);
+				int option = JOptionPane.showConfirmDialog(getMe(), "Confirm Close?", "Exit",
+						JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
 					// FIXME : hide or remove any datepicker if opened
 					dispose();
@@ -116,7 +113,8 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		getContentPane().setLayout(null);
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)), "Report criteria", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)),
+				"Report criteria", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel.setBounds(0, 0, 933, 90);
 		panel.setLayout(null);
 		getContentPane().add(panel);
@@ -126,12 +124,10 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		Calendar today = Calendar.getInstance();
 
 		UtilDateModel modelStart = new UtilDateModel();
-		modelStart.setDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH),
-				today.get(Calendar.DATE));
+		modelStart.setDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DATE));
 		modelStart.setSelected(true);
 		JDatePanelImpl datePanelStart = new JDatePanelImpl(modelStart, props);
-		datePickerStart = new JDatePickerImpl(datePanelStart,
-				new CustomeDateFormatter());
+		datePickerStart = new JDatePickerImpl(datePanelStart, new CustomeDateFormatter());
 		datePickerStart.setToolTipText("Select from data");
 		datePickerStart.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		datePickerStart.setBounds(82, 14, 123, 27);
@@ -150,12 +146,10 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		panel.add(lblNewLabel);
 
 		UtilDateModel modelEnd = new UtilDateModel();
-		modelEnd.setDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH),
-				today.get(Calendar.DATE));
+		modelEnd.setDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DATE));
 		modelEnd.setSelected(true);
 		JDatePanelImpl datePanelEnd = new JDatePanelImpl(modelEnd, props);
-		datePickerEnd = new JDatePickerImpl(datePanelEnd,
-				new CustomeDateFormatter());
+		datePickerEnd = new JDatePickerImpl(datePanelEnd, new CustomeDateFormatter());
 		datePickerEnd.setToolTipText("Select to date");
 		datePickerEnd.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		datePickerEnd.setBounds(296, 14, 130, 27);
@@ -166,36 +160,26 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		btnExportToExcel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// We set default date as today, so no need to check null
-				UtilDateModel startModel = (UtilDateModel) datePickerStart
-						.getModel();
-				UtilDateModel endModel = (UtilDateModel) datePickerEnd
-						.getModel();
+				UtilDateModel startModel = (UtilDateModel) datePickerStart.getModel();
+				UtilDateModel endModel = (UtilDateModel) datePickerEnd.getModel();
 
-				int deviceUniqueId = validateDeviceId(comboBoxDevice
-						.getSelectedItem());
+				int deviceUniqueId = validateDeviceId(comboBoxDevice.getSelectedItem());
 				long startDate = Helper.getStartOfDay(startModel.getValue());
 				long endDate = Helper.getEndOfDay(endModel.getValue());
-				DeviceDetailsDTO detailsDTO = DBConnectionManager
-						.getDeviceById(deviceUniqueId);
+				DeviceDetailsDTO detailsDTO = DBConnectionManager.getDeviceById(deviceUniqueId);
 				Properties properties = null;
-				if (detailsDTO == null
-						|| detailsDTO.getMemoryMapping() == null
+				if (detailsDTO == null || detailsDTO.getMemoryMapping() == null
 						|| detailsDTO.getMemoryMapping().trim().isEmpty()
-						|| (properties = EMSUtility.loadProperties(detailsDTO
-								.getMemoryMapping())).size() == 0) {
-					JOptionPane.showMessageDialog(getMe(),
-							"No memory mapping details found", "Report",
+						|| (properties = EMSUtility.loadProperties(detailsDTO.getMemoryMapping())).size() == 0) {
+					JOptionPane.showMessageDialog(getMe(), "No memory mapping details found", "Report",
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 
-				logger.info("Excel Report request , device:{},start:{},end:{}",
-						deviceUniqueId, startDate, endDate);
+				logger.info("Excel Report request , device:{},start:{},end:{}", deviceUniqueId, startDate, endDate);
 
-				String fileName = prepareUnitData(deviceUniqueId, startDate,
-						endDate, properties, detailsDTO);
-				JOptionPane.showMessageDialog(getMe(),
-						"Report created at " + fileName, "Report",
+				String fileName = prepareUnitData(deviceUniqueId, startDate, endDate, properties, detailsDTO);
+				JOptionPane.showMessageDialog(getMe(), "Report created at " + fileName, "Report",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
@@ -211,21 +195,18 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		comboBoxDevice = new JComboBox<String>();
 		comboBoxDevice.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
-				/*Object object = event.getItem();
-				if (object != null && deviceMap != null && deviceMap.size() > 0) {
-					String selectedDevice = object.toString();
-					DeviceDetailsDTO details = deviceMap.get(selectedDevice);
-					details.getMemoryMapping();
-					JComboBox<String> mappings = getComboBoxMapping();
-					mappings.removeAllItems();
-					if (details.getMemoryMapping() != null) {
-						String[] regMap = details.getMemoryMapping()
-								.split(System.lineSeparator());
-						EMSSwingUtils.addItemsComboBox(mappings, 0, regMap);
-					}
-					mappings.revalidate();
-					mappings.repaint();
-				}*/
+				/*
+				 * Object object = event.getItem(); if (object != null &&
+				 * deviceMap != null && deviceMap.size() > 0) { String
+				 * selectedDevice = object.toString(); DeviceDetailsDTO details
+				 * = deviceMap.get(selectedDevice); details.getMemoryMapping();
+				 * JComboBox<String> mappings = getComboBoxMapping();
+				 * mappings.removeAllItems(); if (details.getMemoryMapping() !=
+				 * null) { String[] regMap = details.getMemoryMapping()
+				 * .split(System.lineSeparator());
+				 * EMSSwingUtils.addItemsComboBox(mappings, 0, regMap); }
+				 * mappings.revalidate(); mappings.repaint(); }
+				 */
 			}
 		});
 		comboBoxDevice.setBounds(533, 14, 131, 23);
@@ -237,39 +218,28 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 			public void actionPerformed(ActionEvent arg0) {
 				panelChart.removeAll();
 				// We set default date as today, so no need to check null
-				UtilDateModel startModel = (UtilDateModel) datePickerStart
-						.getModel();
-				UtilDateModel endModel = (UtilDateModel) datePickerEnd
-						.getModel();
-				int diff = (int) Helper.findDateDiff(startModel.getValue(),
-						endModel.getValue());
+				UtilDateModel startModel = (UtilDateModel) datePickerStart.getModel();
+				UtilDateModel endModel = (UtilDateModel) datePickerEnd.getModel();
+				int diff = (int) Helper.findDateDiff(startModel.getValue(), endModel.getValue());
 				if (diff > LimitConstants.REPORT_DATE_DIFF) {
-					JOptionPane
-							.showMessageDialog(getMe(),
-									"Please select less than "
-											+ LimitConstants.REPORT_DATE_DIFF
-											+ " days", "Report",
-									JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(getMe(),
+							"Please select less than " + LimitConstants.REPORT_DATE_DIFF + " days", "Report",
+							JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 
-				int deviceUniqueId = validateDeviceId(comboBoxDevice
-						.getSelectedItem());
+				int deviceUniqueId = validateDeviceId(comboBoxDevice.getSelectedItem());
 				long startDate = Helper.getStartOfDay(startModel.getValue());
 				long endDate = Helper.getEndOfDay(endModel.getValue());
 
-				logger.info("Chart Report request , device:{},start:{},end:{}",
-						deviceUniqueId, startDate, endDate);
+				logger.info("Chart Report request , device:{},start:{},end:{}", deviceUniqueId, startDate, endDate);
 
-				DeviceDetailsDTO detailsDTO = DBConnectionManager
-						.getDeviceById(deviceUniqueId);
+				DeviceDetailsDTO detailsDTO = DBConnectionManager.getDeviceById(deviceUniqueId);
 
 				if (detailsDTO != null) {
 					createChart(deviceUniqueId, startDate, endDate, detailsDTO);
 				} else {
-					JOptionPane.showMessageDialog(getMe(),
-							"Please try again!", "Report",
-							JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(getMe(), "Please try again!", "Report", JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});
@@ -283,7 +253,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		panel.add(lblNewLabel_1);
 
 		comboRecordCount = new JComboBox<String>();
-		comboRecordCount.setModel(new DefaultComboBoxModel<String>(new String[] {"1", "2", "4", "6"}));
+		comboRecordCount.setModel(new DefaultComboBoxModel<String>(new String[] { "1", "2", "4", "6" }));
 		comboRecordCount.setSelectedIndex(1);
 		comboRecordCount.setBounds(791, 14, 73, 23);
 		panel.add(comboRecordCount);
@@ -295,36 +265,36 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		panelChart.setBounds(0, 90, 933, 480);
 		getContentPane().add(panelChart);
 		panelChart.setLayout(new BorderLayout(0, 0));
-		
+
 		seriesControlPanel = new JPanel();
-		seriesControlPanel.setBorder(new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)), "Report criteria", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		seriesControlPanel.setBorder(
+				new TitledBorder(new CompoundBorder(null, new EtchedBorder(EtchedBorder.LOWERED, null, null)),
+						"Report criteria", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		seriesControlPanel.setBounds(0, 575, 933, 80);
 		getContentPane().add(seriesControlPanel);
-		
+
 		loadAvailableActiveDevices(comboBoxDevice);
 	}
 
-	public JPanel getSeriesControlPanel(){
+	public JPanel getSeriesControlPanel() {
 		return seriesControlPanel;
 	}
-	
-	private void createChart(long deviceUniqueId, long startTime, long endTime,
-			DeviceDetailsDTO device) {
+
+	private void createChart(long deviceUniqueId, long startTime, long endTime, DeviceDetailsDTO device) {
 		Connection connection = DBConnectionManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		
-		Properties memoryMapping = EMSUtility.loadProperties(device
-				.getMemoryMapping());
-		
-		//Remove existing content
+
+		Properties memoryMapping = EMSUtility.loadProperties(device.getMemoryMapping());
+
+		// Remove existing content
 		JPanel seriesControlPanel = getSeriesControlPanel();
 		seriesControlPanel.removeAll();
-		
+
 		int index = 0;
-		for(Entry<Object, Object> entry : memoryMapping.entrySet()){
-			//Skip memory mapping record whose value is "NoMap"
-			if(!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().toString().trim())){
+		for (Entry<Object, Object> entry : memoryMapping.entrySet()) {
+			// Skip memory mapping record whose value is "NoMap"
+			if (!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().toString().trim())) {
 				JCheckBox box = new JCheckBox(entry.getValue().toString());
 				box.setActionCommand(String.valueOf(index++));
 				box.addActionListener(this);
@@ -332,11 +302,10 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 				seriesControlPanel.add(box);
 			}
 		}
-		
+
 		try {
-			
-			ps = connection
-					.prepareStatement(QueryConstants.RETRIEVE_DEVICE_STATE4CHART);
+
+			ps = connection.prepareStatement(QueryConstants.RETRIEVE_DEVICE_STATE4CHART);
 			ps.setLong(1, deviceUniqueId);
 			ps.setLong(2, startTime);
 			ps.setLong(3, endTime);
@@ -344,25 +313,22 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 			logger.debug(" Chart query executed ...");
 			CategoryDataset dataset = createDataset(rs, memoryMapping);
 			logger.info("Category dataset created for chart...");
-			extendedChart = new ExtendedChartPanel(
-					device.getDeviceName(), dataset);
-			
+			extendedChart = new ExtendedChartPanel(device.getDeviceName(), dataset);
+
 			panelChart.add(extendedChart);
 			panelChart.repaint();
 			panelChart.updateUI();
 		} catch (Exception e) {
-			logger.error("{}",e);
+			logger.error("{}", e);
 			logger.error("{}", e.getLocalizedMessage());
-			JOptionPane.showMessageDialog(getMe(), "Please try again!",
-					"Report", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(getMe(), "Please try again!", "Report", JOptionPane.WARNING_MESSAGE);
 		} finally {
 			DBConnectionManager.closeConnections(connection, ps, rs);
 		}
 	}
 
 	// Creates data set and limits number of records to displayed in Chart
-	private static CategoryDataset createDataset(ResultSet rs,
-			Properties memoryMapping) {
+	private static CategoryDataset createDataset(ResultSet rs, Properties memoryMapping) {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		Map<Long, ArrayList<PollingDetailDTO>> records = new LinkedHashMap<Long, ArrayList<PollingDetailDTO>>();
 
@@ -385,8 +351,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 				currentHour = detailDTO.getFormattedHour();
 
 				if (previousHour != currentHour) {
-					addRecordsToDataset(recordsPerHour, previousHour, records,
-							dataset);
+					addRecordsToDataset(recordsPerHour, previousHour, records, dataset);
 
 					records.clear();
 					addTempEntry(currentHour, detailDTO, records);
@@ -395,8 +360,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 					addTempEntry(currentHour, detailDTO, records);
 
 					if (rs.isLast()) {
-						addRecordsToDataset(recordsPerHour, currentHour,
-								records, dataset);
+						addRecordsToDataset(recordsPerHour, currentHour, records, dataset);
 					}
 				}
 			}
@@ -404,20 +368,17 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 			logger.debug("Report added to view");
 
 		} catch (Exception e) {
-			logger.error("{}",e);
+			logger.error("{}", e);
 			logger.error("Failed creating dataset for chart...");
 		}
 
 		return dataset;
 	}
 
-	private static void addRecordsToDataset(int recordsPerHour,
-			long currentHour, Map<Long, ArrayList<PollingDetailDTO>> records,
-			DefaultCategoryDataset dataset) {
-		ArrayList<PollingDetailDTO> previousRecordsPerHour = records
-				.get(currentHour);
-		ArrayList<PollingDetailDTO> recordsToDisplay = getHourRecordsToDisplay(
-				previousRecordsPerHour, recordsPerHour);
+	private static void addRecordsToDataset(int recordsPerHour, long currentHour,
+			Map<Long, ArrayList<PollingDetailDTO>> records, DefaultCategoryDataset dataset) {
+		ArrayList<PollingDetailDTO> previousRecordsPerHour = records.get(currentHour);
+		ArrayList<PollingDetailDTO> recordsToDisplay = getHourRecordsToDisplay(previousRecordsPerHour, recordsPerHour);
 
 		for (PollingDetailDTO record : recordsToDisplay) {
 			addDatasetEntry(dataset, record);
@@ -425,28 +386,25 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 	}
 
 	private static ArrayList<PollingDetailDTO> getHourRecordsToDisplay(
-			ArrayList<PollingDetailDTO> previousRecordsPerHour,
-			int recordsNeeded) {
+			ArrayList<PollingDetailDTO> previousRecordsPerHour, int recordsNeeded) {
 		ArrayList<PollingDetailDTO> selectedRecords = new ArrayList<>();
 		int size = 0;
-		
-		if (previousRecordsPerHour == null
-				|| (size = previousRecordsPerHour.size()) == 0) {
+
+		if (previousRecordsPerHour == null || (size = previousRecordsPerHour.size()) == 0) {
 			return selectedRecords;
 		}
-		
-		//Simple optimal selection algorithm
+
+		// Simple optimal selection algorithm
 		int[] selectedIndexes = Helper.selectOptimalRecords(size, recordsNeeded);
-		logger.trace("Optimal selection records : {}",Arrays.toString(selectedIndexes), size, recordsNeeded);
-		for(int index = 0; index < selectedIndexes.length ; index++ ){
+		logger.trace("Optimal selection records : {}", Arrays.toString(selectedIndexes), size, recordsNeeded);
+		for (int index = 0; index < selectedIndexes.length; index++) {
 			selectedRecords.add(previousRecordsPerHour.get(selectedIndexes[index]));
 		}
-		
+
 		return selectedRecords;
 	}
 
-	private static Map<Long, ArrayList<PollingDetailDTO>> addTempEntry(
-			long hourKey, PollingDetailDTO detailDTO,
+	private static Map<Long, ArrayList<PollingDetailDTO>> addTempEntry(long hourKey, PollingDetailDTO detailDTO,
 			Map<Long, ArrayList<PollingDetailDTO>> records) {
 		ArrayList<PollingDetailDTO> hoursRecords = records.get(hourKey);
 
@@ -459,51 +417,51 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 		return records;
 	}
 
-	private static void addDatasetEntry(DefaultCategoryDataset dataset,
-			PollingDetailDTO dto) {
+	private static void addDatasetEntry(DefaultCategoryDataset dataset, PollingDetailDTO dto) {
 		Properties props = EMSUtility.loadProperties(dto.getUnitresponse());
+		logger.trace("Unit response : {} Device Reading : {}", dto.getUnitresponse(), dto.getDeviceReading());
+
 		for (Entry<Object, Object> entry : props.entrySet()) {
-			
-			String seriesName = dto.getDeviceReading().getProperty(
-					entry.getKey().toString());
-			
-			//Skip memory mapping record whose value is "NoMap"
-			if(!EmsConstants.NO_MAP.equalsIgnoreCase(seriesName.trim())){
-				logger.trace(
-						"Reading: {} Series : {} Time : {}",
-						entry.getValue().toString(),
-						seriesName,dto.getFormattedDate());
-				
-				dataset.addValue(Float.parseFloat(entry.getValue().toString())/*Reading*/, 
-						seriesName/*Series name*/, dto.getFormattedDate()/*Time*/);
+
+			String seriesName = dto.getDeviceReading()
+					.getProperty(String.valueOf(Integer.valueOf(entry.getKey().toString())));
+
+			logger.trace("Reading: {} Series : {} Time : {}", entry.getValue().toString(), seriesName,
+					dto.getFormattedDate());
+
+			// Skip memory mapping record whose value is "NoMap"
+			if (seriesName != null && !EmsConstants.NO_MAP.equalsIgnoreCase(seriesName.trim())) {
+
+				try {
+					dataset.addValue(Float.parseFloat(entry.getValue().toString())/* Reading */,
+							seriesName/* Series name */, dto.getFormattedDate()/* Time */);
+				} catch (Exception e) {
+					logger.error("{}", e);
+				}
 			}
 		}
 	}
 
 	private int validateDeviceId(Object selectedDevice) {
 		int deviceId = 0;
-		if (selectedDevice == null
-				|| selectedDevice.toString().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(getMe(), "No device selected",
-					"Report", JOptionPane.WARNING_MESSAGE);
+		if (selectedDevice == null || selectedDevice.toString().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(getMe(), "No device selected", "Report", JOptionPane.WARNING_MESSAGE);
 			return deviceId;
 		}
 
-		String deviceUniqueId = selectedDevice.toString().split(
-				MessageConstants.REPORT_KEY_SEPARATOR)[0];
+		String deviceUniqueId = selectedDevice.toString().split(MessageConstants.REPORT_KEY_SEPARATOR)[0];
 		deviceId = Integer.parseInt(deviceUniqueId);
 
 		return deviceId;
 	}
 
-	private String prepareUnitData(long uniqueId, long startDate, long endDate,
-			Properties properties, DeviceDetailsDTO detailsDTO) {
+	private String prepareUnitData(long uniqueId, long startDate, long endDate, Properties properties,
+			DeviceDetailsDTO detailsDTO) {
 		Connection connection = DBConnectionManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		String fileName = detailsDTO.getDeviceName()
-				+ System.currentTimeMillis() + ".xls";
+		String fileName = detailsDTO.getDeviceName() + System.currentTimeMillis() + ".xls";
 		fileName = new File(fileName).getAbsolutePath();
 
 		try {
@@ -513,13 +471,11 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 			ps.setLong(3, endDate);
 			rs = ps.executeQuery();
 
-			ExcelUtils.writeReadingsToWorkBook(fileName,
-					detailsDTO.getDeviceName(), properties, rs);
+			ExcelUtils.writeReadingsToWorkBook(fileName, detailsDTO.getDeviceName(), properties, rs);
 
 		} catch (Exception e) {
-			logger.error("{}",e);
-			logger.error("Report data fetching failed : {}",
-					e.getLocalizedMessage());
+			logger.error("{}", e);
+			logger.error("Report data fetching failed : {}", e.getLocalizedMessage());
 		} finally {
 			DBConnectionManager.closeConnections(connection, ps, rs);
 		}
@@ -545,8 +501,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 	public void loadAvailableActiveDevices(JComboBox<String> devices) {
 
 		try {
-			deviceList = DBConnectionManager
-					.getAvailableDevices(SELECT_ENABLED_ENDEVICES);
+			deviceList = DBConnectionManager.getAvailableDevices(SELECT_ENABLED_ENDEVICES);
 			String[] deviceIds = new String[deviceList.size()];
 			int index = 0;
 			deviceMap = new HashMap<>(deviceList.size());
@@ -563,31 +518,30 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener{
 			devices.revalidate();
 			devices.repaint();
 		} catch (Exception e) {
-			logger.error("{}",e);
-			logger.error("Failed to load active devices , Reports page : {}",
-					e.getLocalizedMessage());
+			logger.error("{}", e);
+			logger.error("Failed to load active devices , Reports page : {}", e.getLocalizedMessage());
 		}
 	}
 
 	public JInternalFrame getMe() {
 		return this;
 	}
-	
-	public static int getRecordsPerHour(){
+
+	public static int getRecordsPerHour() {
 		return Integer.parseInt(comboRecordCount.getSelectedItem().toString());
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent action) {
-		
+
 		String commad = action.getActionCommand();
-		
-		if(commad != null && !commad.trim().isEmpty()){
+
+		if (commad != null && !commad.trim().isEmpty()) {
 			int serieNumber = Integer.parseInt(commad);
-			
+
 			boolean visible = this.extendedChart.getCategoryRenderer().getItemVisible(serieNumber, 0);
 			this.extendedChart.getCategoryRenderer().setSeriesVisible(serieNumber, new Boolean(!visible));
 		}
-		
+
 	}
 }
