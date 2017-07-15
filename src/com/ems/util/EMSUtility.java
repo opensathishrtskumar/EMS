@@ -144,6 +144,11 @@ public abstract class EMSUtility {
 		return registerMapping;
 	}
 
+	/**
+	 * @param mappings
+	 * @returns Starting register - Initial required register - 1 is the
+	 *          reference
+	 */
 	public static long getRegisterReference(Map<Long, String> mappings) {
 		long startingRegister = EmsConstants.DEFAULTREGISTER;
 
@@ -215,8 +220,7 @@ public abstract class EMSUtility {
 		try {
 			for (int reg : requiredRegisters) {
 				int registerIndex = reg - (base + 1);
-				logger.trace("Required register : {}, Base : {}, Register : {}, Registers Count : {}",
-						requiredRegisters, base, reg, registeres.length);
+				logger.trace("Required register : {}, Base : {}, Register : {}", requiredRegisters, base, reg);
 
 				byte[] registerBytes = registeres[registerIndex].toBytes();
 				byte[] bytes = new byte[] { 0, 0, 0, 0 };
@@ -240,7 +244,7 @@ public abstract class EMSUtility {
 		}
 
 		logger.trace("Response for device {} is {}", parameters.getUnitId(), builder.toString());
-		
+
 		return builder.toString();
 	}
 
@@ -325,6 +329,8 @@ public abstract class EMSUtility {
 	/**
 	 * Group device by connection param, so that single connection can be reused
 	 * to set of devices
+	 * 
+	 * Keys are created in DeviceDetailsDTO & ExtendedSerialParameter
 	 */
 	public static Map<String, List<ExtendedSerialParameter>> groupDeviceForPolling(
 			List<ExtendedSerialParameter> paramsList) {
@@ -332,12 +338,12 @@ public abstract class EMSUtility {
 
 		for (ExtendedSerialParameter device : paramsList) {
 			List<ExtendedSerialParameter> group = groupedDevice.get(device.getGroupKey());
-
+			// Create group when doesn't exist
 			if (group == null) {
 				group = new ArrayList<ExtendedSerialParameter>();
 				groupedDevice.put(device.getGroupKey(), group);
 			}
-
+			// Add device in group
 			group.add(device);
 		}
 		return groupedDevice;
@@ -408,12 +414,12 @@ public abstract class EMSUtility {
 			return new ReadInputRegistersRequest(reference, count);
 		}
 	}
-	
+
 	public static InputRegister[] getResponseRegisters(ModbusResponse response) {
 		if (response instanceof ReadMultipleRegistersResponse) {
-			return ((ReadMultipleRegistersResponse)response).getRegisters();
+			return ((ReadMultipleRegistersResponse) response).getRegisters();
 		} else {
-			return ((ReadInputRegistersResponse)response).getRegisters();
+			return ((ReadInputRegistersResponse) response).getRegisters();
 		}
 	}
 }

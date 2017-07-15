@@ -22,8 +22,7 @@ import com.ghgande.j2mod.modbus.net.SerialConnection;
 
 public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(GroupedDeviceWorker.class);
+	private static final Logger logger = LoggerFactory.getLogger(GroupedDeviceWorker.class);
 
 	private Map<String, List<ExtendedSerialParameter>> groupedDevices = null;
 	private ModbusResponse response = null;
@@ -55,8 +54,7 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 		return groupedDevices;
 	}
 
-	public void setGroupedDevices(
-			Map<String, List<ExtendedSerialParameter>> groupedDevices) {
+	public void setGroupedDevices(Map<String, List<ExtendedSerialParameter>> groupedDevices) {
 		this.groupedDevices = groupedDevices;
 	}
 
@@ -64,83 +62,78 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 	protected Object doInBackground() throws Exception {
 		failIfInterrupted();
 
-		logger.info("Dashboard worker initialized...");
-		
-		if(getResponseHandler() != null)
-			getResponseHandler().preStart();
-		
-		for (;!isCancelled();) {
+		logger.info("Grouped device worker initialized...");
 
-			if(getGroupedDevices() == null || getGroupedDevices().size() == 0){
-				logger.info("NO Dashboard devices configured");
+		if (getResponseHandler() != null)
+			getResponseHandler().preStart();
+
+		for (; !isCancelled();) {
+
+			if (getGroupedDevices() == null || getGroupedDevices().size() == 0) {
+				logger.info("No devices configured to poll - QUIT!!!");
 				break;
 			}
 
 			try {
-				//Iterate through groups
-				for (Entry<String, List<ExtendedSerialParameter>> group : getGroupedDevices()
-						.entrySet()) {
+				// Iterate through each groups
+				for (Entry<String, List<ExtendedSerialParameter>> group : getGroupedDevices().entrySet()) {
 					logger.debug("Invoking group : {}", group.getKey());
 					List<ExtendedSerialParameter> deviceList = group.getValue();
 
 					failIfInterrupted();
 
-					if(deviceList != null && deviceList.size() >= 1 ){
+					if (deviceList != null && deviceList.size() >= 1) {
 						ExtendedSerialParameter connectionParam = deviceList.get(0);
 
-						//To continue with other group even if one group fails
+						// To continue with other group even if one group fails
 						try {
-							//Create connection in sync environment
+							// Create connection in sync block - shares with
+							// Dashboard, Grouped devices & Poller
 							synchronized (MUTEX) {
 								logger.debug("connection using parameters : {}", connectionParam);
 								connection = new SerialConnection(connectionParam);
 								connection.setTimeout(connectionParam.getTimeout());
-								logger.trace("Trying to obtain connection : {}, {}", Thread
-										.currentThread().getName(), connectionParam);
 								connection.open();
 
-								//Iterate through each group devices
-								for(ExtendedSerialParameter device : deviceList){
+								// Iterate through each devices available in
+								// group
+								for (ExtendedSerialParameter device : deviceList) {
 									device.setStatus(false);
 									device.setRegisteres(null);
 									try {
-										ModbusSerialTransaction tran = new ModbusSerialTransaction(
-												connection);
-										logger.trace("Reading values for {}", device);
+										ModbusSerialTransaction tran = new ModbusSerialTransaction(connection);
 										ModbusRequest request = EMSUtility.getRequest(device.getMethod(),
 												device.getReference(), device.getCount());
-										logger.debug("Function code {},Hex Request {}", request.getFunctionCode(),
-												request.getHexMessage());
 										logger.trace(
-												"Polling worker Hex request : {}, Ref : {}, Count : {}",
-												request.getHexMessage(), device.getReference(),
-												device.getCount());
+												"Hex request : {}, Ref : {}, Count : {}, Function code {}, UniqueId {}",
+												request.getHexMessage(), device.getReference(), device.getCount(),
+												request.getFunctionCode(), device.getUniqueId());
 										request.setUnitID(device.getUnitId());
 										tran.setRequest(request);
 										tran.setRetries(device.getRetries());
 										tran.execute();
-										response =  tran.getResponse();
+										response = tran.getResponse();
 										tran = null;
-										logger.trace("Dashboard device response : {} ", response.getHexMessage());
+										logger.trace("UniqueId {} : Dashboard device response : {} ",
+												device.getUniqueId(), response.getHexMessage());
 										device.setRegisteres(EMSUtility.getResponseRegisters(response));
 										device.setStatus(true);
 									} catch (Exception e) {
-										logger.error("{}",e);
+										logger.error("{}", e);
 										logger.error("Device polling failed : {}", device);
 									}
-									
-									if(getResponseHandler() != null)
+
+									if (getResponseHandler() != null)
 										getResponseHandler().handleResponse(device);
 								}
 
-								//Close connection of each group
+								// Close connection of each group
 								closeSerialConnnection(connection);
 							}
 						} catch (Exception e) {
-							logger.error("{}",e);
-							logger.error(
-									"Dashboard worker group iteration failed : {}, : {}",
-									group.getKey(), e.getLocalizedMessage());
+							logger.error("{}", e);
+							logger.error("Dashboard worker group iteration failed : {}, : {}", group.getKey(),
+									e.getLocalizedMessage());
 						} finally {
 							closeSerialConnnection(connection);
 							logger.debug("Closing serial connection in group");
@@ -149,27 +142,27 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 				}
 
 			} catch (Exception e) {
-				logger.error("{}",e);
-				logger.error("Dashboard worker failed : {}",e.getLocalizedMessage());
+				logger.error("{}", e);
+				logger.error("Dashboard worker failed : {}", e.getLocalizedMessage());
 			} finally {
 				closeSerialConnnection(this.connection);
 			}
 
 			failIfInterrupted();
-			//Configure from properties
+			// Configure from properties
 			Thread.sleep(refreshFrequency);
 		}
 
-		if(getResponseHandler() != null)
+		if (getResponseHandler() != null)
 			getResponseHandler().postStop();
-		
+
 		logger.info("Grouped device worker completed...");
 
 		return "Grouped device worker completed";
 	}
 
-	private void closeSerialConnnection(SerialConnection connection){
-		if(connection != null && connection.isOpen()){
+	private void closeSerialConnnection(SerialConnection connection) {
+		if (connection != null && connection.isOpen()) {
 			connection.close();
 			connection = null;
 		}

@@ -2,6 +2,10 @@ package com.ems.UI.dto;
 
 import java.io.Serializable;
 
+/**
+ * @author Sathish Kumar
+ *
+ */
 public class DeviceDetailsDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	

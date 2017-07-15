@@ -124,11 +124,15 @@ public class ExtendedSerialParameter  extends SerialParameters{
 
 	public void setMemoryMappings(Map<Long,String> memoryMappings) {
 		this.memoryMappings = memoryMappings;
+		//Starting register from where to read
 		setReference((int)getRegisterReference(memoryMappings));
+		//Total number of registers to be read from Reference register
 		setCount(getRegisterCount(memoryMappings));
+		//Contains sorted registers to be persisted
 		setRequiredRegisters(getPersistRegisters(memoryMappings.keySet()));
 	}
-
+	
+	//Creates key for grouped polling - single connection with  multiple requests
 	public String getGroupKey(){
 		StringBuilder builder = new StringBuilder();
 		builder.append(getPort());
@@ -196,6 +200,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	}
 
 	public String getPort() {
+		//set current port name to super object's property to get connect with
 		super.setPortName(port);
 		return port;
 	}

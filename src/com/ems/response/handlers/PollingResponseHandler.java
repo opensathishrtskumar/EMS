@@ -12,11 +12,15 @@ import com.ems.UI.internalframes.PollingIFrame;
 import com.ems.UI.swingworkers.DBPollingWorker;
 import com.ems.concurrency.ConcurrencyUtils;
 
-public class PollingResponseHandler implements ResponseHandler{
-	
-	private static final Logger logger = LoggerFactory
-			.getLogger(DBPollingWorker.class);
-	
+/**
+ * @author Sathish Kumar
+ *
+ *         Implementation is responsible for persisting device response
+ */
+public class PollingResponseHandler implements ResponseHandler {
+
+	private static final Logger logger = LoggerFactory.getLogger(DBPollingWorker.class);
+
 	private PollingIFrame frame = null;
 
 	@Override
@@ -25,19 +29,12 @@ public class PollingResponseHandler implements ResponseHandler{
 	}
 
 	private void startPolling() {
-		if(getFrame() != null){
+		if (getFrame() != null) {
 			JProgressBar progress = getFrame().getProgressBar();
 			progress.setVisible(true);
 		}
 	}
-	
-	private void stopPolling() {
-		if(getFrame() != null){
-			JProgressBar progress = getFrame().getProgressBar();
-			progress.setVisible(false);
-		}
-	}
-	
+
 	public PollingIFrame getFrame() {
 		return frame;
 	}
@@ -49,12 +46,14 @@ public class PollingResponseHandler implements ResponseHandler{
 	@Override
 	public void handleResponse(ExtendedSerialParameter parameter) {
 		try {
+			//New worker is created to persist Device response concurrently
 			DBPollingWorker pollingWorker = new DBPollingWorker(parameter);
 			pollingWorker.setTable(getFrame().getTable());
 			ConcurrencyUtils.execute(pollingWorker);
+			//Wait before submitting new request to the same connection 
 			Thread.sleep(GAP_BETWEEN_REQUEST);
 		} catch (Exception e) {
-			logger.error("{}",e);
+			logger.error("{}", e);
 			logger.error("Response handler error : {}", e.getLocalizedMessage());
 		}
 	}
@@ -62,5 +61,12 @@ public class PollingResponseHandler implements ResponseHandler{
 	@Override
 	public void postStop() {
 		stopPolling();
+	}
+
+	private void stopPolling() {
+		if (getFrame() != null) {
+			JProgressBar progress = getFrame().getProgressBar();
+			progress.setVisible(false);
+		}
 	}
 }

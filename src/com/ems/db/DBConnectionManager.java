@@ -4,14 +4,11 @@ import static com.ems.constants.DBConstants.HOST;
 import static com.ems.constants.DBConstants.PASSWORD;
 import static com.ems.constants.DBConstants.PORT;
 import static com.ems.constants.DBConstants.USERNAME;
-import static com.ems.constants.LimitConstants.DEFAULT_COMPORT;
-import static com.ems.constants.MessageConstants.DEFAULTPORT_KEY;
 import static com.ems.constants.QueryConstants.DASHBOARD_DEVICES;
 import static com.ems.constants.QueryConstants.INSERT_DEVICE;
 import static com.ems.constants.QueryConstants.IN_PLACEHOLDER;
 import static com.ems.constants.QueryConstants.SELECT_DEVICES;
 import static com.ems.constants.QueryConstants.UPDATE_DEVICE;
-import static com.ems.tmp.datamngr.TempDataManager.MAIN_CONFIG;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -302,8 +299,6 @@ public class DBConnectionManager {
 		List<DeviceDetailsDTO> list = new ArrayList<DeviceDetailsDTO>();
 		logger.debug("Device detail mapping requested");
 		try {
-			Properties props = TempDataManager.retrieveTempConfig(MAIN_CONFIG);
-			String port = props.getProperty(DEFAULTPORT_KEY,DEFAULT_COMPORT);
 			
 			int rowIndex = 0;
 			while (resultSet.next()) {
@@ -316,10 +311,10 @@ public class DBConnectionManager {
 				details.setWordLength(resultSet.getInt("wordlength"));
 				details.setStopbit(resultSet.getInt("stopbit"));
 				details.setParity(resultSet.getString("parity"));
-				details.setMemoryMapping(resultSet.getString("memorymapping"));
+				details.setMemoryMapping(resultSet.getString("memorymapping"));//register assignment
 				details.setEnabled(resultSet.getBoolean("status") ? "true"
 						: "false");
-				details.setRegisterMapping(resultSet.getString("registermapping"));
+				details.setRegisterMapping(resultSet.getString("registermapping"));//MSRF/LSRF
 				details.setPort(resultSet.getString("port"));
 				details.setMethod(resultSet.getString("method"));
 				
