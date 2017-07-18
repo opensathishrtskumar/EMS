@@ -19,6 +19,7 @@ import com.ghgande.j2mod.modbus.io.ModbusSerialTransaction;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
+import com.ghgande.j2mod.modbus.procimg.InputRegister;
 
 public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 
@@ -87,63 +88,41 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 
 						// To continue with other group even if one group fails
 						try {
-							// Create connection in sync block - shares with
-							// Dashboard, Grouped devices & Poller
+							/*Create connection in sync block - shares with Dashboard, Grouped devices & Poller*/ 
 							synchronized (MUTEX) {
 								logger.debug("connection using parameters : {}", connectionParam);
-								connection = new SerialConnection(connectionParam);
-								connection.setTimeout(connectionParam.getTimeout());
-								connection.open();
+								this.connection = new SerialConnection(connectionParam);
+								this.connection.setTimeout(connectionParam.getTimeout());
+								this.connection.open();
 
-								// Iterate through each devices available in
-								// group
+								/* Iterate through each devices available in group */
 								for (ExtendedSerialParameter device : deviceList) {
-									device.setStatus(false);
-									device.setRegisteres(null);
 									try {
-										ModbusSerialTransaction tran = new ModbusSerialTransaction(connection);
-										ModbusRequest request = EMSUtility.getRequest(device.getMethod(),
-												device.getReference(), device.getCount());
-										logger.trace(
-												"Hex request : {}, Ref : {}, Count : {}, Function code {}, UniqueId {}",
-												request.getHexMessage(), device.getReference(), device.getCount(),
-												request.getFunctionCode(), device.getUniqueId());
-										request.setUnitID(device.getUnitId());
-										tran.setRequest(request);
-										tran.setRetries(device.getRetries());
-										tran.execute();
-										response = tran.getResponse();
-										tran = null;
-										logger.trace("UniqueId {} : Dashboard device response : {} ",
-												device.getUniqueId(), response.getHexMessage());
-										device.setRegisteres(EMSUtility.getResponseRegisters(response));
-										device.setStatus(true);
+										InputRegister[] registers = EMSUtility.executeTransaction(connection, device);
+										device.setRegisteres(registers);
+										device.setStatus(true);//Mark as execution success
 									} catch (Exception e) {
-										logger.error("{}", e);
-										logger.error("Device polling failed : {}", device);
+										logger.error("Device polling failed : {} error : {}", device, e);
 									}
 
 									if (getResponseHandler() != null)
 										getResponseHandler().handleResponse(device);
 								}
 
-								// Close connection of each group
-								closeSerialConnnection(connection);
+								// Close connection of each group post execution
+								closeSerialConnnection(this.connection);
 							}
 						} catch (Exception e) {
-							logger.error("{}", e);
-							logger.error("Dashboard worker group iteration failed : {}, : {}", group.getKey(),
-									e.getLocalizedMessage());
+							logger.error("Dashboard worker group iteration failed : {}, : {}", group.getKey(), e);
 						} finally {
-							closeSerialConnnection(connection);
+							closeSerialConnnection(this.connection);
 							logger.debug("Closing serial connection in group");
 						}
 					}
 				}
 
 			} catch (Exception e) {
-				logger.error("{}", e);
-				logger.error("Dashboard worker failed : {}", e.getLocalizedMessage());
+				logger.error("Dashboard worker failed : {}", e);
 			} finally {
 				closeSerialConnnection(this.connection);
 			}

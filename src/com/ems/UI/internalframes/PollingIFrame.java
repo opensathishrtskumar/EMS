@@ -179,7 +179,7 @@ public class PollingIFrame extends JInternalFrame implements AbstractIFrame{
 					JOptionPane.showMessageDialog(getMe(),
 							"Poller Stopper!!!", "Stopped",
 							JOptionPane.INFORMATION_MESSAGE);
-					logger.info("Poller intentionally");
+					logger.debug("Poller intentionally stopped");
 				}
 			}
 		});

@@ -33,12 +33,15 @@ import com.ems.UI.dto.GroupsDTO;
 import com.ems.constants.EmsConstants;
 import com.fazecast.jSerialComm.SerialPort;
 import com.ghgande.j2mod.modbus.Modbus;
+import com.ghgande.j2mod.modbus.ModbusException;
+import com.ghgande.j2mod.modbus.io.ModbusSerialTransaction;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.msg.ReadInputRegistersRequest;
 import com.ghgande.j2mod.modbus.msg.ReadInputRegistersResponse;
 import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersRequest;
 import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersResponse;
+import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.util.ModbusUtil;
 import com.google.gson.Gson;
@@ -421,5 +424,27 @@ public abstract class EMSUtility {
 		} else {
 			return ((ReadInputRegistersResponse) response).getRegisters();
 		}
+	}
+	
+	public static InputRegister[] executeTransaction(SerialConnection connection, ExtendedSerialParameter device)
+			throws ModbusException {
+		
+		ModbusSerialTransaction tran = new ModbusSerialTransaction(connection);
+		ModbusRequest request = EMSUtility.getRequest(device.getMethod(),
+				device.getReference(), device.getCount());
+		logger.trace(
+				"Hex request : {}, Ref : {}, Count : {}, Function code {}, UniqueId {}",
+				request.getHexMessage(), device.getReference(), device.getCount(),
+				request.getFunctionCode(), device.getUniqueId());
+		request.setUnitID(device.getUnitId());
+		tran.setRequest(request);
+		tran.setRetries(device.getRetries());
+		tran.execute();
+		
+		ModbusResponse response = tran.getResponse();
+		logger.trace("UniqueId {} : Dashboard device response : {} ",
+				device.getUniqueId(), response.getHexMessage());
+		tran = null;
+		return getResponseRegisters(response);
 	}
 }
