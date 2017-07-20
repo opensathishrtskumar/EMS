@@ -282,7 +282,6 @@ public class DBConnectionManager {
 			int rowIndex = 0;
 			while (resultSet.next()) {
 				DeviceDetailsDTO details = resultToDeviceDetail(resultSet);
-				;
 				details.setRowIndex(rowIndex++);
 				logger.trace(" Device from DB : {}", details);
 				list.add(details);

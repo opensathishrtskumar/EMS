@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -28,6 +29,7 @@ import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.GroupDTO;
 import com.ems.UI.dto.GroupsDTO;
 import com.ems.UI.swingworkers.GroupedDeviceWorker;
+import com.ems.concurrency.ConcurrencyUtils;
 import com.ems.response.handlers.DashboardResponseHandler;
 import com.ems.util.ConfigHelper;
 import com.ems.util.EMSSwingUtils;
@@ -93,10 +95,10 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 			List<GroupDTO> groupList = groups.getGroups();
 			if(groupList != null){
 
-				List<ExtendedSerialParameter> mainList = new ArrayList<ExtendedSerialParameter>();
+				final List<ExtendedSerialParameter> mainList = new ArrayList<ExtendedSerialParameter>();
 				
 				for(GroupDTO group : groupList){
-					JPanel panel_1 = new JPanel();
+					final JPanel panel_1 = new JPanel();
 					tabbedPane.addTab(group.getGroupName(), null, new JScrollPane(panel_1), group.getGroupDescription());
 					panel_1.setLayout(new GridLayout());
 
@@ -104,11 +106,21 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 					if(deviceList != null){
 						List<ExtendedSerialParameter> list = mapDevicesToSerialParams(deviceList);
 
-						for(ExtendedSerialParameter device : list){
-							JScrollPane deviceDetail = getDeviceDetailJScrollPane(device);
-							device.setPanel(deviceDetail);
-							mainList.add(device);
-							panel_1.add(deviceDetail);
+						for(final ExtendedSerialParameter device : list){
+							
+							Callable<Object> deviceAdder = new Callable<Object>() {
+								@Override
+								public String call() throws Exception {
+									JScrollPane deviceDetail = getDeviceDetailJScrollPane(device);
+									device.setPanel(deviceDetail);
+									mainList.add(device);
+									panel_1.add(deviceDetail);
+									logger.trace("Grouped device added {}" , device);
+									return "Grouped device added successfully...";
+								}
+							};
+							
+							ConcurrencyUtils.execute(deviceAdder);
 						}
 					}
 
