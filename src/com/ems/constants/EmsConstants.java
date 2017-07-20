@@ -40,5 +40,7 @@ public abstract class EmsConstants {
 	
 	public static final String NO_MAP = "NoMap";
 	
+	public static final String SPLIT_JOIN = "9999=split";
+	
 	public static final String[] READ_METHOD = { "3", "4" };
 }

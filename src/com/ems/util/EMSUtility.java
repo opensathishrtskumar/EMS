@@ -216,41 +216,6 @@ public abstract class EMSUtility {
 		return registers;
 	}
 
-	public static String processRequiredRegister(InputRegister[] registeres, ExtendedSerialParameter parameters) {
-		StringBuilder builder = new StringBuilder();
-		int[] requiredRegisters = parameters.getRequiredRegisters();
-		int base = parameters.getReference();
-		try {
-			for (int reg : requiredRegisters) {
-				int registerIndex = reg - (base + 1);
-				logger.trace("Required register : {}, Base : {}, Register : {}", requiredRegisters, base, reg);
-
-				byte[] registerBytes = registeres[registerIndex].toBytes();
-				byte[] bytes = new byte[] { 0, 0, 0, 0 };
-				bytes[0] = registerBytes[0];
-				bytes[1] = registerBytes[1];
-
-				if (registerIndex + 1 < registeres.length) {
-					registerBytes = registeres[registerIndex + 1].toBytes();
-					bytes[2] = registerBytes[0];
-					bytes[3] = registerBytes[1];
-				}
-
-				// register ordering is implemeted
-				String value = convertToFloatWithOrder(bytes, parameters.getRegisterMapping());
-				// To persist in DB
-				builder.append(reg + REPORT_KEY_SEPARATOR + value + REPORT_RECORD_SEPARATOR);
-			}
-		} catch (Exception e) {
-			logger.error("{}", e);
-			logger.error("Mapping error : {}", e.getLocalizedMessage());
-		}
-
-		logger.trace("Response for device {} is {}", parameters.getUnitId(), builder.toString());
-
-		return builder.toString();
-	}
-
 	/**
 	 * returns memory address and its value in Map structure
 	 */
@@ -258,40 +223,68 @@ public abstract class EMSUtility {
 		int[] requiredRegisters = parameters.getRequiredRegisters();
 		int base = parameters.getReference();
 		InputRegister[] registeres = parameters.getRegisteres();
-
 		Map<String, String> finalResponse = new LinkedHashMap<String, String>();
-		try {
-			for (int reg : requiredRegisters) {
-				int registerIndex = reg - (base + 1);
-				String value = "00.00";
 
-				if (registeres != null && registerIndex < registeres.length && registeres[registerIndex] != null) {
+		if (requiredRegisters == null)
+			return finalResponse;
 
-					byte[] registerBytes = registeres[registerIndex].toBytes();
-					logger.trace("Firt 16 bit  : {}", Arrays.toString(registerBytes));
-					byte[] bytes = new byte[] { 0, 0, 0, 0 };
-					bytes[0] = registerBytes[0];
-					bytes[1] = registerBytes[1];
+		for (int reg : requiredRegisters) {
+			int registerIndex = reg - (base + 1);
+			String value = "00.00";
 
-					if (registerIndex + 1 < registeres.length) {
-						registerBytes = registeres[registerIndex + 1].toBytes();
-						bytes[2] = registerBytes[0];
-						bytes[3] = registerBytes[1];
-						logger.trace("Second 16 bit  : {}", Arrays.toString(registerBytes));
-					}
-
-					// register order is implemeted
-					value = convertToFloatWithOrder(bytes, parameters.getRegisterMapping());
-				}
-
-				finalResponse.put(String.valueOf(reg), value);
+			try {
+				// register order is implemeted
+				value = getRegisterValue(registerIndex, registeres,
+						parameters.getRegisterMapping()/* MSRF/LSRF param */);
+			} catch (Exception e) {
+				logger.error("Setting default value for register {}", e);
 			}
-		} catch (Exception e) {
-			logger.error("{}", e);
-			logger.error("Dashboard Mapping error : {}", e.getLocalizedMessage());
+
+			finalResponse.put(String.valueOf(reg), value);
 		}
 
+		logger.trace("Required register : {} Response map {}", requiredRegisters, finalResponse);
+
 		return finalResponse;
+	}
+
+	public static String processRequiredRegister(ExtendedSerialParameter parameters) {
+		StringBuilder builder = new StringBuilder();
+		int[] requiredRegisters = parameters.getRequiredRegisters();
+
+		if(requiredRegisters == null)
+			return builder.toString();
+		
+		Map<String, String> responseMap = processRegistersForDashBoard(parameters);
+
+		for (int reg : requiredRegisters) {
+			// To persist in DB
+			String value = responseMap.get(String.valueOf(reg));
+			builder.append(reg + REPORT_KEY_SEPARATOR + value + REPORT_RECORD_SEPARATOR);
+		}
+
+		logger.trace("Response for device {} is {}", parameters.getUnitId(), builder.toString());
+
+		return builder.toString();
+	}
+
+	private static String getRegisterValue(int index, InputRegister[] registers, String registerMapping) {
+
+		byte[] bytes = new byte[] { 0, 0, 0, 0 };
+		if (registers != null && index < registers.length && registers[index] != null) {
+			byte[] registerBytes = registers[index].toBytes();
+
+			bytes[0] = registerBytes[0];
+			bytes[1] = registerBytes[1];
+
+			if (index + 1 < registers.length) {
+				registerBytes = registers[index + 1].toBytes();
+				bytes[2] = registerBytes[0];
+				bytes[3] = registerBytes[1];
+			}
+		}
+		// register ordering MSRF/LSRF
+		return convertToFloatWithOrder(bytes, registerMapping);
 	}
 
 	public static List<ExtendedSerialParameter> mapDevicesToSerialParams(List<DeviceDetailsDTO> devices) {
@@ -316,15 +309,23 @@ public abstract class EMSUtility {
 		parameters.setUnitId(devices.getDeviceId());
 		parameters.setUniqueId(devices.getUniqueId());
 		parameters.setRowIndex(devices.getRowIndex());
-		Properties memoryProps = loadProperties(devices.getMemoryMapping());
-		parameters.setProps(memoryProps);
-		parameters.setMemoryMappings(loadMemoryMappingDetails(devices.getMemoryMapping()));
-		parameters.setPortName(devices.getPort());
-
+		parameters.setSplitJoin(devices.isSplitJoin());
 		parameters.setDeviceName(devices.getDeviceName());
 		parameters.setRegisterMapping(devices.getRegisterMapping());
-		parameters.setPort(devices.getPort());
+		parameters.setPort(devices.getPort());// PortName property should be set
+												// to create SerialConnection
 		parameters.setMethod(devices.getMethod());
+
+		if (!parameters.isSplitJoin()) {
+			Properties memoryProps = loadProperties(devices.getMemoryMapping());
+			parameters.setProps(memoryProps);
+			parameters.setMemoryMappings(loadMemoryMappingDetails(devices.getMemoryMapping()));
+		} else {
+			logger.debug("Split Join device Found : {}", devices);
+			Properties memoryProps = loadProperties(devices.getMemoryMapping());
+			parameters.setProps(memoryProps);
+			parameters.setMemoryMappings(loadMemoryMappingDetails(devices.getMemoryMapping()));
+		}
 
 		return parameters;
 	}
@@ -359,10 +360,10 @@ public abstract class EMSUtility {
 	 *            - the order of which registeres to be processed
 	 * @return
 	 */
-	public static String convertToFloatWithOrder(byte[] bytes, String order) {
+	public static String convertToFloatWithOrder(byte[] bytes, String registeOrder) {
 		byte[] byteOrder = null;
 
-		if (order.equals(EmsConstants.REG_MAPPING[0])) {
+		if (registeOrder.equals(EmsConstants.REG_MAPPING[0])) {
 			byteOrder = bytes;
 		} else {
 			byteOrder = new byte[] { bytes[2], bytes[3], bytes[0], bytes[1] };
@@ -418,33 +419,14 @@ public abstract class EMSUtility {
 		}
 	}
 
-	public static InputRegister[] getResponseRegisters(ModbusResponse response) {
-		if (response instanceof ReadMultipleRegistersResponse) {
-			return ((ReadMultipleRegistersResponse) response).getRegisters();
-		} else {
-			return ((ReadInputRegistersResponse) response).getRegisters();
-		}
+	public static boolean isSplitJoin(String memoryMappings) {
+		return memoryMappings != null && memoryMappings.trim().length() > 0
+				&& memoryMappings.contains(EmsConstants.SPLIT_JOIN);
 	}
 	
-	public static InputRegister[] executeTransaction(SerialConnection connection, ExtendedSerialParameter device)
-			throws ModbusException {
-		
-		ModbusSerialTransaction tran = new ModbusSerialTransaction(connection);
-		ModbusRequest request = EMSUtility.getRequest(device.getMethod(),
-				device.getReference(), device.getCount());
-		logger.trace(
-				"Hex request : {}, Ref : {}, Count : {}, Function code {}, UniqueId {}",
-				request.getHexMessage(), device.getReference(), device.getCount(),
-				request.getFunctionCode(), device.getUniqueId());
-		request.setUnitID(device.getUnitId());
-		tran.setRequest(request);
-		tran.setRetries(device.getRetries());
-		tran.execute();
-		
-		ModbusResponse response = tran.getResponse();
-		logger.trace("UniqueId {} : Dashboard device response : {} ",
-				device.getUniqueId(), response.getHexMessage());
-		tran = null;
-		return getResponseRegisters(response);
+	public static Map<String, String> convertProp2Map(Properties prop){
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.putAll((Map) prop);
+		return map;
 	}
 }

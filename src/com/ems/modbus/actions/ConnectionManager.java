@@ -6,79 +6,63 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.ExtendedSerialParameter;
+import com.ems.util.EMSUtility;
 import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.io.ModbusSerialTransaction;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
 import com.ghgande.j2mod.modbus.msg.ModbusResponse;
-import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersRequest;
+import com.ghgande.j2mod.modbus.msg.ReadInputRegistersResponse;
+import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersResponse;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
+import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
 public abstract class ConnectionManager {
-	private static final Logger logger = LoggerFactory
-			.getLogger(ConnectionManager.class);
-
-	private static SerialConnection connection = null;
+	private static final Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
 
 	public static SerialConnection getConnection(SerialParameters parameters) {
-		if (connection == null) {
-			connection = new SerialConnection(parameters);
-			connection.setTimeout(TIMEOUT[1]);
-			connection.open();
-		}
-
+		SerialConnection connection = new SerialConnection(parameters);
+		connection.setTimeout(TIMEOUT[1]);
+		connection.open();
 		return connection;
 	}
+	
+	
+	public static InputRegister[] executeTransaction(SerialConnection connection, ExtendedSerialParameter device)
+			throws ModbusException {
 
-	public static ModbusResponse sendRequest(ExtendedSerialParameter params, 
-			SerialConnection connection) throws ModbusException {
-		ExtendedSerialParameter extendedParams = params;
-		ModbusRequest request = getModbusRequest(params);
-		logger.info("Ping worker request : {}", request.getHexMessage());
-		ModbusResponse response = null;
-
-		ModbusSerialTransaction tran = new ModbusSerialTransaction(
-				connection);
+		ModbusSerialTransaction tran = new ModbusSerialTransaction(connection);
+		ModbusRequest request = EMSUtility.getRequest(device.getMethod(), device.getReference(), device.getCount());
+		logger.trace("Hex request : {}, Ref : {}, Count : {}, Function code {}, UniqueId {}", request.getHexMessage(),
+				device.getReference(), device.getCount(), request.getFunctionCode(), device.getUniqueId());
+		request.setUnitID(device.getUnitId());
 		tran.setRequest(request);
-		tran.setRetries(extendedParams.getRetries());
+		tran.setRetries(device.getRetries());
+		tran.execute();
 
-		synchronized (connection) {
-			if(logger.isDebugEnabled())
-				logger.debug("executing serial transaction");
-			tran.execute();
-			response = tran.getResponse();
-		}
-
-		return response;
+		ModbusResponse response = tran.getResponse();
+		logger.trace("UniqueId {} : Dashboard device response : {} ", device.getUniqueId(), response.getHexMessage());
+		tran = null;
+		return getResponseRegisters(response);
 	}
-
-	private static ModbusRequest getModbusRequest(ExtendedSerialParameter params){
-
-		ModbusRequest request = ModbusRequest.createModbusRequest(params.getPointType());
-		request.setUnitID(params.getUnitId());
-
-		if(request instanceof ReadMultipleRegistersRequest){
-			ReadMultipleRegistersRequest multipleRegister = (ReadMultipleRegistersRequest)request;
-			multipleRegister.setWordCount(params.getCount());
-			multipleRegister.setReference(params.getReference());
+	
+	
+	public static InputRegister[] getResponseRegisters(ModbusResponse response) {
+		if (response instanceof ReadMultipleRegistersResponse) {
+			return ((ReadMultipleRegistersResponse) response).getRegisters();
 		} else {
-			//TODO : for future support
+			return ((ReadInputRegistersResponse) response).getRegisters();
 		}
-
-		return request;
 	}
-
-
-	/* (non-Javadoc)
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#finalize()
 	 * 
-	 * Close the conneciton if not closed
 	 */
 	@Override
 	protected void finalize() throws Throwable {
-		if(connection != null && connection.isOpen()){
-			connection.close();
-		}
 		super.finalize();
 	}
 }

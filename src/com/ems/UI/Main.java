@@ -146,7 +146,7 @@ public class Main {
 				dialog.setVisible(true);
 			}
 		});
-		frmManageEnergy.setAlwaysOnTop(false);
+		frmManageEnergy.setAlwaysOnTop(true);
 		frmManageEnergy.setResizable(true);
 		frmManageEnergy
 				.setTitle(BUNDLE.getString("Main.frmManageEnergy.title") + getCompanyName()); //$NON-NLS-1$
@@ -360,9 +360,7 @@ public class Main {
 		mntmGroupedDevices.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Show grouped devices
-				GroupedDevices dialog = new GroupedDevices(getMe());
-				dialog.setModal(true);
-				dialog.setVisible(true);
+				EMSSwingUtils.openSingletonIFrame(desktopPane, GroupedDevices.class);
 			}
 		});
 		mnReports.add(mntmGroupedDevices);
@@ -403,5 +401,7 @@ public class Main {
 		desktopPane.setBackground(SystemColor.text);
 		frmManageEnergy.getContentPane().add(desktopPane);
 		frmManageEnergy.setAlwaysOnTop(false);
+		
+		EMSSwingUtils.addTrayIcon(getCompanyName());
 	}
 }

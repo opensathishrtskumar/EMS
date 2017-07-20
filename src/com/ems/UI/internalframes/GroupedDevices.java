@@ -4,22 +4,21 @@ import static com.ems.util.EMSSwingUtils.getDeviceDetailLabel;
 import static com.ems.util.EMSUtility.groupDeviceForPolling;
 import static com.ems.util.EMSUtility.mapDevicesToSerialParams;
 
-import java.awt.EventQueue;
-import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JDialog;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.WindowConstants;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,42 +30,32 @@ import com.ems.UI.dto.GroupsDTO;
 import com.ems.UI.swingworkers.GroupedDeviceWorker;
 import com.ems.response.handlers.DashboardResponseHandler;
 import com.ems.util.ConfigHelper;
+import com.ems.util.EMSSwingUtils;
 import com.ems.util.EMSUtility;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-public class GroupedDevices extends JDialog {
+public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 	private static final Logger logger = LoggerFactory.getLogger(GroupedDevices.class);
 	private static final long serialVersionUID = 1L;
 	private GroupedDeviceWorker worker = null;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					GroupedDevices frame = new GroupedDevices(null);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
-	public GroupedDevices(Frame parent) {
-		super(parent, "Grouped Devices", true);
-		
+	public GroupedDevices() {
 		//Dont need close button
-		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter() {
+		setIconifiable(true);
+		setFrameIcon(new ImageIcon(GroupedDevices.class.getResource("/com/ems/resources/group.png")));
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setClosable(true);
+		setResizable(true);
+		setMaximizable(true);
+		
+		addInternalFrameListener(new InternalFrameAdapter() {
 			@Override
-			public void windowClosing(WindowEvent arg0) {
+			public void internalFrameActivated(InternalFrameEvent arg0) {
+			}
+			@Override
+			public void internalFrameClosing(InternalFrameEvent arg0) {
 				int option = JOptionPane.showConfirmDialog(getMe(), "Confirm to close?",
 						"Exit", JOptionPane.YES_NO_OPTION);
 				if(option == JOptionPane.YES_OPTION){
@@ -78,7 +67,9 @@ public class GroupedDevices extends JDialog {
 		});
 		
 		setTitle("Grouped Devices");
-		setBounds(100, 100, 1000, 600);
+		setBounds(0, 0, 100, 100);
+		
+		
 		getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
 
 		JPanel panel = new JPanel();
@@ -90,6 +81,7 @@ public class GroupedDevices extends JDialog {
 		panel.add(tabbedPane);
 
 		addContent(tabbedPane);
+		EMSSwingUtils.setMaximizedSize(this);
 	}
 
 	private void addContent(JTabbedPane tabbedPane){
@@ -158,12 +150,17 @@ public class GroupedDevices extends JDialog {
 		}
 	}
 	
-	public final JDialog getMe(){
+	public final JInternalFrame getMe(){
     	return this;
     }
 	
 	@Override
 	protected void finalize() throws Throwable {
+		killWorker();
+	}
+
+	@Override
+	public void releaseResource() {
 		killWorker();
 	}
 }

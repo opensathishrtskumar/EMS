@@ -57,7 +57,7 @@ public class DBPollingWorker implements Callable<Object> {
 
 		if (status) {
 			failIfInterrupted();
-			String finalResponse = processRequiredRegister(parameters.getRegisteres(), parameters);
+			String finalResponse = processRequiredRegister(parameters);
 			PollingDetailDTO dto = new PollingDetailDTO(parameters.getUniqueId(), System.currentTimeMillis(),
 					finalResponse);
 			int insert = DBConnectionManager.insertPollingDetails(dto);
@@ -79,12 +79,9 @@ public class DBPollingWorker implements Callable<Object> {
 			@SuppressWarnings("rawtypes")
 			Vector columnVector = (Vector) rowVector.get(parameters.getRowIndex());
 			columnVector.set(3, status);
-			/* synchronized (table) */ {
-				model.fireTableDataChanged();
-			}
+			model.fireTableDataChanged();
 		} catch (Exception e) {
-			logger.error("{}", e);
-			logger.error("Polling Table mode fire event failed : {}", e.getLocalizedMessage());
+			logger.error("Polling Table mode fire event failed : {} Exception {}", e.getLocalizedMessage(), e);
 		}
 	}
 }

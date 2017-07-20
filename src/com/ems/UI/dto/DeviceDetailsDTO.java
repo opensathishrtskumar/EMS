@@ -25,7 +25,7 @@ public class DeviceDetailsDTO implements Serializable{
 	//Set default mapping as "MSRF"
 	private String registerMapping;
 	private String method;
-	
+	private boolean splitJoin;
 	
 	public DeviceDetailsDTO() {
 	}
@@ -134,6 +134,14 @@ public class DeviceDetailsDTO implements Serializable{
 		this.registerMapping = registerMapping;
 	}
 	
+	public boolean isSplitJoin() {
+		return splitJoin;
+	}
+
+	public void setSplitJoin(boolean splitJoin) {
+		this.splitJoin = splitJoin;
+	}
+
 	public String getMethod() {
 		return method;
 	}

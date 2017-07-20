@@ -34,6 +34,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private String registerMapping;
 	private String port;
 	private String method;
+	private boolean splitJoin;
 	
 	public ExtendedSerialParameter(String portName, int baudRate,
 			int flowControlIn, int flowControlOut, int databits, int stopbits,
@@ -200,12 +201,12 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	}
 
 	public String getPort() {
-		//set current port name to super object's property to get connect with
-		super.setPortName(port);
 		return port;
 	}
 
 	public void setPort(String port) {
+		//set current port name to super object's property to get connect with
+		super.setPortName(port);
 		this.port = port;
 	}
 
@@ -215,6 +216,14 @@ public class ExtendedSerialParameter  extends SerialParameters{
 
 	public void setMethod(String method) {
 		this.method = method;
+	}
+	
+	public boolean isSplitJoin() {
+		return splitJoin;
+	}
+
+	public void setSplitJoin(boolean splitJoin) {
+		this.splitJoin = splitJoin;
 	}
 
 	@Override
@@ -226,6 +235,5 @@ public class ExtendedSerialParameter  extends SerialParameters{
 				+ Arrays.toString(registeres) + ", status=" + status + ", props=" + props + ", registerMapping="
 				+ registerMapping + ", port=" + port + ", method=" + method + "]";
 	}
-	
 }
 

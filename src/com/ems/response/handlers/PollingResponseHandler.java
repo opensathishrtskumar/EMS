@@ -19,7 +19,7 @@ import com.ems.concurrency.ConcurrencyUtils;
  */
 public class PollingResponseHandler implements ResponseHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(DBPollingWorker.class);
+	private static final Logger logger = LoggerFactory.getLogger(PollingResponseHandler.class);
 
 	private PollingIFrame frame = null;
 

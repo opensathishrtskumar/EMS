@@ -13,11 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.ExtendedSerialParameter;
+import com.ems.modbus.actions.ConnectionManager;
 import com.ems.response.handlers.ResponseHandler;
 import com.ems.util.EMSUtility;
-import com.ghgande.j2mod.modbus.io.ModbusSerialTransaction;
-import com.ghgande.j2mod.modbus.msg.ModbusRequest;
-import com.ghgande.j2mod.modbus.msg.ModbusResponse;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 
@@ -26,7 +24,6 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 	private static final Logger logger = LoggerFactory.getLogger(GroupedDeviceWorker.class);
 
 	private Map<String, List<ExtendedSerialParameter>> groupedDevices = null;
-	private ModbusResponse response = null;
 	private SerialConnection connection = null;
 	private int refreshFrequency = DASHBOARD_REFRESH_FREQUENCY * 1000 * 60;
 	private ResponseHandler responseHandler = null;
@@ -91,14 +88,12 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 							/*Create connection in sync block - shares with Dashboard, Grouped devices & Poller*/ 
 							synchronized (MUTEX) {
 								logger.debug("connection using parameters : {}", connectionParam);
-								this.connection = new SerialConnection(connectionParam);
-								this.connection.setTimeout(connectionParam.getTimeout());
-								this.connection.open();
+								this.connection = ConnectionManager.getConnection(connectionParam);
 
 								/* Iterate through each devices available in group */
 								for (ExtendedSerialParameter device : deviceList) {
 									try {
-										InputRegister[] registers = EMSUtility.executeTransaction(connection, device);
+										InputRegister[] registers = ConnectionManager.executeTransaction(connection, device);
 										device.setRegisteres(registers);
 										device.setStatus(true);//Mark as execution success
 									} catch (Exception e) {
