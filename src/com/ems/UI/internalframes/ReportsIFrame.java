@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ems.UI.chart.ExtendedChartPanel;
 import com.ems.UI.dto.DeviceDetailsDTO;
+import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.PollingDetailDTO;
 import com.ems.constants.EmsConstants;
 import com.ems.constants.LimitConstants;
@@ -167,10 +168,8 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 				long startDate = Helper.getStartOfDay(startModel.getValue());
 				long endDate = Helper.getEndOfDay(endModel.getValue());
 				DeviceDetailsDTO detailsDTO = DBConnectionManager.getDeviceById(deviceUniqueId);
-				Properties properties = null;
 				if (detailsDTO == null || detailsDTO.getMemoryMapping() == null
-						|| detailsDTO.getMemoryMapping().trim().isEmpty()
-						|| (properties = EMSUtility.loadProperties(detailsDTO.getMemoryMapping())).size() == 0) {
+						|| detailsDTO.getMemoryMapping().trim().isEmpty()) {
 					JOptionPane.showMessageDialog(getMe(), "No memory mapping details found", "Report",
 							JOptionPane.ERROR_MESSAGE);
 					return;
@@ -178,7 +177,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 
 				logger.info("Excel Report request , device:{},start:{},end:{}", deviceUniqueId, startDate, endDate);
 
-				String fileName = prepareUnitData(deviceUniqueId, startDate, endDate, properties, detailsDTO);
+				String fileName = prepareUnitData( startDate, endDate, detailsDTO);
 				JOptionPane.showMessageDialog(getMe(), "Report created at " + fileName, "Report",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -455,8 +454,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 		return deviceId;
 	}
 
-	private String prepareUnitData(long uniqueId, long startDate, long endDate, Properties properties,
-			DeviceDetailsDTO detailsDTO) {
+	private String prepareUnitData(long startDate, long endDate, DeviceDetailsDTO detailsDTO) {
 		Connection connection = DBConnectionManager.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -466,12 +464,13 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 
 		try {
 			ps = connection.prepareStatement(RETRIEVE_DEVICE_STATE);
-			ps.setLong(1, uniqueId);
+			ps.setLong(1, detailsDTO.getUniqueId());
 			ps.setLong(2, startDate);
 			ps.setLong(3, endDate);
 			rs = ps.executeQuery();
-
-			ExcelUtils.writeReadingsToWorkBook(fileName, detailsDTO.getDeviceName(), properties, rs);
+			
+			ExtendedSerialParameter device = EMSUtility.mapDeviceToSerialParam(detailsDTO);
+			ExcelUtils.writeReadingsToWorkBook(fileName, device, rs);
 
 		} catch (Exception e) {
 			logger.error("{}", e);

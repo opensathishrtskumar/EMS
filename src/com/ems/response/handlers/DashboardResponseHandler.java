@@ -33,7 +33,6 @@ public class DashboardResponseHandler implements ResponseHandler{
 		if(parameter == null || parameter.getPanel() == null)
 			return;
 		try {
-			Thread.sleep(GAP_BETWEEN_REQUEST);
 			JLabel label = getDeviceDetailLabel(parameter);
 			JScrollPane panel = parameter.getPanel();
 			panel.setViewport(null);

@@ -23,6 +23,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.constants.EmsConstants;
 
 public abstract class ExcelUtils {
@@ -68,16 +69,16 @@ public abstract class ExcelUtils {
 		return workBook;
 	}
 	
-	public static Workbook writeReadingsToWorkBook(String filePath,
-			String sheetName, Properties mappings, ResultSet result) throws IOException {
+	public static Workbook writeReadingsToWorkBook(String filePath, ExtendedSerialParameter device, ResultSet result)
+			throws IOException {
 		//Keep the order of properties
-		Map<String, String> memoryMap = getOrderedProperties(mappings);
+		Map<String, String> memoryMap = getOrderedProperties(device);
 		
 		Map<String, String> headers = new LinkedHashMap<>();
 		headers.put("Polled on","Date");
 		headers.putAll(memoryMap);
-		HSSFWorkbook workBook = createWorkBook(sheetName, headers);
-		HSSFSheet sheet = workBook.getSheet(sheetName);
+		HSSFWorkbook workBook = createWorkBook(device.getDeviceName(), headers);
+		HSSFSheet sheet = workBook.getSheet(device.getDeviceName());
 		
 		for(int i=0;i<headers.size();i++){
 			sheet.autoSizeColumn(i);

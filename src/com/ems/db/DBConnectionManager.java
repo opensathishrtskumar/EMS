@@ -48,9 +48,10 @@ public class DBConnectionManager {
 
 			if (st != null)
 				st.close();
-
-			if (connection != null)
-				connection.close();
+			
+			//TODO : Connection closed for observation
+			/*if (connection != null)
+				connection.close();*/
 		} catch (SQLException e) {
 			logger.error("{}", e);
 			logger.error("Error closing DB Connection : {}", e.getLocalizedMessage());
@@ -105,8 +106,8 @@ public class DBConnectionManager {
 			source.setDriverClassName("com.mysql.jdbc.Driver");
 			source.setUsername(props.getProperty(USERNAME));
 			source.setPassword(props.getProperty(PASSWORD));
-			source.setInitialSize(1);
-			source.setMaxTotal(15);
+			source.setInitialSize(5);
+			source.setMaxTotal(30);
 			source.setMaxIdle(10);
 			source.setMinIdle(5);
 			source.setValidationQuery("select 1");

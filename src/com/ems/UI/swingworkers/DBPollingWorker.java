@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.PollingDetailDTO;
 import com.ems.db.DBConnectionManager;
+import com.ems.util.EMSUtility;
 
 public class DBPollingWorker implements Callable<Object> {
 	private static final Logger logger = LoggerFactory.getLogger(DBPollingWorker.class);
@@ -34,10 +35,6 @@ public class DBPollingWorker implements Callable<Object> {
 		this.table = table;
 	}
 
-	private static void log(String log, Object... obj) {
-		logger.debug(log, obj);
-	}
-
 	private static void failIfInterrupted() throws InterruptedException {
 		if (Thread.currentThread().isInterrupted()) {
 			throw new InterruptedException(" Stopping worker...");
@@ -47,28 +44,31 @@ public class DBPollingWorker implements Callable<Object> {
 	@Override
 	public Object call() throws Exception {
 
-		boolean status = parameters.isStatus();
-
-		if (status) {
-			updateWorkerStatus("Poll Success - " + getHHmm());
+		boolean status = true;
+		
+		if(parameters.isSplitJoin()){
+			status = EMSUtility.splitJoinStatus(parameters.getSplitJoinDTO().getStatus());
+			logger.trace("Split Join final response Status {}", status);
 		} else {
-			updateWorkerStatus("Poll Failed - " + getHHmm());
+			status = parameters.isStatus();
 		}
 
+		updateWorkerStatus(status);
+		
 		if (status) {
 			failIfInterrupted();
 			String finalResponse = processRequiredRegister(parameters);
 			PollingDetailDTO dto = new PollingDetailDTO(parameters.getUniqueId(), System.currentTimeMillis(),
 					finalResponse);
 			int insert = DBConnectionManager.insertPollingDetails(dto);
-			log(" insert poll response unit : {}, status : {}", parameters.getUniqueId(), insert);
+			logger.debug(" insert poll response unit : {}, status : {}", parameters.getUniqueId(), insert);
 		}
 
 		return "Polling completed...";
 	}
 
 	@SuppressWarnings("unchecked")
-	private void updateWorkerStatus(String status) {
+	private void updateWorkerStatus(boolean status) {
 		JTable table = getTable();
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		@SuppressWarnings("rawtypes")
@@ -78,10 +78,18 @@ public class DBPollingWorker implements Callable<Object> {
 		try {
 			@SuppressWarnings("rawtypes")
 			Vector columnVector = (Vector) rowVector.get(parameters.getRowIndex());
-			columnVector.set(3, status);
+			
+			if(!status){
+				columnVector.set(3, "Poll Failed - " + getHHmm());
+			} else {
+				columnVector.set(3, "Poll Success - " + getHHmm());
+			}
+			
 			model.fireTableDataChanged();
 		} catch (Exception e) {
 			logger.error("Polling Table mode fire event failed : {} Exception {}", e.getLocalizedMessage(), e);
 		}
 	}
+	
+	
 }

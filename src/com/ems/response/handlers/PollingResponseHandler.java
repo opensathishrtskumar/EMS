@@ -1,7 +1,5 @@
 package com.ems.response.handlers;
 
-import static com.ems.constants.EmsConstants.GAP_BETWEEN_REQUEST;
-
 import javax.swing.JProgressBar;
 
 import org.slf4j.Logger;
@@ -50,8 +48,6 @@ public class PollingResponseHandler implements ResponseHandler {
 			DBPollingWorker pollingWorker = new DBPollingWorker(parameter);
 			pollingWorker.setTable(getFrame().getTable());
 			ConcurrencyUtils.execute(pollingWorker);
-			//Wait before submitting new request to the same connection 
-			Thread.sleep(GAP_BETWEEN_REQUEST);
 		} catch (Exception e) {
 			logger.error("{}", e);
 			logger.error("Response handler error : {}", e.getLocalizedMessage());

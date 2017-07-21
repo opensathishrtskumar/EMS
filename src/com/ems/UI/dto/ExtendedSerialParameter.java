@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import javax.swing.JScrollPane;
 
+import com.ems.util.EMSUtility;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
@@ -35,6 +36,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private String port;
 	private String method;
 	private boolean splitJoin;
+	private SplitJoinDTO splitJoinDTO;
 	
 	public ExtendedSerialParameter(String portName, int baudRate,
 			int flowControlIn, int flowControlOut, int databits, int stopbits,
@@ -130,7 +132,8 @@ public class ExtendedSerialParameter  extends SerialParameters{
 		//Total number of registers to be read from Reference register
 		setCount(getRegisterCount(memoryMappings));
 		//Contains sorted registers to be persisted
-		setRequiredRegisters(getPersistRegisters(memoryMappings.keySet()));
+		Integer[] registerList = getPersistRegisters(memoryMappings.keySet());
+		setRequiredRegisters(EMSUtility.convertWrapper2Int(registerList));
 	}
 	
 	//Creates key for grouped polling - single connection with  multiple requests
@@ -224,6 +227,14 @@ public class ExtendedSerialParameter  extends SerialParameters{
 
 	public void setSplitJoin(boolean splitJoin) {
 		this.splitJoin = splitJoin;
+	}
+	
+	public SplitJoinDTO getSplitJoinDTO() {
+		return splitJoinDTO;
+	}
+
+	public void setSplitJoinDTO(SplitJoinDTO splitJoinDTO) {
+		this.splitJoinDTO = splitJoinDTO;
 	}
 
 	@Override

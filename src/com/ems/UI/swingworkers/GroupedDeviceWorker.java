@@ -13,9 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.ExtendedSerialParameter;
+import com.ems.UI.dto.SplitJoinDTO;
 import com.ems.modbus.actions.ConnectionManager;
 import com.ems.response.handlers.ResponseHandler;
-import com.ems.util.EMSUtility;
+import com.ghgande.j2mod.modbus.ModbusException;
 import com.ghgande.j2mod.modbus.net.SerialConnection;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 
@@ -92,12 +93,24 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 
 								/* Iterate through each devices available in group */
 								for (ExtendedSerialParameter device : deviceList) {
-									try {
-										InputRegister[] registers = ConnectionManager.executeTransaction(connection, device);
-										device.setRegisteres(registers);
-										device.setStatus(true);//Mark as execution success
-									} catch (Exception e) {
-										logger.error("Device polling failed : {} error : {}", device, e);
+									if(!device.isSplitJoin()){
+										try {
+											logger.debug("Request execution started...");
+											InputRegister[] registers = ConnectionManager.executeTransaction(connection, device);
+											device.setRegisteres(registers);
+											device.setStatus(true);//Mark as execution success
+											logger.debug("Request execution completed...");
+										} catch (Exception e) {
+											logger.error("Device polling failed : {} error : {}", device, e);
+										}
+									} else {
+										try {
+											logger.debug("Split JOIN execution started...");
+											executeSplitJoin(connection, device);
+											logger.debug("Split JOIN execution completed...");
+										} catch (Exception e) {
+											logger.error("splitJoin polling failed : {} error : {}", device, e);
+										}
 									}
 
 									if (getResponseHandler() != null)
@@ -135,6 +148,27 @@ public class GroupedDeviceWorker extends SwingWorker<Object, Object> {
 		return "Grouped device worker completed";
 	}
 
+	/**
+	 * @param connection
+	 * @param device
+	 * @throws ModbusException
+	 * 
+	 * Executes split join device request
+	 * 
+	 */
+	private void executeSplitJoin(SerialConnection connection , ExtendedSerialParameter device) throws ModbusException{
+		SplitJoinDTO dto = device.getSplitJoinDTO();
+		logger.trace("Executing split join request");
+		for(int i=0;i<dto.getCount().size();i++){
+			InputRegister[] registers = ConnectionManager.execute(connection, device.getMethod(),
+					(int) dto.getReferencce().get(i), (int) dto.getCount().get(i), device.getUnitId(),
+					device.getUniqueId(), device.getRetries());
+			//Set response back to DTO for processing
+			dto.getRegisteres().set(i, registers);
+			dto.getStatus().set(i, true);
+		}
+	}
+	
 	private void closeSerialConnnection(SerialConnection connection) {
 		if (connection != null && connection.isOpen()) {
 			connection.close();

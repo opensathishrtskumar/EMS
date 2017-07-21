@@ -200,10 +200,12 @@ public abstract class EMSSwingUtils {
 				"margin: 1px;text-align:center;}table#table{width:100%;margin-left:20%;margin-right:15%;}tr{background-color: #B3B3C4;color: black;font-family: Times New Roman, Georgia, Serif; font-size: 16pt;}</style></head><body>");
 		builder.append("<div><h3>" + device.getDeviceName() + "</h3><hr><center><table id='table'>");
 
-		Map<String, String> mappings = EMSUtility.getOrderedProperties(device.getProps());
 		Map<String, String> registerValue = null;
 		
-		if(device.isStatus()){//Modbus Request is success
+		//if request status is success then process else load from DB
+		if(device.isStatus() 
+				|| (device.isSplitJoin() 
+						&& EMSUtility.splitJoinStatus(device.getSplitJoinDTO().getStatus()))){//Modbus Request is success
 			registerValue = processRegistersForDashBoard(device);
 		} else {
 			//Load recent polling response from DB for the first time;
@@ -214,7 +216,9 @@ public abstract class EMSSwingUtils {
 				registerValue = EMSUtility.convertProp2Map(props);
 			}
 		}
-
+		
+		Map<String, String> mappings = EMSUtility.getOrderedProperties(device.getProps());
+		
 		logger.trace("Processed register : {} Mapping : {}", registerValue, mappings);
 
 		for (Entry<String, String> memory : mappings.entrySet()) {

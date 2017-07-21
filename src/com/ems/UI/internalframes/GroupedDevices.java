@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -105,23 +106,32 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 					List<DeviceDetailsDTO> deviceList = group.getDevices();
 					if(deviceList != null){
 						List<ExtendedSerialParameter> list = mapDevicesToSerialParams(deviceList);
-
+						List<Future<Object>> tasks = new ArrayList<>();
+						
 						for(final ExtendedSerialParameter device : list){
+							mainList.add(device);
 							
+							//Load device details label asynchronously
 							Callable<Object> deviceAdder = new Callable<Object>() {
 								@Override
 								public String call() throws Exception {
 									JScrollPane deviceDetail = getDeviceDetailJScrollPane(device);
 									device.setPanel(deviceDetail);
-									mainList.add(device);
 									panel_1.add(deviceDetail);
 									logger.trace("Grouped device added {}" , device);
 									return "Grouped device added successfully...";
 								}
 							};
 							
-							ConcurrencyUtils.execute(deviceAdder);
+							Future<Object> future = ConcurrencyUtils.execute(deviceAdder);
+							logger.trace("Grouped device Task submitted for Device {} ",device.getUniqueId());
+							tasks.add(future);
 						}
+						
+						//Wait for tasks if any
+						/*for(Future<Object> future : tasks){
+							try {future.get();} catch (Exception e) {logger.error("{}",e);}
+						}*/
 					}
 
 					groupConfigured = true;

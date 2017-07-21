@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 public abstract class ConcurrencyUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ConcurrencyUtils.class);
 
-	private static ThreadPoolExecutor workers = new ThreadPoolExecutor(5, 30, 5, TimeUnit.SECONDS,
-			new LinkedBlockingQueue<Runnable>());;
+	private static ThreadPoolExecutor workers = new ThreadPoolExecutor(20, 60, 5, TimeUnit.SECONDS,
+			new LinkedBlockingQueue<Runnable>());
 
 	public static ThreadPoolExecutor getWorkers() {
 		return workers;

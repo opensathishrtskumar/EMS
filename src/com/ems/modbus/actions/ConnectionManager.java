@@ -1,5 +1,6 @@
 package com.ems.modbus.actions;
 
+import static com.ems.constants.EmsConstants.GAP_BETWEEN_REQUEST;
 import static com.ems.constants.EmsConstants.TIMEOUT;
 
 import org.slf4j.Logger;
@@ -31,21 +32,32 @@ public abstract class ConnectionManager {
 	public static InputRegister[] executeTransaction(SerialConnection connection, ExtendedSerialParameter device)
 			throws ModbusException {
 
+		InputRegister[] responseRegisters = execute(connection, device.getMethod(), device.getReference(),
+				device.getCount(), device.getUnitId(), device.getUniqueId(), device.getRetries());
+		
+		return responseRegisters;
+	}
+	
+	
+	public static InputRegister[] execute(SerialConnection connection, String method, int reference, int count, int unitId,
+			long uniqueId, int retries) throws ModbusException {
+		//Atleast minimum gap between every request is required even in same connection
+		try{ Thread.sleep(GAP_BETWEEN_REQUEST); } catch(Exception e){}
+		
 		ModbusSerialTransaction tran = new ModbusSerialTransaction(connection);
-		ModbusRequest request = EMSUtility.getRequest(device.getMethod(), device.getReference(), device.getCount());
+		ModbusRequest request = EMSUtility.getRequest(method, reference, count);
 		logger.trace("Hex request : {}, Ref : {}, Count : {}, Function code {}, UniqueId {}", request.getHexMessage(),
-				device.getReference(), device.getCount(), request.getFunctionCode(), device.getUniqueId());
-		request.setUnitID(device.getUnitId());
+				reference, count, request.getFunctionCode(), uniqueId);
+		request.setUnitID(unitId);
 		tran.setRequest(request);
-		tran.setRetries(device.getRetries());
+		tran.setRetries(retries);
 		tran.execute();
-
+		
 		ModbusResponse response = tran.getResponse();
-		logger.trace("UniqueId {} : Dashboard device response : {} ", device.getUniqueId(), response.getHexMessage());
+		logger.trace("UniqueId {} : Dashboard device response : {} ", uniqueId, response.getHexMessage());
 		tran = null;
 		return getResponseRegisters(response);
 	}
-	
 	
 	public static InputRegister[] getResponseRegisters(ModbusResponse response) {
 		if (response instanceof ReadMultipleRegistersResponse) {

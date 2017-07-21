@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 
@@ -15,13 +16,16 @@ public class SplitJoinDTO implements Serializable{
 	private List<Integer[]> requiredRegisters;
 	private List<Map<Long,String>> memoryMappings;
 	private List<InputRegister[]> registeres;
-	
+	private List<Properties> props;
+	private List<Boolean> status;
 	
 	public SplitJoinDTO() {
 		this.count = new ArrayList<>();
 		this.referencce = new ArrayList<>();
 		this.requiredRegisters = new ArrayList<>();
 		this.memoryMappings = new ArrayList<>();
+		this.props = new ArrayList<>();
+		this.status = new ArrayList<>();
 	}
 
 	public List<Integer> getCount() {
@@ -63,4 +67,21 @@ public class SplitJoinDTO implements Serializable{
 	public void setRegisteres(List<InputRegister[]> registeres) {
 		this.registeres = registeres;
 	}
+
+	public List<Properties> getProps() {
+		return props;
+	}
+
+	public void setProps(List<Properties> props) {
+		this.props = props;
+	}
+
+	public List<Boolean> getStatus() {
+		return status;
+	}
+
+	public void setStatus(List<Boolean> status) {
+		this.status = status;
+	}
+	
 }
