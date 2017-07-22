@@ -46,6 +46,11 @@ public abstract class QueryConstants {
 
 	public static final String CONFIGURED_DEVICE_COUNT = "SELECT COUNT(*) AS COUNT FROM SETUP.DEVICEDETAILS";
 
-	public static final String GET_LATEST_POLLING_DETAIL = "SELECT deviceuniqueid, DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d-%b-%y %h:%i%p') AS polledon, unitresponse "
-			+ "FROM polling.pollingdetails WHERE deviceuniqueid=? ORDER BY polledon DESC LIMIT 1";
+	/*public static final String GET_LATEST_POLLING_DETAIL = "SELECT deviceuniqueid, DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d-%b-%y %h:%i%p') AS polledon, unitresponse "
+			+ "FROM polling.pollingdetails WHERE deviceuniqueid=? ORDER BY polledon DESC LIMIT 1";*/
+	
+	public static final String GET_LATEST_POLLING_DETAIL = "SELECT p.deviceuniqueid,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d-%b-%y %h:%i%p') AS polledon,"
+			+ " unitresponse FROM polling.pollingdetails p,(SELECT MAX(polledon) AS pon,deviceuniqueid "
+			+ "FROM polling.pollingdetails WHERE deviceuniqueid=?) AS d "
+			+ "WHERE d.deviceuniqueid=p.deviceuniqueid AND p.polledon=d.pon ORDER BY polledon DESC LIMIT 1";
 }

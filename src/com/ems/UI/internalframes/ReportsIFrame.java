@@ -284,7 +284,13 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		Properties memoryMapping = EMSUtility.loadProperties(device.getMemoryMapping());
+		Properties props = new Properties();
+		ExtendedSerialParameter serialDevice = EMSUtility.mapDeviceToSerialParam(device);
+		Map<String, String> splitJoinRegisterMap = EMSUtility.getOrderedProperties(serialDevice);
+		props.putAll(splitJoinRegisterMap);
+		
+		//Properties memoryMapping = EMSUtility.loadProperties(device.getMemoryMapping());
+		Properties memoryMapping = props;
 
 		// Remove existing content
 		JPanel seriesControlPanel = getSeriesControlPanel();
@@ -423,7 +429,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 		for (Entry<Object, Object> entry : props.entrySet()) {
 
 			String seriesName = dto.getDeviceReading()
-					.getProperty(String.valueOf(Integer.valueOf(entry.getKey().toString())));
+					.getProperty(String.valueOf(entry.getKey().toString()));
 
 			logger.trace("Reading: {} Series : {} Time : {}", entry.getValue().toString(), seriesName,
 					dto.getFormattedDate());
