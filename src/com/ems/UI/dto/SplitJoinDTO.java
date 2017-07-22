@@ -26,6 +26,7 @@ public class SplitJoinDTO implements Serializable{
 		this.memoryMappings = new ArrayList<>();
 		this.props = new ArrayList<>();
 		this.status = new ArrayList<>();
+		this.registeres = new ArrayList<>();
 	}
 
 	public List<Integer> getCount() {

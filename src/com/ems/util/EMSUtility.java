@@ -243,20 +243,21 @@ public abstract class EMSUtility {
 
 		if (splitJoinDto != null) {
 			if (validateSplitJoinDtoValues(splitJoinDto)) {
-				int index = 0;
 				
 				List<Integer[]> requiredRegisters = splitJoinDto.getRequiredRegisters();// All the required registers
 				List<Integer> reference = splitJoinDto.getReferencce();// Base register
 				List<InputRegister[]> registers = splitJoinDto.getRegisteres();// Response registers
 				List<Boolean> status = splitJoinDto.getStatus();// Subset execution status
 				
+				int index = 0;
 				for (int base : reference) {
 					
 					if(status.get(index)){
 						Map<String, String> subSetResponse = convertRegistersToMap(base,
 								convertWrapper2Int(requiredRegisters.get(index)), registers.get(index), msrfOrLsrf);
-						
+						logger.debug(" SplitJoin partial response map {} ", subSetResponse);
 						finalResponse.putAll(subSetResponse);
+						index++;
 					}
 				}
 			} else {
@@ -287,6 +288,7 @@ public abstract class EMSUtility {
 				value = getRegisterValue(registerIndex, registers, msrfOrLsrf);
 			} catch (Exception e) {
 				logger.error("Setting default value for register {}", e);
+				value = "00.00";
 			}
 
 			finalResponse.put(String.valueOf(reg), value);
@@ -305,7 +307,7 @@ public abstract class EMSUtility {
 	private static String getRegisterValue(int index, InputRegister[] registers, String registerMapping) {
 
 		byte[] bytes = new byte[] { 0, 0, 0, 0 };
-		if (registers != null && index < registers.length && registers[index] != null) {
+		if (registers != null && index < registers.length) {
 			byte[] registerBytes = registers[index].toBytes();
 
 			bytes[0] = registerBytes[0];
@@ -361,32 +363,37 @@ public abstract class EMSUtility {
 			parameters.setSplitJoinDTO(splitJoinDto);
 
 			String[] memoryMappings = devices.getMemoryMapping().split(EmsConstants.SPLIT_JOIN);
-			logger.trace("Splitted memory mapping details {}", Arrays.toString(memoryMappings));
 
 			for (String memoryMapping : memoryMappings) {
-
-				if (memoryMapping == null || memoryMapping.trim().length() == 0)
-					continue;
-
-				Properties props = loadProperties(memoryMapping);
-				Map<Long, String> mappings = loadMemoryMappingDetails(memoryMapping);
-
-				splitJoinDto.getProps().add(props);
-				splitJoinDto.getMemoryMappings().add(mappings);
-				// Starting register from where to read
-				splitJoinDto.getReferencce().add((int) getRegisterReference(mappings));
-				// Total number of registers to be read from Reference register
-				splitJoinDto.getCount().add(getRegisterCount(mappings));
-				// Contains sorted registers to be persisted
-				splitJoinDto.getRequiredRegisters().add(getPersistRegisters(mappings.keySet()));
-				//Set default execution status as false
-				splitJoinDto.getStatus().add(false);
-				//Set default Response registers null
-				splitJoinDto.getRegisteres().add(null);
 				
-				logger.trace("SplitJoin DTO for device {} is {} ", devices.getUniqueId(),
-						convertObjectToString(splitJoinDto));
+				if (memoryMapping == null || memoryMapping.trim().length() == 0){
+					logger.debug("SJ Memory mapping is null continue");
+					continue;
+				}
+				
+				try {
+					Properties props = loadProperties(memoryMapping);
+					Map<Long, String> mappings = loadMemoryMappingDetails(memoryMapping);
+
+					splitJoinDto.getProps().add(props);
+					splitJoinDto.getMemoryMappings().add(mappings);
+					// Starting register from where to read
+					splitJoinDto.getReferencce().add((int) getRegisterReference(mappings));
+					// Total number of registers to be read from Reference register
+					splitJoinDto.getCount().add(getRegisterCount(mappings));
+					// Contains sorted registers to be persisted
+					splitJoinDto.getRequiredRegisters().add(getPersistRegisters(mappings.keySet()));
+					//Set default execution status as false
+					splitJoinDto.getStatus().add(false);
+					//Set default Response registers null
+					splitJoinDto.getRegisteres().add(null);
+				} catch (Exception e) {
+					logger.error("{}",e);
+				}
 			}
+			
+			logger.trace("SplitJoin DTO for device {} is {} ", devices.getUniqueId(),
+					convertObjectToString(splitJoinDto));
 		}
 
 		return parameters;

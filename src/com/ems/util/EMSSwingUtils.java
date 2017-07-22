@@ -217,7 +217,7 @@ public abstract class EMSSwingUtils {
 			}
 		}
 		
-		Map<String, String> mappings = EMSUtility.getOrderedProperties(device.getProps());
+		Map<String, String> mappings = EMSUtility.getOrderedProperties(device);
 		
 		logger.trace("Processed register : {} Mapping : {}", registerValue, mappings);
 
@@ -229,11 +229,12 @@ public abstract class EMSSwingUtils {
 				String value = null;
 
 				try {
-					value = registerValue.get(String.valueOf(Integer.valueOf(memory.getKey()))).toString();
+					String lookup = String.valueOf(Integer.valueOf(memory.getKey()));
+					value = registerValue.get(lookup);
 					logger.trace("looked up values : {}", value);
 				} catch (Exception e) {
-					logger.error("{}", e.getLocalizedMessage());
 					logger.error("{}", e);
+					value = "0.00";
 				}
 
 				builder.append("</td><td align='center'>" + (value == null ? "0.00" : value) + "</td></tr>");
@@ -300,9 +301,5 @@ public abstract class EMSSwingUtils {
 		} catch (AWTException e) {
 			logger.error("{}", e);
 		}
-	}
-
-	public static void main(String[] args) {
-		addTrayIcon("Denm");
 	}
 }

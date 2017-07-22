@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -48,10 +49,9 @@ public class DBConnectionManager {
 
 			if (st != null)
 				st.close();
-			
-			//TODO : Connection closed for observation
-			/*if (connection != null)
-				connection.close();*/
+
+			if (connection != null)
+				connection.close();
 		} catch (SQLException e) {
 			logger.error("{}", e);
 			logger.error("Error closing DB Connection : {}", e.getLocalizedMessage());
@@ -107,7 +107,7 @@ public class DBConnectionManager {
 			source.setUsername(props.getProperty(USERNAME));
 			source.setPassword(props.getProperty(PASSWORD));
 			source.setInitialSize(5);
-			source.setMaxTotal(30);
+			source.setMaxTotal(15);
 			source.setMaxIdle(10);
 			source.setMinIdle(5);
 			source.setValidationQuery("select 1");
@@ -133,6 +133,9 @@ public class DBConnectionManager {
 
 		List<Future<Object>> taskList = new ArrayList<Future<Object>>();
 
+		/*list.stream().filter(device -> device.getUniqueId() == 0).collect(Collectors.toList());
+		list.stream().filter(device -> device.getUniqueId() != 0).collect(Collectors.toList());*/
+		
 		for (final DeviceDetailsDTO device : list) {
 			ManageDeviceTask task = new ManageDeviceTask(device);
 			Future<Object> future = ConcurrencyUtils.execute(task);
@@ -388,7 +391,7 @@ public class DBConnectionManager {
 			rs = ps.executeQuery();
 
 			list = mapPollingDetails(rs, list);
-			logger.trace("Polling response : {}" , list);
+			logger.trace("Polling response : {}", list);
 		} catch (SQLException e) {
 			logger.error("{}", e);
 		} finally {

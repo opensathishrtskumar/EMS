@@ -78,4 +78,11 @@ public class PollingDetailDTO {
 	public void setDeviceReading(Properties deviceReading) {
 		this.deviceReading = deviceReading;
 	}
+
+	@Override
+	public String toString() {
+		return "PollingDetailDTO [deviceuniqueid=" + deviceuniqueid + ", polledon=" + polledon + ", polledTime="
+				+ polledTime + ", unitresponse=" + unitresponse + ", formattedDate=" + formattedDate
+				+ ", formattedHour=" + formattedHour + ", deviceReading=" + deviceReading + "]";
+	}
 }

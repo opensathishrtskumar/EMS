@@ -118,6 +118,7 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 									JScrollPane deviceDetail = getDeviceDetailJScrollPane(device);
 									device.setPanel(deviceDetail);
 									panel_1.add(deviceDetail);
+									panel_1.revalidate();
 									logger.trace("Grouped device added {}" , device);
 									return "Grouped device added successfully...";
 								}
