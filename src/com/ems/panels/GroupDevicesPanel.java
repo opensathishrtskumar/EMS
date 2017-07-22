@@ -123,15 +123,17 @@ public class GroupDevicesPanel extends JPanel {
 			DefaultMutableTreeNode rootGroup = new DefaultMutableTreeNode(groupsDTO);
 			rootGroup.setAllowsChildren(true);
 
-			for (GroupDTO group : groupList) {
-				if (group.getDevices() != null) {
-					DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(group);
-					groupNode.setAllowsChildren(true);
-					
-					for (DeviceDetailsDTO device : group.getDevices()) {
-						groupNode.add(new DefaultMutableTreeNode(device));
+			if(groupList != null){
+				for (GroupDTO group : groupList) {
+					if (group.getDevices() != null) {
+						DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(group);
+						groupNode.setAllowsChildren(true);
+						
+						for (DeviceDetailsDTO device : group.getDevices()) {
+							groupNode.add(new DefaultMutableTreeNode(device));
+						}
+						rootGroup.add(groupNode);
 					}
-					rootGroup.add(groupNode);
 				}
 			}
 
