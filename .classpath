@@ -20,6 +20,10 @@
 	<classpathentry kind="lib" path="lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.19.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/activation.jar"/>
+	<classpathentry kind="lib" path="lib/mail.jar"/>
+	<classpathentry kind="lib" path="lib/quartz-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/quartz-jobs-2.2.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
