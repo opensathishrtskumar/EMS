@@ -1,7 +1,6 @@
 package com.ems.UI.internalframes;
 
 import static com.ems.constants.MessageConstants.REPORT_KEY_SEPARATOR;
-import static com.ems.constants.QueryConstants.RETRIEVE_DEVICE_STATE;
 import static com.ems.constants.QueryConstants.SELECT_ENABLED_ENDEVICES;
 import static com.ems.util.EMSSwingUtils.centerFrame;
 
@@ -12,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -177,7 +175,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 
 				logger.info("Excel Report request , device:{},start:{},end:{}", deviceUniqueId, startDate, endDate);
 
-				String fileName = prepareUnitData( startDate, endDate, detailsDTO);
+				String fileName = ExcelUtils.prepareUnitData( startDate, endDate, detailsDTO);
 				JOptionPane.showMessageDialog(getMe(), "Report created at " + fileName, "Report",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -458,33 +456,6 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 		deviceId = Integer.parseInt(deviceUniqueId);
 
 		return deviceId;
-	}
-
-	private String prepareUnitData(long startDate, long endDate, DeviceDetailsDTO detailsDTO) {
-		Connection connection = DBConnectionManager.getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		String fileName = detailsDTO.getDeviceName() + System.currentTimeMillis() + ".xls";
-		fileName = new File(fileName).getAbsolutePath();
-
-		try {
-			ps = connection.prepareStatement(RETRIEVE_DEVICE_STATE);
-			ps.setLong(1, detailsDTO.getUniqueId());
-			ps.setLong(2, startDate);
-			ps.setLong(3, endDate);
-			rs = ps.executeQuery();
-			
-			ExtendedSerialParameter device = EMSUtility.mapDeviceToSerialParam(detailsDTO);
-			ExcelUtils.writeReadingsToWorkBook(fileName, device, rs);
-
-		} catch (Exception e) {
-			logger.error("{}", e);
-			logger.error("Report data fetching failed : {}", e.getLocalizedMessage());
-		} finally {
-			DBConnectionManager.closeConnections(connection, ps, rs);
-		}
-		return fileName;
 	}
 
 	public JDatePickerImpl getDatePickerStart() {

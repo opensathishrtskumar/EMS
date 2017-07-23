@@ -64,7 +64,7 @@ public class Admin {
 	private void initialize() {
 		frmAdmin = new JFrame();
 		frmAdmin.setTitle("Admin");
-		frmAdmin.setBounds(100, 100, 450, 300);
+		frmAdmin.setBounds(100, 100, 607, 437);
 		frmAdmin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAdmin.getContentPane().setLayout(null);
 
@@ -104,7 +104,7 @@ public class Admin {
 		textArea.setBounds(95, 51, 217, 154);
 
 		JScrollPane scrollPane = new JScrollPane(textArea);
-		scrollPane.setBounds(95, 51, 217, 154);
+		scrollPane.setBounds(95, 51, 410, 243);
 		frmAdmin.getContentPane().add(scrollPane);
 
 		JButton btnOpen = new JButton("Open");
@@ -130,7 +130,7 @@ public class Admin {
 			}
 		});
 
-		btnOpen.setBounds(95, 216, 65, 23);
+		btnOpen.setBounds(97, 344, 65, 23);
 		frmAdmin.getContentPane().add(btnOpen);
 
 		JButton btnSave = new JButton("Save");
@@ -162,7 +162,7 @@ public class Admin {
 				}
 			}
 		});
-		btnSave.setBounds(170, 216, 65, 23);
+		btnSave.setBounds(172, 344, 65, 23);
 		frmAdmin.getContentPane().add(btnSave);
 
 		JButton btnClear = new JButton("Clear");
@@ -173,7 +173,7 @@ public class Admin {
 				password.setText("");
 			}
 		});
-		btnClear.setBounds(245, 216, 65, 23);
+		btnClear.setBounds(247, 344, 65, 23);
 		frmAdmin.getContentPane().add(btnClear);
 	}
 

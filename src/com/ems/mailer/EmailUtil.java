@@ -1,5 +1,6 @@
 package com.ems.mailer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.AttachmentDTO;
 import com.ems.UI.dto.EmailDTO;
+import com.ems.constants.EmailConstants;
+import com.ems.util.ConfigHelper;
 
 public abstract class EmailUtil {
 
@@ -128,12 +131,24 @@ public abstract class EmailUtil {
 	
 	public static String getEmailBody(String template, Map<String, String> values){
 		
+		logger.debug("{} {}",template,values);
+		
 		if(template != null && values != null){
 			for(Entry<String, String> entry : values.entrySet()){
-				template = template.replaceAll(entry.getKey(), entry.getValue());
+				template = template.replace(entry.getKey(), entry.getValue());
 			}
 		}
 		
 		return template;
 	}
+	
+	public static EmailDTO setEmailDetails(EmailDTO dto){
+		dto.setSubject("EMS Report");
+		Map<String, String> values = new HashMap<>();
+		values.put(EmailConstants.COMPANY_NAME_PARAM, ConfigHelper.getCompanyName());
+		values.put(EmailConstants.REPORT_DATE, dto.getDate());
+		dto.setBody(EmailUtil.getEmailBody(EmailConstants.DAILY_REPORT, values));
+		return dto;
+	}
+	
 }

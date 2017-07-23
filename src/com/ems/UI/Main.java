@@ -4,9 +4,7 @@ import static com.ems.util.ConfigHelper.getCompanyName;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -30,6 +28,8 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 
+import org.quartz.JobDetail;
+import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,11 @@ import com.ems.UI.internalframes.ReportsIFrame;
 import com.ems.response.handlers.Event;
 import com.ems.response.handlers.EventHandler;
 import com.ems.response.handlers.Events;
+import com.ems.scheduler.DailyReportJob;
+import com.ems.scheduler.SchedulerConfigurer;
+import com.ems.scheduler.SchedulerUtil;
 import com.ems.tmp.datamngr.TempDataManager;
+import com.ems.util.ConfigHelper;
 import com.ems.util.EMSSwingUtils;
 
 public class Main {
@@ -107,7 +111,7 @@ public class Main {
 						JOptionPane.YES_NO_OPTION);  
 		        if (option == JOptionPane.YES_OPTION){
 		        	
-		        	TempDataManager.deleteFrameLock();
+		        	//TempDataManager.deleteFrameLock();
 		        	
 		        	//Close all existing IFrames, that will close its workers
 		        	for(JInternalFrame frame : desktopPane.getAllFrames()){
@@ -124,21 +128,28 @@ public class Main {
 			}
 			@Override
 			public void windowActivated(WindowEvent arg0) {
-				TempDataManager.createFrameLock();
+				//TempDataManager.createFrameLock();
 			}
 			
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 				logger.info("Application is opened...");
 				LoginDialog dialog = new LoginDialog(getMe());
+				//Dashboard not required
 				dialog.setHandler(new EventHandler() {
 					
 					@Override
 					public void handle(Event event) {
 						if(event.getEvent() == Events.LOGIN_SUCCESS){
-							EMSSwingUtils.openSingletonIFrame(desktopPane,
+							/*EMSSwingUtils.openSingletonIFrame(desktopPane,
 									DashboardFrame.class);
-							logger.info("Opening dashboard after successful login...");
+							logger.info("Opening dashboard after successful login...");*/
+							
+							JobDetail job = SchedulerUtil.createJob("HelloJob", "EMS", DailyReportJob.class);
+							Trigger trigger = SchedulerUtil.createTrigger("DailyReport", "EMS", ConfigHelper.getDailyReportCronExpr());
+							SchedulerConfigurer.scheduleJob(trigger, job);
+							
+							//TODO : config Cumulative scheduler
 						}
 					}
 				});
@@ -383,7 +394,7 @@ public class Main {
 		mnHelp.add(mntmAbout);
 		frmManageEnergy.getContentPane().setLayout(new GridLayout(1, 0, 0, 0));
 
-		desktopPane = new JDesktopPane(){
+		desktopPane = new JDesktopPane()/*{
 			private static final long serialVersionUID = -6668135361372162932L;
 			ImageIcon icon = new ImageIcon(Main.class.getResource("/com/ems/resources/images_desk.png"));
             Image image = icon.getImage();
@@ -395,7 +406,7 @@ public class Main {
 						(getWidth() - scaledimage.getWidth(this)) / 2,
 						(getHeight() - scaledimage.getHeight(this)) / 2, this);
             }
-		};
+		}*/;
 		desktopPane.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		desktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 		desktopPane.setBackground(SystemColor.text);

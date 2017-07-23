@@ -3,9 +3,11 @@ package com.ems.UI.dto;
 import java.io.Serializable;
 import java.util.List;
 
-public class EmailDTO implements Serializable{
+import com.ems.constants.EmailConstants;
+
+public class EmailDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private String fromEmail;
 	private String mailPassword;
 	private String toEmail;
@@ -13,12 +15,22 @@ public class EmailDTO implements Serializable{
 	private String bccEmail;
 	private String subject;
 	private String body;
-	private List<AttachmentDTO>	attachments;
+	private List<AttachmentDTO> attachments;
 	
+	
+	private String date;
+
+	// Set default empty so that it can be updated in props file directly
 	public EmailDTO() {
+		this.fromEmail = "";
+		this.mailPassword = "";
+		this.toEmail = "";
+		this.ccEmail = "";
 	}
 
 	public String getFromEmail() {
+		if (fromEmail == null || fromEmail.isEmpty())
+			return EmailConstants.DEFAULT_FROM_EMAIL;
 		return fromEmail;
 	}
 
@@ -27,6 +39,8 @@ public class EmailDTO implements Serializable{
 	}
 
 	public String getMailPassword() {
+		if (mailPassword == null || mailPassword.isEmpty())
+			return EmailConstants.DEFAULT_EMAIL_PASSWORD;
 		return mailPassword;
 	}
 
@@ -73,13 +87,21 @@ public class EmailDTO implements Serializable{
 	public void setAttachments(List<AttachmentDTO> attachments) {
 		this.attachments = attachments;
 	}
-	
+
 	public String getBccEmail() {
 		return bccEmail;
 	}
 
 	public void setBccEmail(String bccEmail) {
 		this.bccEmail = bccEmail;
+	}
+	
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	@Override

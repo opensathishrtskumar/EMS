@@ -13,7 +13,7 @@ public abstract class ConcurrencyUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ConcurrencyUtils.class);
 
 	private static ThreadPoolExecutor workers = new ThreadPoolExecutor(20, 60, 5, TimeUnit.SECONDS,
-			new LinkedBlockingQueue<Runnable>());
+			new LinkedBlockingQueue<Runnable>(30));
 
 	public static ThreadPoolExecutor getWorkers() {
 		return workers;

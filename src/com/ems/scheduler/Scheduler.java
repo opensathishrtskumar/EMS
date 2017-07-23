@@ -9,6 +9,7 @@ import org.quartz.SchedulerException;
 import com.ems.UI.dto.AttachmentDTO;
 import com.ems.UI.dto.EmailDTO;
 import com.ems.mailer.EmailUtil;
+import com.ems.util.EMSUtility;
 
 public class Scheduler {
 
@@ -21,10 +22,9 @@ public class Scheduler {
 		EmailDTO dto = new EmailDTO();
 		
 		dto.setBody("<html><head><title>Saratha Engineering</title></head><body><h1>Isuzu Report</h1></body></html>");
-		dto.setCcEmail("gokul@sarathaeng.com");
-		dto.setBccEmail("sathishrtskumar@gmail.com");
-		dto.setFromEmail("sathishrtskumar@gmail.com");
-		dto.setMailPassword("DxB@2017002");
+		//dto.setCcEmail("gokul@sarathaeng.com");
+		dto.setFromEmail("ems.ses03@gmail.com");
+		dto.setMailPassword("kavi071215");
 		dto.setSubject("EMS Report Test");
 		dto.setToEmail("sarathaengg@gmail.com,sathishrtskumar@gmail.com");
 		
@@ -36,6 +36,8 @@ public class Scheduler {
 		
 		EmailUtil.sendEmail(dto);
 		
+		/*String s = EMSUtility.convertObjectToJSONString(new EmailDTO());
+		System.out.println(s);*/
 	}
 }
 

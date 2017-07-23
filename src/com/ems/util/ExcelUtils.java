@@ -1,10 +1,15 @@
 package com.ems.util;
 
+import static com.ems.constants.QueryConstants.RETRIEVE_DEVICE_STATE;
+import static com.ems.util.EMSUtility.REPORTNAME_FORMAT;
+import static com.ems.util.EMSUtility.getFormattedDate;
 import static com.ems.util.EMSUtility.getOrderedProperties;
 import static com.ems.util.EMSUtility.loadProperties;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,103 +28,143 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.constants.EmsConstants;
+import com.ems.db.DBConnectionManager;
 
 public abstract class ExcelUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
-	
-	public static Map<String,String> getMap(Properties props){
-		Map<String, String> map = new TreeMap<String,String>((Map)props);
+
+	public static Map<String, String> getMap(Properties props) {
+		Map<String, String> map = new TreeMap<String, String>((Map) props);
 		return map;
 	}
-	
-	public static HSSFWorkbook createWorkBook(String sheetName, Map<String,String> headers){
+
+	public static HSSFWorkbook createWorkBook() {
 		HSSFWorkbook workBook = new HSSFWorkbook();
-		HSSFSheet sheet = workBook.createSheet(sheetName);
-		HSSFRow row = sheet.createRow(0);
-		int column = 0;
-		
+		return workBook;
+	}
+
+	public static HSSFSheet createWorkSheet(HSSFWorkbook workBook, String sheetName, Map<String, String> headers) {
+
 		HSSFFont font = workBook.createFont();
-		font.setFontHeightInPoints((short)9);
+		font.setFontHeightInPoints((short) 9);
 		font.setFontName("Arial");
 		font.setColor(IndexedColors.BLACK.getIndex());
 		font.setBold(true);
 		font.setItalic(false);
-		
-		HSSFCellStyle header = workBook.createCellStyle();
-		header.setFont(font);
-		
-		for(Entry<String, String> entry : headers.entrySet()){
-			//Skip memory mapping record whose value is "NoMap"
-			if(!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().trim())){
+
+		HSSFCellStyle headerStyle = workBook.createCellStyle();
+		headerStyle.setFont(font);
+
+		HSSFSheet sheet = workBook.createSheet(sheetName);
+		HSSFRow row = sheet.createRow(0);
+		int column = 0;
+		for (Entry<String, String> entry : headers.entrySet()) {
+			// Skip memory mapping record whose value is "NoMap"
+			if (!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().trim())) {
 				sheet.autoSizeColumn(column);
 				HSSFCell cell = row.createCell(column);
-				StringBuilder builder = new StringBuilder();
-				builder.append(entry.getValue());
-				builder.append("(");
-				builder.append(entry.getKey());
-				builder.append(")");
-				cell.setCellValue(builder.toString());
-				cell.setCellStyle(header);
+				cell.setCellValue(entry.getValue());// Register mapping name
+				cell.setCellStyle(headerStyle);
 				column += 1;
 			}
 		}
-		
-		return workBook;
+
+		return sheet;
 	}
-	
+
 	public static Workbook writeReadingsToWorkBook(String filePath, ExtendedSerialParameter device, ResultSet result)
 			throws IOException {
-		//Keep the order of properties
-		Map<String, String> memoryMap = getOrderedProperties(device);
-		
+		// All the values becomes header of column
+		Map<String, String> headers = createReportHeaderMap(device);
+		HSSFWorkbook workBook = createWorkBook();
+		HSSFSheet sheet = createWorkSheet(workBook, device.getDeviceName(), headers);
+		sheet = writeResultToSheet(device, result, sheet);
+
+		workBook.write(new File(filePath));
+
+		return workBook;
+	}
+
+	public static Map<String, String> createReportHeaderMap(ExtendedSerialParameter device) {
+		// All the values becomes header of column
 		Map<String, String> headers = new LinkedHashMap<>();
-		headers.put("Polled on","Date");
+		headers.put("Polled on", "Time");
+		// Keep the order of properties
+		Map<String, String> memoryMap = getOrderedProperties(device);
 		headers.putAll(memoryMap);
-		HSSFWorkbook workBook = createWorkBook(device.getDeviceName(), headers);
-		HSSFSheet sheet = workBook.getSheet(device.getDeviceName());
-		
-		for(int i=0;i<headers.size();i++){
-			sheet.autoSizeColumn(i);
-		}
-		
-		if(result != null){
+		return headers;
+	}
+	
+	public static HSSFSheet writeResultToSheet(ExtendedSerialParameter device, ResultSet result, HSSFSheet sheet) {
+		// Keep the order of properties
+		Map<String, String> memoryMap = getOrderedProperties(device);
+		// All the values becomes header of column
+		Map<String, String> headers = new LinkedHashMap<>();
+		headers.put("Polled on", "Time");
+		headers.putAll(memoryMap);
+
+		if (result != null) {
 			try {
-				//Firt row reserved for headers
-				int rowIndex = 1;
-				while(result.next()){
-					HSSFRow row = sheet.createRow(rowIndex++);
-					writeReadingsRow(row, result.getString("formatteddate"),
+				// Firt row reserved for headers so start with 1
+				for (int rowIndex = 1;result.next(); rowIndex++) {
+					HSSFRow row = sheet.createRow(rowIndex);
+					writeReadingsRow(row, result.getString("formatteddate"), 
 							result.getString("unitresponse"), memoryMap);
 				}
 			} catch (Exception e) {
-				logger.error("Report export to excel failed : {}",e.getLocalizedMessage());
-				logger.error("{}",e);
+				logger.error("Report export to excel failed : {}", e);
 			}
 		}
-		
-		workBook.write(new File(filePath));
-		
-		return workBook;
+
+		return sheet;
 	}
-	
-	private static void writeReadingsRow(HSSFRow row, String formattedDate,
-			String unitResponse, Map<String, String> headers) {
-		
+
+	private static void writeReadingsRow(HSSFRow row, String formattedDate, String unitResponse,
+			Map<String, String> headers) {
+
 		int columnIndex = 0;
 		HSSFCell dateCell = row.createCell(columnIndex++);
 		dateCell.setCellValue(formattedDate);
-		StringBuilder builder = new StringBuilder(unitResponse);
-		
-		Properties readingMap = loadProperties(builder.toString());
-		for(Entry<String, String> entry : headers.entrySet()){
-			//Skip memory mapping record whose value is "NoMap"
-			if(!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().trim())){
+
+		Properties readingMap = loadProperties(unitResponse);
+		for (Entry<String, String> entry : headers.entrySet()) {
+			// Skip memory mapping record whose value is "NoMap"
+			if (!EmsConstants.NO_MAP.equalsIgnoreCase(entry.getValue().trim())) {
 				HSSFCell readingCell = row.createCell(columnIndex);
-				readingCell.setCellValue(readingMap.getProperty(String.valueOf(Integer.valueOf(entry.getKey())), "0.0"));
+				readingCell.setCellValue(readingMap.getProperty(String.valueOf(entry.getKey()), "0.0"));
 				columnIndex += 1;
 			}
 		}
 	}
+
+	public static String prepareUnitData(long startDate, long endDate, DeviceDetailsDTO detailsDTO) {
+		Connection connection = DBConnectionManager.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String fileName = detailsDTO.getDeviceName() + getFormattedDate(REPORTNAME_FORMAT) + ".xls";
+		fileName = new File(fileName).getAbsolutePath();
+
+		try {
+			ps = connection.prepareStatement(RETRIEVE_DEVICE_STATE);
+			ps.setLong(1, detailsDTO.getUniqueId());
+			ps.setLong(2, startDate);
+			ps.setLong(3, endDate);
+			rs = ps.executeQuery();
+
+			ExtendedSerialParameter device = EMSUtility.mapDeviceToSerialParam(detailsDTO);
+			ExcelUtils.writeReadingsToWorkBook(fileName, device, rs);
+
+		} catch (Exception e) {
+			logger.error("{}", e);
+			logger.error("Report data fetching failed : {}", e.getLocalizedMessage());
+		} finally {
+			DBConnectionManager.closeConnections(connection, ps, rs);
+		}
+		return fileName;
+	}
+	
 }

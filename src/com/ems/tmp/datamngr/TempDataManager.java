@@ -88,9 +88,13 @@ public abstract class TempDataManager {
 	
 	
 	private static String getTempDir() {
-		String tmpDir = System.getProperty("java.io.tmpdir");
+		String tmpDir = getSystemTempFolder();
 		File file = new File(tmpDir);
 		return file.getParent();
+	}
+	
+	public static String getSystemTempFolder(){
+		return System.getProperty("java.io.tmpdir");
 	}
 
 	/**

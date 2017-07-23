@@ -49,6 +49,8 @@ public abstract class EMSUtility {
 	public static final String hh_mma = "hh:mma";
 	public static final String DASHBOARD_FMT = "dd-MMM,yyyy";
 	public static final String DASHBOARD_POLLED_FMT = "dd-MMM,yy hh:mm a";
+	public static final String REPORTNAME_FORMAT = "ddMMyyHHmm";
+	
 
 	/**
 	 * return Available Serial ports as array
@@ -261,7 +263,7 @@ public abstract class EMSUtility {
 					}
 				}
 			} else {
-				logger.info("Split Join DTO values size is different {} ", convertObjectToString(splitJoinDto));
+				logger.info("Split Join DTO values size is different {} ", convertObjectToJSONString(splitJoinDto));
 			}
 		}
 
@@ -393,7 +395,7 @@ public abstract class EMSUtility {
 			}
 			
 			logger.trace("SplitJoin DTO for device {} is {} ", devices.getUniqueId(),
-					convertObjectToString(splitJoinDto));
+					convertObjectToJSONString(splitJoinDto));
 		}
 
 		return parameters;
@@ -488,11 +490,15 @@ public abstract class EMSUtility {
 	public static GroupsDTO fetchGroupedDevices() {
 		String groupingDetails = ConfigHelper.getGroupingDetails();
 		logger.debug("Grouped devices from prop : " + groupingDetails);
-		Gson gson = new GsonBuilder().create();
-		GroupsDTO groups = gson.fromJson(groupingDetails, GroupsDTO.class);
+		GroupsDTO groups = (GroupsDTO)convertJson2Object(groupingDetails, GroupsDTO.class); 
 		return groups;
 	}
 
+	public static Object convertJson2Object(String json, Class type) {
+		Gson gson = new GsonBuilder().create();
+		return (Object)gson.fromJson(json, type);
+	}
+	
 	public static boolean isNullEmpty(String value) {
 		return value == null || value.trim().isEmpty();
 	}
@@ -520,7 +526,7 @@ public abstract class EMSUtility {
 		return Arrays.stream(intList).mapToInt(Integer::intValue).toArray();
 	}
 
-	public static String convertObjectToString(Object obj) {
+	public static String convertObjectToJSONString(Object obj) {
 		Gson gson = new GsonBuilder().create();
 		return gson.toJson(obj);
 	}

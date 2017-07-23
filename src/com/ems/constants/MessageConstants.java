@@ -27,4 +27,10 @@ public abstract class MessageConstants {
 	
 	//Device grouping
 	public static final String DEVICES_GROUPING_KEY = "deViceGroupIngKeY";
+	
+	public static final String EMAIL_DETAILS_KEY = "EmAilDetAilsKEy";
+	
+	//For Schedulers
+	public static final String DAILY_REPORT_CRON_KEY = "dailyreportcronkey";
+	public static final String CUMULATIVE_REPORT_CRON_KEY = "cumulativereportcronkey";
 }

@@ -14,4 +14,6 @@ public class LimitConstants {
 	public static final String DEFAULT_COMPORT = "COM3";
 	
 	public static final int DEFAULT_NUMBER_OF_DEVICES = 20;
+	
+	public static final String DEFAULT_GROUP_VALUE = "{'groups':[]}";
 }
