@@ -87,8 +87,6 @@ public class DailyReportJob extends AbstractJob {
 		long startTime = Helper.getStartOfDay(yesterday);
 		long endTime = Helper.getEndOfDay(yesterday);
 		
-		startTime = 0;//For Testing
-		
 		for(DeviceDetailsDTO device : this.devices){
 			ExtendedSerialParameter param = EMSUtility.mapDeviceToSerialParam(device);
 			Map<String, String> headers = createReportHeaderMap(param);
