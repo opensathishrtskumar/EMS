@@ -225,7 +225,7 @@ public abstract class EMSSwingUtils {
 			// Skip memory mapping record whose value is "NoMap"
 			if (!EmsConstants.NO_MAP.equalsIgnoreCase(memory.getValue().trim())) {
 				builder.append("<tr><td align='center'>");
-				builder.append(memory.getValue() + "(" + memory.getKey() + ")");
+				builder.append(memory.getValue());
 				String value = null;
 
 				try {

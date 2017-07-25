@@ -115,14 +115,14 @@ public abstract class ExcelUtils {
 							result.getString("unitresponse"), memoryMap);
 				}
 			} catch (Exception e) {
-				logger.error("Report export to excel failed : {}", e);
+				logger.error("Report write to excel failed for device {} : {}", device ,e);
 			}
 		}
 
 		return sheet;
 	}
 
-	private static void writeReadingsRow(HSSFRow row, String formattedDate, String unitResponse,
+	public static void writeReadingsRow(HSSFRow row, String formattedDate, String unitResponse,
 			Map<String, String> headers) {
 
 		int columnIndex = 0;
