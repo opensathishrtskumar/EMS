@@ -49,6 +49,7 @@ import com.ems.UI.internalframes.ReportsIFrame;
 import com.ems.response.handlers.Event;
 import com.ems.response.handlers.EventHandler;
 import com.ems.response.handlers.Events;
+import com.ems.scheduler.CumulativeReportJob;
 import com.ems.scheduler.DailyReportJob;
 import com.ems.scheduler.SchedulerConfigurer;
 import com.ems.scheduler.SchedulerUtil;
@@ -141,15 +142,14 @@ public class Main {
 					@Override
 					public void handle(Event event) {
 						if(event.getEvent() == Events.LOGIN_SUCCESS){
-							/*EMSSwingUtils.openSingletonIFrame(desktopPane,
-									DashboardFrame.class);
-							logger.info("Opening dashboard after successful login...");*/
 							
-							JobDetail job = SchedulerUtil.createJob("HelloJob", "EMS", DailyReportJob.class);
+							JobDetail job = SchedulerUtil.createJob("DailyReportJob", "EMS", DailyReportJob.class);
 							Trigger trigger = SchedulerUtil.createTrigger("DailyReport", "EMS", ConfigHelper.getDailyReportCronExpr());
 							SchedulerConfigurer.scheduleJob(trigger, job);
 							
-							//TODO : config Cumulative scheduler
+							JobDetail reportJob = SchedulerUtil.createJob("DailyCumulativeReportJob", "EMS", CumulativeReportJob.class);
+							Trigger reportTrigger = SchedulerUtil.createTrigger("DailyCumulativeReport", "EMS", ConfigHelper.getcumulativeReportCronExpr());
+							SchedulerConfigurer.scheduleJob(reportTrigger, reportJob);
 						}
 					}
 				});
