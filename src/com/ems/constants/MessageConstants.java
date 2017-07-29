@@ -33,4 +33,8 @@ public abstract class MessageConstants {
 	//For Schedulers
 	public static final String DAILY_REPORT_CRON_KEY = "dailyreportcronkey";
 	public static final String CUMULATIVE_REPORT_CRON_KEY = "cumulativereportcronkey";
+	
+	//Report path
+	public static final String DAILY_REPORT_KEY = "dailyreportkey";
+	public static final String DAILY_REPORT_CUMULATIVE_KEY = "dailyreportcumulativekey";
 }

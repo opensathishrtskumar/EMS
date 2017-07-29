@@ -7,6 +7,7 @@ import static com.ems.constants.MessageConstants.REPORT_KEY_SEPARATOR;
 import static com.ems.constants.MessageConstants.REPORT_RECORD_SEPARATOR;
 
 import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.GroupsDTO;
 import com.ems.UI.dto.SplitJoinDTO;
 import com.ems.constants.EmsConstants;
+import com.ems.scheduler.SchedulerConstants;
 import com.fazecast.jSerialComm.SerialPort;
 import com.ghgande.j2mod.modbus.Modbus;
 import com.ghgande.j2mod.modbus.msg.ModbusRequest;
@@ -563,6 +565,10 @@ public abstract class EMSUtility {
 	}
 	
 	
+	/**
+	 * @param list
+	 * @return
+	 */
 	public static boolean splitJoinStatus(List<Boolean> list){
 		boolean status = true;
 		
@@ -572,4 +578,76 @@ public abstract class EMSUtility {
 		
 		return status;
 	}
+	
+	
+	/**
+	 * @param count
+	 * @param source
+	 * @return List which contains sublist of 'count' items
+	 * 
+	 * Splits given source list into count number of sublist
+	 */
+	public static List<ArrayList<DeviceDetailsDTO>> split(int count, List<DeviceDetailsDTO> source) {
+		List<ArrayList<DeviceDetailsDTO>> list = new ArrayList<ArrayList<DeviceDetailsDTO>>();
+
+		if (source != null && count > 0) {
+
+			ArrayList<DeviceDetailsDTO> sublist = null;
+			for (int index = 0; index < source.size(); index++) {
+				if (index % count == 0) {
+					sublist = new ArrayList<>();
+					list.add(sublist);
+				}
+				sublist.add(source.get(index));
+			}
+
+		}
+
+		return list;
+	}
+	
+	
+	public static String getForwarKWMappingRegister(String memoryMapping){
+		return getRegisterByMappingName(memoryMapping, SchedulerConstants.FORWARD_KW);
+	}
+	
+	public static String getRegisterByMappingName(String memoryMapping, String mappingName){
+		
+		Properties prop = loadProperties(memoryMapping);
+		
+		String register = null;
+		
+		for(Entry<Object, Object> entry : prop.entrySet()){
+			if(String.valueOf(entry.getValue()).equals(mappingName)){
+				register = String.valueOf(entry.getKey());
+			}
+		}
+		
+		return register;
+	}
+	
+	public static BigDecimal findSecondSmallest(BigDecimal[] a){
+		BigDecimal smallest = a[0];
+		BigDecimal secondSmallest = a[0];
+	  
+		for (int i = 0; i < a.length; i++) 
+	    {
+	        if(a[i].compareTo(smallest) == 0)
+	        {
+	          secondSmallest = smallest;
+	        } 
+	        else if (a[i].compareTo(smallest) < 0 ) 
+	        {
+	            secondSmallest = smallest;
+	            smallest = a[i];
+	        } 
+	        else if (a[i].compareTo(secondSmallest) < 0) 
+	        {
+	            secondSmallest = a[i];
+	        }
+	    }
+		
+		return secondSmallest;
+	}
+	
 }

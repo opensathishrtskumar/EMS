@@ -8,7 +8,11 @@ public abstract class EmailConstants {
 			+ EmailConstants.REPORT_DATE
 			+ "</h2><p>&nbsp;</p><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p><h2 style='color: #2e6c80;'><br /><br /></h2><p>&nbsp;</p></body></html>";
 	
-	public static final String CUMULATIVE_REPORT = "<html><head></head><body><h1 style='color: #5e9ca0; text-align: enter;'>Welcome $companyname$</h1><h2 style='color: #2e6c80;'>Please find attached report for all active device(s) dated &nbsp;between $startdate$ and $enddate$</h2><p>&nbsp;</p><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p><h2 style='color: #2e6c80;'><br /><br /></h2><p>&nbsp;</p></body></html>";
+	public static final String CUMULATIVE_REPORT = "<html><head></head><body><h1 style='color: #5e9ca0; text-align: enter;'>Welcome "
+			+ EmailConstants.COMPANY_NAME_PARAM
+			+ "</h1><h2 style='color: #2e6c80;'>Please find attached Summary report for all active device(s) dated &nbsp;"
+			+ EmailConstants.REPORT_DATE
+			+ "</h2><p>&nbsp;</p><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p><h2 style='color: #2e6c80;'><br /><br /></h2><p>&nbsp;</p></body></html>";
 
 	public static final String COMPANY_NAME_PARAM = "$companyname$";
 	public static final String REPORT_DATE = "$date$";

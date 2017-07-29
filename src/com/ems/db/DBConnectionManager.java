@@ -106,8 +106,8 @@ public class DBConnectionManager {
 			source.setDriverClassName("com.mysql.jdbc.Driver");
 			source.setUsername(props.getProperty(USERNAME));
 			source.setPassword(props.getProperty(PASSWORD));
-			source.setInitialSize(5);
-			source.setMaxTotal(15);
+			source.setInitialSize(1);
+			source.setMaxTotal(70);
 			source.setMaxIdle(10);
 			source.setMinIdle(5);
 			source.setValidationQuery("select 1");

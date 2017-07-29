@@ -53,4 +53,9 @@ public abstract class QueryConstants {
 			+ " unitresponse FROM polling.pollingdetails p,(SELECT MAX(polledon) AS pon,deviceuniqueid "
 			+ "FROM polling.pollingdetails WHERE deviceuniqueid=?) AS d "
 			+ "WHERE d.deviceuniqueid=p.deviceuniqueid AND p.polledon=d.pon ORDER BY polledon DESC LIMIT 1";
+	
+	public static final String DAILY_CUMULATIVE_REPORT = "SELECT temp.timeformat, temp.polledon,temp.unitresponse FROM "
+			+ "(SELECT DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%k') timeformat,polledon, unitresponse "
+			+ "FROM polling.pollingdetails WHERE  deviceuniqueid=? AND polledon "
+			+ "BETWEEN ? AND ? ORDER BY timeformat DESC) temp GROUP BY timeformat";
 }

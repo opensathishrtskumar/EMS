@@ -18,13 +18,9 @@ DB Env setup :
 					`createdtime` BIGINT UNSIGNED NOT NULL, 
 					`modifiedtime` BIGINT UNSIGNED NOT NULL, PRIMARY KEY (`deviceuniqueid`) );
 					
-			
-			ALTER TABLE `setup`.`devicedetails` ADD COLUMN `port` VARCHAR(5) DEFAULT 'COM3' NOT NULL AFTER `registermapping`;
-			ALTER TABLE `setup`.`devicedetails` ADD COLUMN `method` VARCHAR(5) DEFAULT '3' NOT NULL AFTER `registermapping`;		
-					 		
 		
 		2.5 CREATE TABLE `polling`.`pollingdetails`( `deviceuniqueid` BIGINT UNSIGNED NOT NULL, 
 					`polledon` BIGINT UNSIGNED NOT NULL, 
 					`unitresponse` VARCHAR(2000), KEY (`deviceuniqueid`)); 
 		
-
+			ALTER TABLE `polling`.`pollingdetails` ADD  KEY `polledon` (`polledon`);

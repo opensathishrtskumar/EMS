@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -33,7 +32,7 @@ import com.ems.UI.dto.AttachmentDTO;
 import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.EmailDTO;
 import com.ems.UI.dto.ExtendedSerialParameter;
-import com.ems.concurrency.ConcurrencyUtils;
+import com.ems.constants.EmailConstants;
 import com.ems.constants.QueryConstants;
 import com.ems.db.DBConnectionManager;
 import com.ems.mailer.EmailUtil;
@@ -77,10 +76,7 @@ public class DailyReportJob extends AbstractJob {
 		long yesterday = reportDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		
 		this.emailDTO.setDate(reportDate.format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
-		
-		//Set company name date and so on
-		EmailUtil.setEmailDetails(this.emailDTO);
-
+		this.emailDTO.setBody(EmailConstants.DAILY_REPORT);
 		AttachmentDTO attachment = new AttachmentDTO();
 		attachment.setFileName("EMSReport-" + this.emailDTO.getDate() + ".xls");
 		
@@ -101,8 +97,10 @@ public class DailyReportJob extends AbstractJob {
 		}
 		
 		try {
-			this.tempReportFile = File.createTempFile(this.emailDTO.getDate() + "EMS_Report", ".xls");
+			String reportDir = ConfigHelper.getDailyReportDir();
+			this.tempReportFile = new File(reportDir + File.separator +  this.emailDTO.getDate() + "-EMSReport.xls");
 			workBook.write(this.tempReportFile);
+			workBook.close();
 			attachment.setFile(this.tempReportFile);
 		} catch (Exception e) {
 			logger.error("{}",e);
@@ -116,11 +114,11 @@ public class DailyReportJob extends AbstractJob {
 	@Override
 	protected void postProcessing(JobExecutionContext arg0) throws JobExecutionException {
 		logger.debug("Trigger mail daily report..");
+		//Set company name date and so on
+		EmailUtil.setEmailDetails(this.emailDTO);
 		this.emailDTO.setAttachments(this.attachments);
 		boolean sent = EmailUtil.sendEmail(this.emailDTO);
-		//Delete if mail sent
-		if(tempReportFile != null && sent)
-			tempReportFile.delete();
+		//No need to delete report file
 		logger.debug("mail triggered  for daily report..");
 	}
 	

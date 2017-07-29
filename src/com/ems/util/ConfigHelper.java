@@ -9,10 +9,11 @@ import static com.ems.constants.MessageConstants.DAILY_REPORT_CRON_KEY;
 import static com.ems.constants.MessageConstants.DASHBOARD_REFRESHFREQUENCY_KEY;
 import static com.ems.constants.MessageConstants.DEVICES_GROUPING_KEY;
 import static com.ems.constants.MessageConstants.EMAIL_DETAILS_KEY;
-import static com.ems.constants.MessageConstants.NUMBER_OF_DEVICES_KEY;
+import static com.ems.constants.MessageConstants.*;
 import static com.ems.tmp.datamngr.TempDataManager.MAIN_CONFIG;
 import static com.ems.tmp.datamngr.TempDataManager.retrieveTempConfig;
 
+import java.io.File;
 import java.util.Properties;
 
 import com.ems.UI.dto.EmailDTO;
@@ -68,7 +69,40 @@ public abstract class ConfigHelper {
 	public static String getcumulativeReportCronExpr() {
 		return getPropertyWithPut(CUMULATIVE_REPORT_CRON_KEY, SchedulerConstants.CUMULATIVE_REPORT_CRON);
 	}
-	
+
+	//Scheduler daily report path
+	public static String getDailyReportDir() {
+		return getPropertyWithPut(DAILY_REPORT_KEY, getDailyReportBaseDir());
+	}
+
+	//Scheduler daily summary report path
+	public static String getDailyCumulativeReportDir() {
+		return getPropertyWithPut(DAILY_REPORT_CUMULATIVE_KEY, getCumulativeDailyReportBaseDir());
+	}
+
+	private static String getReportBaseDir(){
+		String baseReportPath = System.getProperty("user.home") + File.separator + "Reports";
+		return baseReportPath;
+	}
+
+	private static String getDailyReportBaseDir(){
+		String dailyReportPath = getReportBaseDir() + File.separator + "DailyReport";
+		File dir = new File(dailyReportPath);
+		if(!dir.exists()){
+			dir.mkdirs();
+		}
+		return dailyReportPath;
+	}
+
+	private static String getCumulativeDailyReportBaseDir(){
+		String reportPath = getReportBaseDir() + File.separator + "DailySummaryReport";
+		File dir = new File(reportPath);
+		if(!dir.exists()){
+			dir.mkdirs();
+		}
+		return reportPath;
+	}
+
 	/**
 	 * @param key
 	 * @param defaultValue

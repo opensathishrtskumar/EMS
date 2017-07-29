@@ -147,7 +147,7 @@ public abstract class EmailUtil {
 		Map<String, String> values = new HashMap<>();
 		values.put(EmailConstants.COMPANY_NAME_PARAM, ConfigHelper.getCompanyName());
 		values.put(EmailConstants.REPORT_DATE, dto.getDate());
-		dto.setBody(EmailUtil.getEmailBody(EmailConstants.DAILY_REPORT, values));
+		dto.setBody(EmailUtil.getEmailBody(dto.getBody(), values));
 		return dto;
 	}
 	
