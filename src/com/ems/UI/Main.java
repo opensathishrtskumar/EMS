@@ -42,8 +42,8 @@ import com.ems.UI.internalframes.DBConfigurer;
 import com.ems.UI.internalframes.DashboardFrame;
 import com.ems.UI.internalframes.GroupDevices;
 import com.ems.UI.internalframes.GroupedDevices;
+import com.ems.UI.internalframes.LiveChartIFrame;
 import com.ems.UI.internalframes.ManageDeviceIFrame;
-import com.ems.UI.internalframes.PingInternalFrame;
 import com.ems.UI.internalframes.PollingIFrame;
 import com.ems.UI.internalframes.ReportsIFrame;
 import com.ems.response.handlers.Event;
@@ -220,7 +220,7 @@ public class Main {
 		mnConnection.setMnemonic('n');
 		menuBar.add(mnConnection);
 
-		JMenuItem mntmPing = new JMenuItem(
+		/*JMenuItem mntmPing = new JMenuItem(
 				BUNDLE.getString("Main.mntmNewMenuItem_1.text")); //$NON-NLS-1$
 		mntmPing.setMnemonic('I');
 		mntmPing.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/filefind.png")));
@@ -235,7 +235,7 @@ public class Main {
 		mnConnection.add(separator_2);
 		mntmPing.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
 				InputEvent.ALT_MASK));
-		mnConnection.add(mntmPing);
+		mnConnection.add(mntmPing);*/
 		
 		JSeparator separator_3 = new JSeparator();
 		mnConnection.add(separator_3);
@@ -375,6 +375,17 @@ public class Main {
 			}
 		});
 		mnReports.add(mntmGroupedDevices);
+		
+		JMenuItem mntmLiveChart = new JMenuItem(BUNDLE.getString("Main.mntmLiveChart.text")); //$NON-NLS-1$
+		mntmLiveChart.setMnemonic('M');
+		mntmLiveChart.setActionCommand(BUNDLE.getString("Main.mntmLiveChart.actionCommand")); //$NON-NLS-1$
+		mntmLiveChart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				EMSSwingUtils.openSingletonIFrame(desktopPane,
+						LiveChartIFrame.class);
+			}
+		});
+		mnReports.add(mntmLiveChart);
 
 		JMenu mnHelp = new JMenu(BUNDLE.getString("Main.mnHelp.text")); //$NON-NLS-1$
 		mnHelp.setMnemonic('H');

@@ -128,11 +128,6 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 							logger.trace("Grouped device Task submitted for Device {} ",device.getUniqueId());
 							tasks.add(future);
 						}
-						
-						//Wait for tasks if any
-						/*for(Future<Object> future : tasks){
-							try {future.get();} catch (Exception e) {logger.error("{}",e);}
-						}*/
 					}
 
 					groupConfigured = true;

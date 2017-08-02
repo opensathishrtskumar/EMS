@@ -55,15 +55,24 @@ public class DBPollingWorker implements Callable<Object> {
 
 		updateWorkerStatus(status);
 		
+		PollingDetailDTO dto = new PollingDetailDTO(parameters.getUniqueId(), System.currentTimeMillis(),
+				null);
+		dto.setStatus(status);
+		
 		if (status) {
 			failIfInterrupted();
 			String finalResponse = processRequiredRegister(parameters);
-			PollingDetailDTO dto = new PollingDetailDTO(parameters.getUniqueId(), System.currentTimeMillis(),
-					finalResponse);
+			dto.setUnitresponse(finalResponse);
 			int insert = DBConnectionManager.insertPollingDetails(dto);
 			logger.debug(" insert poll response unit : {}, status : {}", parameters.getUniqueId(), insert);
 		}
 
+		int count = DBConnectionManager.updateRecentPolling(dto);
+		
+		if(count == 0){
+			DBConnectionManager.insertRecentPolling(dto);
+		}
+		
 		return "Polling completed...";
 	}
 

@@ -126,24 +126,24 @@ public class PollingIFrame extends JInternalFrame implements AbstractIFrame{
 					return;
 				}
 				
-				Object object = comboBoxPorts.getSelectedItem();
+				/*Object object = comboBoxPorts.getSelectedItem();
 				if(object == null || object.toString().isEmpty()){
 					JOptionPane.showMessageDialog(getMe(),
 							"No port available to connect", "Port?",
 							JOptionPane.INFORMATION_MESSAGE);
 					logger.debug("No port connected for polling");
 					return;
-				}
+				}*/
 				
 				DefaultTableModel model = (DefaultTableModel)getTable().getModel();
 				if(model.getRowCount() == 0){
 					JOptionPane.showMessageDialog(getMe(),
-							"No port available to connect", "Port?",
+							"No devices available to connect", "Port?",
 							JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
 				
-				String port = getComboBoxPorts().getSelectedItem().toString();
+				//String port = getComboBoxPorts().getSelectedItem().toString();
 				int frequency = Integer.parseInt(getComboBox().getSelectedItem().toString()) * 60 * 1000;
 				
 				List<DeviceDetailsDTO> availableDevices = DBConnectionManager

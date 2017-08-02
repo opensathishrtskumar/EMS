@@ -103,6 +103,14 @@ public abstract class ConfigHelper {
 		return reportPath;
 	}
 
+
+	//LiveChart refresh frequency
+	public static int getLiveRefreshFrequency() {
+		String value = String.valueOf(SchedulerConstants.LIVECHAR_REFRESH_FREQUENCY);
+		value = getPropertyWithPut(LIVECHART_FREQUENCY_KEY, value);
+		return Integer.parseInt(value);
+	}
+
 	/**
 	 * @param key
 	 * @param defaultValue

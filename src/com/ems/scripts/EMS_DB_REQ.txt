@@ -24,3 +24,14 @@ DB Env setup :
 					`unitresponse` VARCHAR(2000), KEY (`deviceuniqueid`)); 
 		
 			ALTER TABLE `polling`.`pollingdetails` ADD  KEY `polledon` (`polledon`);
+
+			
+		2.6 CREATE TABLE `polling`.`recentpoll`(  
+  					`deviceuniqueid` BIGINT UNSIGNED NOT NULL,
+  					`polledon` BIGINT UNSIGNED NOT NULL,
+  					`unitresponse` TEXT,
+  					`status` BOOL NOT NULL,
+  					KEY (`deviceuniqueid`, `polledon`),
+  					FOREIGN KEY (`deviceuniqueid`) REFERENCES `setup`.`devicedetails`(`deviceuniqueid`)
+				);
+			

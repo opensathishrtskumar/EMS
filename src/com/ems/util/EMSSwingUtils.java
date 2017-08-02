@@ -210,7 +210,7 @@ public abstract class EMSSwingUtils {
 		} else {
 			//Load recent polling response from DB for the first time;
 			List<PollingDetailDTO> list = DBConnectionManager.
-					fetchPollingDetails(QueryConstants.GET_LATEST_POLLING_DETAIL, new Object[]{ device.getUniqueId() });
+					fetchRecentPollingDetails(device.getUniqueId());
 			if(list.size() > 0){
 				Properties props = EMSUtility.loadProperties(list.get(0).getUnitresponse());
 				registerValue = EMSUtility.convertProp2Map(props);

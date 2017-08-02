@@ -109,7 +109,7 @@ public class ExtendedChartPanel extends MyChartPanel implements ChangeListener {
 
 		int seriesCount = dataset.getRowCount();
 		for (int i = 0; i < seriesCount; i++) {
-			renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+			renderer.setSeriesStroke(i, new BasicStroke(3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 			
 			if(colors.length > i) 
 				renderer.setSeriesPaint(i, colors[i].brighter());

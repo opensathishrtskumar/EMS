@@ -1,9 +1,6 @@
 package com.ems.UI.dto;
 
-import java.util.Map;
 import java.util.Properties;
-
-import static com.ems.util.EMSUtility.*;
 
 public class PollingDetailDTO {
 	private long deviceuniqueid;
@@ -13,6 +10,7 @@ public class PollingDetailDTO {
 	private String formattedDate;
 	private long formattedHour;
 	private Properties deviceReading;
+	private boolean status;
 	
 	public PollingDetailDTO(long deviceuniqueid, long polledon, String unitresponse) {
 		this.deviceuniqueid = deviceuniqueid;
@@ -77,6 +75,14 @@ public class PollingDetailDTO {
 
 	public void setDeviceReading(Properties deviceReading) {
 		this.deviceReading = deviceReading;
+	}
+	
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 
 	@Override

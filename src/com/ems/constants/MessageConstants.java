@@ -37,4 +37,6 @@ public abstract class MessageConstants {
 	//Report path
 	public static final String DAILY_REPORT_KEY = "dailyreportkey";
 	public static final String DAILY_REPORT_CUMULATIVE_KEY = "dailyreportcumulativekey";
+	
+	public static final String LIVECHART_FREQUENCY_KEY = "livechartfrequencykey";
 }

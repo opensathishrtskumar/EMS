@@ -58,4 +58,13 @@ public abstract class QueryConstants {
 			+ "(SELECT DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%k') timeformat,polledon, unitresponse "
 			+ "FROM polling.pollingdetails WHERE  deviceuniqueid=? AND polledon "
 			+ "BETWEEN ? AND ? ORDER BY timeformat DESC) temp GROUP BY timeformat";
+	
+	
+	public static final String RECENT_POLL_UPDATE = "UPDATE polling.recentpoll SET polledon = ?,  "
+			+ "unitresponse = ?,  status = ? WHERE 	deviceuniqueid = ? ";
+	
+	public static final String RECENT_POLL_INSERT = "INSERT INTO polling.recentpoll (deviceuniqueid, polledon,unitresponse,status) VALUES (?,?,?,?)";
+	
+	public static final String RECENT_POLL_SELECT = "SELECT deviceuniqueid,polledon,unitresponse,status	FROM polling.recentpoll where deviceuniqueid = ?";
+	
 }

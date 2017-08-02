@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -106,7 +105,7 @@ public class DBConnectionManager {
 			source.setDriverClassName("com.mysql.jdbc.Driver");
 			source.setUsername(props.getProperty(USERNAME));
 			source.setPassword(props.getProperty(PASSWORD));
-			source.setInitialSize(1);
+			source.setInitialSize(5);
 			source.setMaxTotal(70);
 			source.setMaxIdle(10);
 			source.setMinIdle(5);
@@ -416,7 +415,82 @@ public class DBConnectionManager {
 
 		return list;
 	}
+	
+	public static int insertRecentPolling(PollingDetailDTO dto){
+		Connection connection = getConnection();
+		PreparedStatement stmt = null;
+		int insert = 0;
+		try {
+			stmt = connection.prepareStatement(QueryConstants.RECENT_POLL_INSERT);
+			stmt.setLong(1, dto.getDeviceuniqueid());
+			stmt.setLong(2, dto.getPolledon());
+			stmt.setString(3, dto.getUnitresponse());
+			stmt.setBoolean(4, dto.isStatus());
 
+			insert = stmt.executeUpdate();
+			logger.debug("polling data insertion status : {}", insert);
+		} catch (Exception e) {
+			logger.error("polling data insertion failed : {}", e.getLocalizedMessage());
+			logger.error("{}", e);
+		} finally {
+			closeConnections(connection, stmt, null);
+		}
+		return insert;
+	}
+	
+	public static int updateRecentPolling(PollingDetailDTO dto){
+		Connection connection = getConnection();
+		PreparedStatement stmt = null;
+		int insert = 0;
+		try {
+			stmt = connection.prepareStatement(QueryConstants.RECENT_POLL_UPDATE);
+			stmt.setLong(1, dto.getPolledon());
+			stmt.setString(2, dto.getUnitresponse());
+			stmt.setBoolean(3, dto.isStatus());
+			stmt.setLong(4, dto.getDeviceuniqueid());
+
+			insert = stmt.executeUpdate();
+			logger.debug("polling data insertion status : {}", insert);
+		} catch (Exception e) {
+			logger.error("polling data insertion failed : {}", e.getLocalizedMessage());
+			logger.error("{}", e);
+		} finally {
+			closeConnections(connection, stmt, null);
+		}
+		return insert;
+	}
+
+	public static List<PollingDetailDTO> fetchRecentPollingDetails(long deviceUniqueid) {
+		List<PollingDetailDTO> list = new ArrayList<PollingDetailDTO>();
+
+		Connection connection = getConnection();
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try {
+			ps = connection.prepareStatement(QueryConstants.RECENT_POLL_SELECT);
+			ps.setObject(1, deviceUniqueid);
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				PollingDetailDTO dto = new PollingDetailDTO();
+				dto.setFormattedDate(rs.getString("polledon"));
+				dto.setUnitresponse(rs.getString("unitresponse"));
+				dto.setDeviceuniqueid(deviceUniqueid);
+				dto.setStatus(rs.getBoolean("status"));
+				list.add(dto);
+			}
+			
+			logger.trace("Polling response : {}", list);
+		} catch (SQLException e) {
+			logger.error("{}", e);
+		} finally {
+			closeConnections(connection, ps, rs);
+		}
+
+		return list;
+	}
+	
 	@Override
 	protected void finalize() throws Throwable {
 		if (source != null)

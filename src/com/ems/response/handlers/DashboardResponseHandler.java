@@ -1,6 +1,5 @@
 package com.ems.response.handlers;
 
-import static com.ems.constants.EmsConstants.GAP_BETWEEN_REQUEST;
 import static com.ems.util.EMSSwingUtils.getDeviceDetailLabel;
 import static com.ems.util.EMSUtility.DASHBOARD_POLLED_FMT;
 import static com.ems.util.EMSUtility.getFormattedDate;

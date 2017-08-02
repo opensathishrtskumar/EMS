@@ -11,4 +11,5 @@ public abstract class SchedulerConstants {
 	
 	public static final String FORWARD_KW = "FwdWH";
 	
+	public static final int LIVECHAR_REFRESH_FREQUENCY = 15;
 }

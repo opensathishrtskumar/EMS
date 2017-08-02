@@ -114,7 +114,8 @@ public abstract class EMSUtility {
 		Properties mappings = new OrderedProperties();
 
 		try {
-			mappings.load(new ByteArrayInputStream(propertiesString.getBytes()));
+			if(propertiesString != null)
+				mappings.load(new ByteArrayInputStream(propertiesString.getBytes()));
 		} catch (Exception e) {
 			logger.error("error loading memory mapping : {}", e.getLocalizedMessage());
 			logger.error("{}", e);
