@@ -24,7 +24,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.ems.UI.dto.AttachmentDTO;
 import com.ems.UI.dto.DeviceDetailsDTO;
@@ -194,16 +193,17 @@ public class FinalReportJob extends AbstractJob {
 
 	}
 
-	
-	 public static void main(String[] args) throws JobExecutionException {
-	 
-	/* FileSystemXmlApplicationContext context = new
-	 FileSystemXmlApplicationContext(
-	 "C:\\Users\\USER\\Desktop\\EMS source code\\EMSService1\\src\\main\\webapp\\WEB-INF\\spring\\appServlet/servlet-context.xml"
-	 ); AbstractJob job = new FinalReportJob(); job.execute(null);
-	 
-	 context.close();*/ }
-	
+	public static void main(String[] args) throws JobExecutionException {
+
+		/*
+		 * FileSystemXmlApplicationContext context = new
+		 * FileSystemXmlApplicationContext(
+		 * "C:\\Users\\USER\\Desktop\\EMS source code\\EMSService1\\src\\main\\webapp\\WEB-INF\\spring\\appServlet/servlet-context.xml"
+		 * ); AbstractJob job = new FinalReportJob(); job.execute(null);
+		 * 
+		 * context.close();
+		 */ }
+
 	public static class FinalReportConstants {
 
 		private FinalReportConstants() {

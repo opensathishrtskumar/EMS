@@ -217,6 +217,13 @@
 			<version>1.0.19</version>
 		</dependency>
 
+		<!-- html generator -->
+		<dependency>
+			<groupId>com.j2html</groupId>
+			<artifactId>j2html</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+
 	</dependencies>
 	<repositories>
 		<!-- For testing against latest Spring snapshots -->

@@ -20,11 +20,11 @@
 	</appender>
 
 	<logger name="com.ems">
-		<level value="debug" />
+		<level value="trace" />
 	</logger>
 
 	<logger name="org.ems">
-		<level value="debug" />
+		<level value="trace" />
 	</logger>
 
 	<logger name="com.ghgande">

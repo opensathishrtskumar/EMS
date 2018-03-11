@@ -136,4 +136,8 @@ public abstract class QueryConstants {
 			"WHERE deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?) 	\r\n" + 
 			"AND polledon BETWEEN ? AND ? \r\n" + 
 			"GROUP BY DT";
+	
+	
+	public static final String FAILED_DEVICES = "select d.devicealiasname from polling.recentpoll rp, setup.devicedetails d \r\n" + 
+			"	where rp.status = false and d.deviceuniqueid = rp.deviceuniqueid";
 }

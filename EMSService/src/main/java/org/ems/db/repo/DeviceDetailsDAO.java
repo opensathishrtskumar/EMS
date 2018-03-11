@@ -18,34 +18,34 @@ public class DeviceDetailsDAO {
 
 	@Autowired
 	PollingDetailsDAO pollingDao;
+	
 	private List<DeviceDetailsDTO> deviceDetails;
-	private Map<String,String> settings;
-	
-	
-	public void init(){
+	private Map<String, String> settings;
+
+	public void init() {
 		loadDeviceDetails();
 		loadSettings();
 	}
-	
-	public void loadDeviceDetails(){
+
+	public void loadDeviceDetails() {
 		logger.debug("loading active devices...");
-		this.deviceDetails = pollingDao.fetchAllDeviceDetails(QueryConstants.SELECT_ENABLED_ENDEVICES, new Object[]{});
+		this.deviceDetails = pollingDao.fetchAllDeviceDetails(QueryConstants.SELECT_ENABLED_ENDEVICES, new Object[] {});
 		logger.debug("loaded active devices...");
 	}
 
-	public Map<String, String> loadSettings(){
+	public Map<String, String> loadSettings() {
 		logger.debug("loading settings...");
 		List<SettingsDTO> settingsList = pollingDao.fetchSettings();
 		this.settings = new HashMap<>();
-		
-		for(SettingsDTO setting :settingsList){
+
+		for (SettingsDTO setting : settingsList) {
 			this.settings.put(setting.getSkey(), setting.getSvalue());
 		}
-		
+
 		logger.debug("settings loaded...");
 		return this.settings;
 	}
-	
+
 	public List<DeviceDetailsDTO> getDeviceDetails() {
 		return deviceDetails;
 	}

@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.ems.scheduler.AbstractJob;
 import com.ems.scheduler.CumulativeReportJob;
 import com.ems.scheduler.DailyReportJob;
+import com.ems.scheduler.FailedDevicesJob;
 import com.ems.scheduler.FinalReportJob;
 import com.ems.scheduler.MonthlySummaryReportJob;
 
@@ -21,9 +22,16 @@ public class ReportScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportScheduler.class);
 
-	// @Scheduled(fixedDelay = 5000)
-	public void dailyCumulativeReportTask() {
-		System.out.println("Scheduleded printing");
+	@Scheduled(cron = "${faileddevicescron}")
+	public void failedDevices() {
+		logger.debug("Failed Devices report");
+		try {
+			AbstractJob job = new FailedDevicesJob();
+			job.execute(null);
+		} catch (JobExecutionException e) {
+			logger.error("error creating faild devices report", e);
+		}
+		logger.debug("Failed Devices report ending...");
 	}
 
 	@Scheduled(cron = "${dailyreportcron}")
