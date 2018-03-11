@@ -6,10 +6,10 @@ import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EMSContextListener implements ServletContextListener{
+public class EMSContextListener implements ServletContextListener {
 
-	private final static Logger logger = LoggerFactory.getLogger(EMSContextListener.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(EMSContextListener.class);
+
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		logger.info("context initialized...");
