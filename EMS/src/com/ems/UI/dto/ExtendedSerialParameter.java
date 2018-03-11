@@ -38,6 +38,8 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private boolean splitJoin;
 	private SplitJoinDTO splitJoinDTO;
 	
+	private Map<String, String> headers;
+	
 	public ExtendedSerialParameter(String portName, int baudRate,
 			int flowControlIn, int flowControlOut, int databits, int stopbits,
 			int parity, boolean echo) {
@@ -47,6 +49,14 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	
 	public ExtendedSerialParameter() {
 		super();
+	}
+	
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
 	}
 
 	public int getUnitId() {

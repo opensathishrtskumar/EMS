@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -105,8 +106,8 @@ public class DBConnectionManager {
 			source.setDriverClassName("com.mysql.jdbc.Driver");
 			source.setUsername(props.getProperty(USERNAME));
 			source.setPassword(props.getProperty(PASSWORD));
-			source.setInitialSize(5);
-			source.setMaxTotal(70);
+			source.setInitialSize(0);
+			source.setMaxTotal(25);
 			source.setMaxIdle(10);
 			source.setMinIdle(5);
 			source.setValidationQuery("select 1");
@@ -114,7 +115,7 @@ public class DBConnectionManager {
 			source.setMinEvictableIdleTimeMillis(-1);
 			source.setRemoveAbandonedOnBorrow(true);
 			source.setRemoveAbandonedTimeout(10);
-			source.setTimeBetweenEvictionRunsMillis(2000);
+			source.setTimeBetweenEvictionRunsMillis(5000);
 		}
 		Connection connection = null;
 		try {
@@ -276,6 +277,41 @@ public class DBConnectionManager {
 		}
 		return details;
 	}
+	
+	
+	public static List<DeviceDetailsDTO> getFailedDeviceDetails() {
+		Connection connection = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		
+		List<DeviceDetailsDTO> list = new ArrayList<>();
+		try {
+			connection = getConnection();
+			statement = connection.prepareStatement(QueryConstants.FAILED_DEVICES);
+			resultSet = statement.executeQuery();
+
+			int rowIndex = 0;
+			while (resultSet.next()) {
+				DeviceDetailsDTO device = new DeviceDetailsDTO();
+				
+				device.setUniqueId(resultSet.getLong("deviceuniqueid"));
+				device.setDeviceName(resultSet.getString("devicealiasname"));
+				device.setPort(resultSet.getString("port"));
+				device.setTimeStamp(resultSet.getString("ftime"));
+				device.setRowIndex(rowIndex++);
+				
+				list.add(device);
+			}
+		} catch (SQLException e) {
+			logger.error("{}", e);
+			logger.error(" Failed to load devices : {}", e.getLocalizedMessage());
+		} finally {
+			closeConnections(connection, statement, resultSet);
+		}
+		
+		return list;
+	}
+	
 
 	public static List<DeviceDetailsDTO> mapResultToDeviceDetail(ResultSet resultSet) {
 		List<DeviceDetailsDTO> list = new ArrayList<DeviceDetailsDTO>();
@@ -489,6 +525,41 @@ public class DBConnectionManager {
 		}
 
 		return list;
+	}
+	
+	public static LinkedHashMap<Long, DeviceDetailsDTO> getSingleParamDevices(String paramName) {
+		LinkedHashMap<Long, DeviceDetailsDTO> deviceDetailsMap = new LinkedHashMap<>();
+		
+		Connection connection = getConnection();
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try {
+			connection.setAutoCommit(false);
+			ps = connection.prepareStatement(QueryConstants.GET_SINGLE_PARAM_DEVICES);
+			ps.setString(1, "%" + paramName + "%");
+			ps.setFetchSize(Integer.MIN_VALUE);
+			rs = ps.executeQuery();
+
+			int columnIndex = 1;
+			
+			while (rs.next()) {
+				DeviceDetailsDTO dto = new DeviceDetailsDTO();
+				dto.setUniqueId(rs.getLong(1));
+				dto.setDeviceName(rs.getString(2));
+				dto.setMemoryMapping(rs.getString(3));
+				dto.setCoulmnIndex(columnIndex++);// excel column index in which data will be written 
+				dto.setSingleParamAddress(EMSUtility.getAddressByName(rs.getString(3), paramName));
+				deviceDetailsMap.put(rs.getLong(1), dto);
+			}
+			
+			logger.trace("Single param device details : {}", deviceDetailsMap);
+		} catch (SQLException e) {
+			logger.error("{}", e);
+		} finally {
+			closeConnections(connection, ps, rs);
+		}
+
+		return deviceDetailsMap;
 	}
 	
 	@Override

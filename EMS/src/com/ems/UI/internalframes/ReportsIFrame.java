@@ -3,6 +3,9 @@ package com.ems.UI.internalframes;
 import static com.ems.constants.MessageConstants.REPORT_KEY_SEPARATOR;
 import static com.ems.constants.QueryConstants.SELECT_ENABLED_ENDEVICES;
 import static com.ems.util.EMSSwingUtils.centerFrame;
+import static com.ems.util.ExcelUtils.createReportHeaderMap;
+import static com.ems.util.ExcelUtils.createWorkBook;
+import static com.ems.util.ExcelUtils.createWorkSheet;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,6 +45,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -58,6 +64,7 @@ import com.ems.constants.LimitConstants;
 import com.ems.constants.MessageConstants;
 import com.ems.constants.QueryConstants;
 import com.ems.db.DBConnectionManager;
+import com.ems.scheduler.SheetWriter;
 import com.ems.util.CustomeDateFormatter;
 import com.ems.util.EMSSwingUtils;
 import com.ems.util.EMSUtility;
@@ -87,6 +94,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 		setFrameIcon(new ImageIcon(ReportsIFrame.class.getResource("/com/ems/resources/system_16x16.gif")));
 		setTitle("Reports");
 		setClosable(true);
+		setBackground(EMSSwingUtils.getBackGroundColor());
 		setBounds(100, 100, 949, 680);
 		centerFrame(getMe());
 		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
@@ -175,7 +183,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 
 				logger.info("Excel Report request , device:{},start:{},end:{}", deviceUniqueId, startDate, endDate);
 
-				String fileName = ExcelUtils.prepareUnitData( startDate, endDate, detailsDTO);
+				String fileName = ExcelUtils.prepareUnitData(startDate, endDate, detailsDTO);
 				JOptionPane.showMessageDialog(getMe(), "Report created at " + fileName, "Report",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -271,6 +279,58 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 		getContentPane().add(seriesControlPanel);
 
 		loadAvailableActiveDevices(comboBoxDevice);
+
+		JButton btnExportAll = new JButton("Export All");
+		btnExportAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UtilDateModel startModel = (UtilDateModel) datePickerStart.getModel();
+				UtilDateModel endModel = (UtilDateModel) datePickerEnd.getModel();
+
+				List<DeviceDetailsDTO> devices = DBConnectionManager
+						.getAvailableDevices(QueryConstants.SELECT_ENABLED_ENDEVICES);
+
+				if (devices == null || devices.size() == 0) {
+					JOptionPane.showMessageDialog(getMe(), "No Active device(s) found", "Export Excel",
+							JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+
+				long startDate = Helper.getStartOfDay(startModel.getValue());
+				long endDate = Helper.getEndOfDay(endModel.getValue());
+
+				HSSFWorkbook workBook = createWorkBook();
+
+				for (DeviceDetailsDTO device : devices) {
+					ExtendedSerialParameter param = EMSUtility.mapDeviceToSerialParam(device);
+					Map<String, String> headers = createReportHeaderMap(param);
+					HSSFSheet sheet = createWorkSheet(workBook, device.getDeviceName(), headers);
+
+					try {
+						SheetWriter sheetWriter = new SheetWriter(param, sheet, QueryConstants.RETRIEVE_ALL_DEVICE_STATE, new Object[] {
+								param.getUniqueId(), startDate, endDate, param.getUniqueId(), startDate, endDate });
+						sheetWriter.call();
+					} catch (Exception e1) {
+						logger.error("{}", e);
+					}
+				}
+
+				File reportFile = new File(
+						EMSUtility.getFormattedTime(System.currentTimeMillis(), EMSUtility.REPORTNAME_FORMAT) + ".xls");
+
+				try {
+					workBook.write(reportFile);
+					workBook.close();
+				} catch (Exception e1) {
+					logger.error("Error writing all record to report {}", e1);
+				}
+
+				JOptionPane.showMessageDialog(getMe(), "Report created at " + reportFile.getAbsolutePath(), "Report",
+						JOptionPane.INFORMATION_MESSAGE);
+
+			}
+		});
+		btnExportAll.setBounds(604, 53, 89, 23);
+		panel.add(btnExportAll);
 	}
 
 	public JPanel getSeriesControlPanel() {
@@ -286,8 +346,9 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 		ExtendedSerialParameter serialDevice = EMSUtility.mapDeviceToSerialParam(device);
 		Map<String, String> splitJoinRegisterMap = EMSUtility.getOrderedProperties(serialDevice);
 		props.putAll(splitJoinRegisterMap);
-		
-		//Properties memoryMapping = EMSUtility.loadProperties(device.getMemoryMapping());
+
+		// Properties memoryMapping =
+		// EMSUtility.loadProperties(device.getMemoryMapping());
 		Properties memoryMapping = props;
 
 		// Remove existing content
@@ -316,8 +377,8 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 			logger.debug(" Chart query executed ...");
 			CategoryDataset dataset = createDataset(rs, memoryMapping);
 			logger.info("Category dataset created for chart...");
-			extendedChart = new ExtendedChartPanel(device.getDeviceName(), dataset);
-
+/*			extendedChart = new ExtendedChartPanel(device.getDeviceName(), dataset);
+*/
 			panelChart.add(extendedChart);
 			panelChart.repaint();
 			panelChart.updateUI();
@@ -426,8 +487,7 @@ public class ReportsIFrame extends JInternalFrame implements ActionListener {
 
 		for (Entry<Object, Object> entry : props.entrySet()) {
 
-			String seriesName = dto.getDeviceReading()
-					.getProperty(String.valueOf(entry.getKey().toString()));
+			String seriesName = dto.getDeviceReading().getProperty(String.valueOf(entry.getKey().toString()));
 
 			logger.trace("Reading: {} Series : {} Time : {}", entry.getValue().toString(), seriesName,
 					dto.getFormattedDate());

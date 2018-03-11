@@ -39,4 +39,6 @@ public abstract class MessageConstants {
 	public static final String DAILY_REPORT_CUMULATIVE_KEY = "dailyreportcumulativekey";
 	
 	public static final String LIVECHART_FREQUENCY_KEY = "livechartfrequencykey";
+	
+	public static final String TIMESTAMP = "Timestamp";
 }

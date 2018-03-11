@@ -13,14 +13,14 @@ public abstract class ConcurrencyUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ConcurrencyUtils.class);
 
 	private static ThreadPoolExecutor workers = new ThreadPoolExecutor(30, 100, 5, TimeUnit.SECONDS,
-			new LinkedBlockingQueue<Runnable>(100));
+			new LinkedBlockingQueue<Runnable>(150));
 	
 	//No task should be rejected
 	static{
 		workers.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 	}
 	
-	public static ThreadPoolExecutor getWorkers() {
+	public static ThreadPoolExecutor getWorkerPool() {
 		return workers;
 	}
 

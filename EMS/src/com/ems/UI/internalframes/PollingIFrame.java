@@ -68,6 +68,7 @@ public class PollingIFrame extends JInternalFrame implements AbstractIFrame{
 		setFrameIcon(new ImageIcon(PollingIFrame.class.getResource("/com/ems/resources/system_16x16.gif")));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setClosable(true);
+		setBackground(EMSSwingUtils.getBackGroundColor());
 		addInternalFrameListener(new InternalFrameAdapter() {
 			@Override
 			public void internalFrameActivated(InternalFrameEvent arg0) {

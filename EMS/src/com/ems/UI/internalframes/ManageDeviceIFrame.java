@@ -6,6 +6,9 @@ import static com.ems.constants.EmsConstants.READ_METHOD;
 import static com.ems.constants.EmsConstants.REG_MAPPING;
 import static com.ems.constants.EmsConstants.STOPBIT;
 import static com.ems.constants.EmsConstants.WORDLENGTH;
+import static com.ems.constants.MessageConstants.PASSWORD_KEY;
+import static com.ems.tmp.datamngr.TempDataManager.MAIN_CONFIG;
+import static com.ems.tmp.datamngr.TempDataManager.retrieveTempConfig;
 import static com.ems.util.EMSSwingUtils.centerFrame;
 import static com.ems.util.EMSUtility.convertObjectArray;
 
@@ -17,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
@@ -28,6 +32,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -70,6 +75,7 @@ public class ManageDeviceIFrame extends JInternalFrame {
 	 */
 	public ManageDeviceIFrame() {
 		setIconifiable(true);
+		setBackground(EMSSwingUtils.getBackGroundColor());
 		setFrameIcon(new ImageIcon(ManageDeviceIFrame.class.getResource("/com/ems/resources/system_16x16.gif")));
 		addInternalFrameListener(new InternalFrameAdapter() {
 			@Override
@@ -129,7 +135,25 @@ public class ManageDeviceIFrame extends JInternalFrame {
 							JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-
+				
+				JPasswordField password = new JPasswordField();
+				int option = JOptionPane.showConfirmDialog(getMe(), password, "Password", JOptionPane.OK_CANCEL_OPTION);
+				char[] pwd = password.getPassword();
+				Properties properties = retrieveTempConfig(MAIN_CONFIG);
+				
+				if(option == JOptionPane.OK_OPTION){
+					String devicePassword = new String(pwd);
+					String currentpwd = properties.getProperty(PASSWORD_KEY,"invalid");
+					
+					if(devicePassword == null || devicePassword.trim().isEmpty() || !devicePassword.equals("$" + currentpwd + "$")){
+						JOptionPane.showMessageDialog(getMe(), "Invalid password", "Manage Device", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+				} else {
+					JOptionPane.showMessageDialog(getMe(), "Action cancelled", "Manage Device", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
 				List<DeviceDetailsDTO> detailsPrepared = validateAndPrepareDetails(table);
 				logger.info("Details prepared for CRUD : {}", detailsPrepared);
 

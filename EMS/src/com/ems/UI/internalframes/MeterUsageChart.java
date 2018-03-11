@@ -6,8 +6,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -36,12 +35,9 @@ import org.jfree.ui.RectangleInsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ems.UI.dto.DeviceDetailsDTO;
-import com.ems.UI.dto.ExtendedSerialParameter;
+import com.ems.UI.dto.ChartDTO;
 import com.ems.UI.swingworkers.GroupedDeviceWorker;
-import com.ems.response.handlers.LiveResponseHandler;
-import com.ems.util.ConfigHelper;
-import com.ems.util.EMSUtility;
+import com.ems.response.handlers.ChartDataGenerator;
 
 public class MeterUsageChart extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -52,15 +48,23 @@ public class MeterUsageChart extends JPanel {
 	private XYItemRenderer renderer = null;
 	private Timer timer;
 	private GroupedDeviceWorker worker = null;
-	private LiveResponseHandler handler = null;
-	
-	
+	private ChartDataGenerator dataGenerator;
+
 	public MeterUsageChart(ChartDTO dto) {
 
 		super(new BorderLayout());
 		this.dto = dto;
 
 		initialize();
+	}
+
+	public ChartDataGenerator getDataGenerator() {
+		return dataGenerator;
+	}
+
+	public MeterUsageChart setDataGenerator(ChartDataGenerator dataGenerator) {
+		this.dataGenerator = dataGenerator;
+		return this;
 	}
 
 	public void initialize() {
@@ -83,7 +87,8 @@ public class MeterUsageChart extends JPanel {
 			series.setMaximumItemAge(dto.getMaxAge());
 			dataset.addSeries(series);
 			renderer.setSeriesStroke(i, new BasicStroke(3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
-			renderer.setSeriesPaint(i, new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).brighter());
+			renderer.setSeriesPaint(i,
+					new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).brighter());
 		}
 
 		XYPlot plot = new XYPlot(this.dataset, domain, range, renderer);
@@ -101,44 +106,31 @@ public class MeterUsageChart extends JPanel {
 		JFreeChart chart = new JFreeChart(dto.getDeviceName(), new Font("SansSerif", Font.BOLD, 24), plot, true);
 		chart.setBackgroundPaint(Color.white);
 		ChartPanel chartPanel = new ChartPanel(chart);
-		chartPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
+		/*chartPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
 				BorderFactory.createLineBorder(Color.black)));
-
+*/
 		add(chartPanel, BorderLayout.CENTER);
 
-		ChartControlPanel controlPanel = new ChartControlPanel();
-
-		add(new JScrollPane(controlPanel), BorderLayout.SOUTH);
+		if (dto.isControlPanelRequired()) {
+			ChartControlPanel controlPanel = new ChartControlPanel();
+			add(new JScrollPane(controlPanel), BorderLayout.SOUTH);
+		}
 	}
 
-	public void start(){
+	public MeterUsageChart start() {
 		timer = new DataGenerator(dto.getInterval());
-		
-		ArrayList<DeviceDetailsDTO> deviceList = new ArrayList<>();
-		deviceList.add(dto.getParameter());
-		List<ExtendedSerialParameter> paramList = EMSUtility.mapDevicesToSerialParams(deviceList);
-		Map<String, List<ExtendedSerialParameter>> groupedDevices = EMSUtility.groupDeviceForPolling(paramList);
-		worker = new GroupedDeviceWorker(groupedDevices);
-		worker.setRefreshFrequency(ConfigHelper.getLiveRefreshFrequency() * 1000);
-		handler = new LiveResponseHandler(dto.getSeriesName())
-				.setDevice(dto.getParameter());
-		
-		//Start worker to poll at given frequency
-		worker.setResponseHandler(handler);
-		worker.execute();
-		
 		timer.start();
-		
-		logger.debug("Data generator thread is started");
+		logger.trace("Data generator thread is started");
+		return this;
 	}
 
-	public void stop(){
-		if(timer != null){
-			logger.debug("Data generator thread is stopped");
+	public void stop() {
+		if (timer != null) {
+			logger.trace("Data generator thread is stopped");
 			timer.stop();
 		}
-		
-		if(worker != null){
+
+		if (worker != null) {
 			worker.cancel(true);
 			logger.debug("Device worker is stopped is stopped");
 			worker = null;
@@ -190,12 +182,14 @@ public class MeterUsageChart extends JPanel {
 
 		public void actionPerformed(ActionEvent event) {
 
-			logger.debug("load current meter readings for device : " + dto.getDeviceName());
-			
-			Map<String, Long> readings = handler.getReadings();
-			
-			for(String seriesName : dto.getSeriesName()){
-				dataset.getSeries(seriesName).add(new Second(), readings.get(seriesName));
+			logger.trace("series names : {}", Arrays.toString(dto.getSeriesName()));
+
+			if (dataGenerator != null) {
+				Map<String, Number> readings = dataGenerator.getReadings();
+				logger.trace("updating chart data.... ");
+				for (String seriesName : dto.getSeriesName()) {
+					dataset.getSeries(seriesName).addOrUpdate(new Second(), readings.get(seriesName));
+				}
 			}
 		}
 	}
@@ -203,96 +197,7 @@ public class MeterUsageChart extends JPanel {
 	@Override
 	protected void finalize() throws Throwable {
 		stop();
-		logger.debug("Finalized Meter usage chart");
+		logger.trace("Finalized Meter usage chart");
 		super.finalize();
-	}
-}
-
-class ChartDTO {
-	private int maxAge;
-	private String deviceName;
-	private String[] seriesName;
-
-	private long deviceUniqueId;
-
-	private String xAxisName;
-	private String yAxisName;
-	private int interval;
-	private DeviceDetailsDTO parameter;
-
-
-	public ChartDTO() {
-	}
-
-	public long getDeviceUniqueId() {
-		return deviceUniqueId;
-	}
-
-	public ChartDTO setDeviceUniqueId(long deviceUniqueId) {
-		this.deviceUniqueId = deviceUniqueId;
-		return this;
-	}
-
-	public int getMaxAge() {
-		return maxAge;
-	}
-
-	public ChartDTO setMaxAge(int maxAge) {
-		this.maxAge = maxAge;
-		return this;
-	}
-
-	public String getDeviceName() {
-		return deviceName;
-	}
-
-	public ChartDTO setDeviceName(String deviceName) {
-		this.deviceName = deviceName;
-		return this;
-	}
-
-	public String[] getSeriesName() {
-		return seriesName;
-	}
-
-	public ChartDTO setSeriesName(String[] seriesName) {
-		this.seriesName = seriesName;
-		return this;
-	}
-
-	public String getxAxisName() {
-		return xAxisName;
-	}
-
-	public ChartDTO setxAxisName(String xAxisName) {
-		this.xAxisName = xAxisName;
-		return this;
-	}
-
-	public String getyAxisName() {
-		return yAxisName;
-	}
-
-	public ChartDTO setyAxisName(String yAxisName) {
-		this.yAxisName = yAxisName;
-		return this;
-	}
-
-	public int getInterval() {
-		return interval;
-	}
-
-	public ChartDTO setInterval(int interval) {
-		this.interval = interval;
-		return this;
-	}
-
-	public DeviceDetailsDTO getParameter() {
-		return parameter;
-	}
-
-	public ChartDTO setParameter(DeviceDetailsDTO parameter) {
-		this.parameter = parameter;
-		return this;
 	}
 }

@@ -22,6 +22,7 @@ import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +53,7 @@ public abstract class EMSUtility {
 	public static final String DASHBOARD_FMT = "dd-MMM,yyyy";
 	public static final String DASHBOARD_POLLED_FMT = "dd-MMM,yy hh:mm a";
 	public static final String REPORTNAME_FORMAT = "ddMMyyHHmm";
+	public static final String EXCEL_REPORTNAME_FORMAT = "ddMMMyyyyHHmm";
 	
 
 	/**
@@ -651,4 +653,51 @@ public abstract class EMSUtility {
 		return secondSmallest;
 	}
 	
+	
+	/**
+	 * @param date1
+	 * @param date2
+	 * @param timeUnit
+	 * @returns date differenece in timeUnit - TimeUnit.DAYS and so on
+	 */
+	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+	    long diffInMillies = date2.getTime() - date1.getTime();
+	    
+	    if(timeUnit == null)
+	    	timeUnit = TimeUnit.DAYS;
+	    
+	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+	}
+	
+	public static String getAddressByName(String mappings, String valueToFind){
+		String regx = "[\\d]+=" + valueToFind;	
+		
+		Pattern pattern = Pattern.compile(regx);
+		Matcher matcher = pattern.matcher(mappings);
+		
+		while(matcher.find()){
+			return matcher.group(0).split("=")[0];
+		}
+		
+		return null;
+	}
+	
+	public static Pattern getValueByAddressPattern(String memory){
+		Pattern pattern = Pattern.compile(memory + "=[\\d.]+");
+		return pattern;
+	}
+	
+	public static String getValueByAddress(String values, String memory, Pattern pattern){
+		
+		if(pattern == null)
+			pattern = getValueByAddressPattern(memory);
+		
+		Matcher matcher = pattern.matcher(values);
+		
+		while(matcher.find()){
+			return matcher.group(0).split("=")[1];
+		}
+		
+		return "0.0";
+	}
 }

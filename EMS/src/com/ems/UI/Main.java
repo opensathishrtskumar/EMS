@@ -5,7 +5,6 @@ import static com.ems.util.ConfigHelper.getCompanyName;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
-import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,8 +27,6 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 
-import org.quartz.JobDetail;
-import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,23 +35,15 @@ import com.ems.UI.custom.components.LoginDialog;
 import com.ems.UI.custom.components.ManagePassword;
 import com.ems.UI.custom.components.PreferencesDialog;
 import com.ems.UI.internalframes.AbstractIFrame;
-import com.ems.UI.internalframes.DBConfigurer;
-import com.ems.UI.internalframes.DashboardFrame;
 import com.ems.UI.internalframes.GroupDevices;
 import com.ems.UI.internalframes.GroupedDevices;
-import com.ems.UI.internalframes.LiveChartIFrame;
 import com.ems.UI.internalframes.ManageDeviceIFrame;
-import com.ems.UI.internalframes.PollingIFrame;
-import com.ems.UI.internalframes.ReportsIFrame;
+import com.ems.UI.internalframes.NewDashboardFrame;
+import com.ems.UI.internalframes.ExcelReportIFrame;
 import com.ems.response.handlers.Event;
 import com.ems.response.handlers.EventHandler;
 import com.ems.response.handlers.Events;
-import com.ems.scheduler.CumulativeReportJob;
-import com.ems.scheduler.DailyReportJob;
-import com.ems.scheduler.SchedulerConfigurer;
-import com.ems.scheduler.SchedulerUtil;
 import com.ems.tmp.datamngr.TempDataManager;
-import com.ems.util.ConfigHelper;
 import com.ems.util.EMSSwingUtils;
 
 public class Main {
@@ -69,7 +58,7 @@ public class Main {
 	private JMenuBar menuBar;
 
 	/**
-	 * Launch the application.
+	 * Launch the application.M
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -143,13 +132,8 @@ public class Main {
 					public void handle(Event event) {
 						if(event.getEvent() == Events.LOGIN_SUCCESS){
 							
-							JobDetail job = SchedulerUtil.createJob("DailyReportJob", "EMS", DailyReportJob.class);
-							Trigger trigger = SchedulerUtil.createTrigger("DailyReport", "EMS", ConfigHelper.getDailyReportCronExpr());
-							SchedulerConfigurer.scheduleJob(trigger, job);
-							
-							JobDetail reportJob = SchedulerUtil.createJob("DailyCumulativeReportJob", "EMS", CumulativeReportJob.class);
-							Trigger reportTrigger = SchedulerUtil.createTrigger("DailyCumulativeReport", "EMS", ConfigHelper.getcumulativeReportCronExpr());
-							SchedulerConfigurer.scheduleJob(reportTrigger, reportJob);
+							/*EMSSwingUtils.openSingletonIFrame(desktopPane,
+									NewDashboardFrame.class);*/
 						}
 					}
 				});
@@ -161,7 +145,7 @@ public class Main {
 		frmManageEnergy.setResizable(true);
 		frmManageEnergy
 				.setTitle(BUNDLE.getString("Main.frmManageEnergy.title") + getCompanyName()); //$NON-NLS-1$
-		/*frmManageEnergy.setExtendedState(JFrame.MAXIMIZED_BOTH);*/
+		
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		frmManageEnergy.setSize(dimension);
 		
@@ -170,11 +154,11 @@ public class Main {
 		menuBar = new JMenuBar();
 		frmManageEnergy.setJMenuBar(menuBar);
 
-		JMenu mnFile = new JMenu(BUNDLE.getString("Main.mnFile.text")); //$NON-NLS-1$
+		/*JMenu mnFile = new JMenu(BUNDLE.getString("Main.mnFile.text")); //$NON-NLS-1$
 		mnFile.setMnemonic('F');
-		menuBar.add(mnFile);
+		menuBar.add(mnFile);*/
 
-		JMenuItem mntmExit = new JMenuItem(
+		/*JMenuItem mntmExit = new JMenuItem(
 				BUNDLE.getString("Main.mntmExit.text")); //$NON-NLS-1$
 		mntmExit.setMnemonic('X');
 		mntmExit.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/gnome-logout.png")));
@@ -194,9 +178,9 @@ public class Main {
 		});
 
 		JSeparator separator = new JSeparator();
-		mnFile.add(separator);
+		mnFile.add(separator);*/
 		
-		JMenuItem mntmLockScreen = new JMenuItem(BUNDLE.getString("Main.mntmLockScreen.text")); //$NON-NLS-1$
+		/*JMenuItem mntmLockScreen = new JMenuItem(BUNDLE.getString("Main.mntmLockScreen.text")); //$NON-NLS-1$
 		mntmLockScreen.setMnemonic('L');
 		mntmLockScreen.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/gnome-lockscreen.png")));
 		mntmLockScreen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
@@ -213,7 +197,7 @@ public class Main {
 		mnFile.add(separator_1);
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
 				InputEvent.ALT_MASK));
-		mnFile.add(mntmExit);
+		mnFile.add(mntmExit);*/
 
 		JMenu mnConnection = new JMenu(
 				BUNDLE.getString("Main.mnConnection.text")); //$NON-NLS-1$
@@ -240,7 +224,7 @@ public class Main {
 		JSeparator separator_3 = new JSeparator();
 		mnConnection.add(separator_3);
 		
-		JMenuItem mntmPolling = new JMenuItem(BUNDLE.getString("Main.mntmPolling.text")); //$NON-NLS-1$
+		/*JMenuItem mntmPolling = new JMenuItem(BUNDLE.getString("Main.mntmPolling.text")); //$NON-NLS-1$
 		mnConnection.add(mntmPolling);
 		mntmPolling.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/gtk-refresh.png")));
 		mntmPolling.addActionListener(new ActionListener() {
@@ -250,7 +234,7 @@ public class Main {
 			}
 		});
 		mntmPolling.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
-		mntmPolling.setMnemonic('P');
+		mntmPolling.setMnemonic('P');*/
 		
 		JSeparator separator_7 = new JSeparator();
 		mnConnection.add(separator_7);
@@ -259,7 +243,7 @@ public class Main {
 		mntmNewMenuItem_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				EMSSwingUtils.openSingletonIFrame(desktopPane,
-						DashboardFrame.class);
+						NewDashboardFrame.class);
 			}
 		});
 		mntmNewMenuItem_1.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/agt_home.png")));
@@ -289,7 +273,7 @@ public class Main {
 		JSeparator separator_4 = new JSeparator();
 		mnSetup.add(separator_4);
 		
-		JMenuItem mntmNewMenuItem = new JMenuItem(BUNDLE.getString("Main.mntmNewMenuItem.text_1"));
+		/*JMenuItem mntmNewMenuItem = new JMenuItem(BUNDLE.getString("Main.mntmNewMenuItem.text_1"));
 		mntmNewMenuItem.setMnemonic('O');
 		mntmNewMenuItem.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/application-x-sqlite2.png")));
 		mntmNewMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
@@ -302,7 +286,7 @@ public class Main {
 		mnSetup.add(mntmNewMenuItem);
 		
 		JSeparator separator_5 = new JSeparator();
-		mnSetup.add(separator_5);
+		mnSetup.add(separator_5);*/
 		
 		JMenuItem mntmManagePassword = new JMenuItem(BUNDLE.getString("Main.mntmManagePassword.text")); //$NON-NLS-1$
 		mntmManagePassword.setMnemonic('W');
@@ -331,7 +315,8 @@ public class Main {
 		mnSetup.add(separator_6);
 		mntmPreference.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/Service-Manager.png")));
 		mntmPreference.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
-		mnSetup.add(mntmPreference);
+		//Preferences not required
+		//mnSetup.add(mntmPreference);
 
 		JMenu mnReports = new JMenu(BUNDLE.getString("Main.mnReports.text")); //$NON-NLS-1$
 		mnReports.setMnemonic('R');
@@ -339,11 +324,12 @@ public class Main {
 
 		JMenuItem mntmView = new JMenuItem(
 				BUNDLE.getString("Main.mntmView.text")); //$NON-NLS-1$
+		mntmView.setToolTipText(BUNDLE.getString("Main.mntmView.toolTipText")); //$NON-NLS-1$
 		mntmView.setMnemonic('V');
 		mntmView.setIcon(new ImageIcon(Main.class.getResource("/com/ems/resources/search.png")));
 		mntmView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				EMSSwingUtils.openSingletonIFrame(desktopPane, ReportsIFrame.class);
+				EMSSwingUtils.openSingletonIFrame(desktopPane, ExcelReportIFrame.class);
 			}
 		});
 		mntmView.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
@@ -357,9 +343,11 @@ public class Main {
 		mntmGroupDevice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//Show grouping feauture
-				GroupDevices dialog = new GroupDevices(getMe());
-				dialog.setModal(true);
-				dialog.setVisible(true);
+				//GroupDevices dialog = new GroupDevices(getMe());
+				//dialog.setModal(true);
+				//dialog.setVisible(true);
+				
+				EMSSwingUtils.openSingletonIFrame(desktopPane, GroupDevices.class);
 			}
 		});
 		mnReports.add(mntmGroupDevice);
@@ -376,7 +364,7 @@ public class Main {
 		});
 		mnReports.add(mntmGroupedDevices);
 		
-		JMenuItem mntmLiveChart = new JMenuItem(BUNDLE.getString("Main.mntmLiveChart.text")); //$NON-NLS-1$
+		/*JMenuItem mntmLiveChart = new JMenuItem(BUNDLE.getString("Main.mntmLiveChart.text")); //$NON-NLS-1$
 		mntmLiveChart.setMnemonic('M');
 		mntmLiveChart.setActionCommand(BUNDLE.getString("Main.mntmLiveChart.actionCommand")); //$NON-NLS-1$
 		mntmLiveChart.addActionListener(new ActionListener() {
@@ -385,7 +373,7 @@ public class Main {
 						LiveChartIFrame.class);
 			}
 		});
-		mnReports.add(mntmLiveChart);
+		mnReports.add(mntmLiveChart);*/
 
 		JMenu mnHelp = new JMenu(BUNDLE.getString("Main.mnHelp.text")); //$NON-NLS-1$
 		mnHelp.setMnemonic('H');
@@ -420,7 +408,7 @@ public class Main {
 		}*/;
 		desktopPane.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		desktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-		desktopPane.setBackground(SystemColor.text);
+		desktopPane.setBackground(EMSSwingUtils.getBackGroundColor());
 		frmManageEnergy.getContentPane().add(desktopPane);
 		frmManageEnergy.setAlwaysOnTop(false);
 		

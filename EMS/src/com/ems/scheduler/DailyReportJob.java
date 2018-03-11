@@ -1,26 +1,17 @@
 package com.ems.scheduler;
 
-import static com.ems.constants.QueryConstants.RETRIEVE_DEVICE_STATE;
-import static com.ems.util.EMSUtility.getOrderedProperties;
 import static com.ems.util.ExcelUtils.createReportHeaderMap;
 import static com.ems.util.ExcelUtils.createWorkBook;
 import static com.ems.util.ExcelUtils.createWorkSheet;
-import static com.ems.util.ExcelUtils.writeResultToSheet;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.quartz.JobExecutionContext;
@@ -38,7 +29,6 @@ import com.ems.db.DBConnectionManager;
 import com.ems.mailer.EmailUtil;
 import com.ems.util.ConfigHelper;
 import com.ems.util.EMSUtility;
-import com.ems.util.ExcelUtils;
 import com.ems.util.Helper;
 
 public class DailyReportJob extends AbstractJob {
@@ -90,7 +80,8 @@ public class DailyReportJob extends AbstractJob {
 			HSSFSheet sheet = createWorkSheet(workBook, device.getDeviceName(), headers);
 			
 			try {
-				new SheetWriter(param, sheet).setReportStartTime(startTime).setReportEndTime(endTime).call();
+				new SheetWriter(param, sheet, QueryConstants.RETRIEVE_DEVICE_STATE,
+						new Object[] { param.getUniqueId(), startTime, endTime }).call();
 			} catch (Exception e) {
 				logger.error("{}",e);
 			}
@@ -120,82 +111,6 @@ public class DailyReportJob extends AbstractJob {
 		boolean sent = EmailUtil.sendEmail(this.emailDTO);
 		//No need to delete report file
 		logger.debug("mail triggered  for daily report..");
-	}
-	
-	static class SheetWriter implements Callable<Object>{
-		
-		private static final Logger logger = LoggerFactory.getLogger(SheetWriter.class);
-		
-		private long reportStartTime;
-		private long reportEndTime;
-		private ExtendedSerialParameter device;
-		private HSSFSheet sheet;
-		
-		public SheetWriter(ExtendedSerialParameter device, HSSFSheet sheet) {
-			this.device = device;
-			this.sheet = sheet;
-		}
-		
-		@Override
-		public HSSFSheet call() throws Exception {
-			
-			logger.trace("trying to get memory details for daily report");
-			
-			Connection connection = DBConnectionManager.getConnection();
-			PreparedStatement ps = null;
-			ResultSet rs = null;
-			
-			try {
-				ps = connection.prepareStatement(RETRIEVE_DEVICE_STATE);
-				ps.setLong(1, this.device.getUniqueId());
-				ps.setLong(2, reportStartTime);
-				ps.setLong(3, reportEndTime);
-				rs = ps.executeQuery();
-
-				// Keep the order of properties
-				Map<String, String> memoryMap = getOrderedProperties(device);
-				// All the values becomes header of column
-				Map<String, String> headers = new LinkedHashMap<>();
-				headers.put("Polled on", "Time");
-				headers.putAll(memoryMap);
-
-				// Firt row reserved for headers so start with 1
-				for (int rowIndex = 1;rs.next(); rowIndex++) {
-					HSSFRow row = sheet.createRow(rowIndex);
-					ExcelUtils.writeReadingsRow(row, rs.getString("formatteddate"), 
-							rs.getString("unitresponse"), memoryMap);
-				}
-
-				this.sheet = writeResultToSheet(device, rs, sheet);
-
-			} catch (Exception e) {
-				logger.error("error creating sheet for daily report  for device {}  {}", this.device, e);
-			} finally {
-				DBConnectionManager.closeConnections(connection, ps, rs);
-			}
-			
-			logger.trace("sheet creation completed for daily report");
-			
-			return this.sheet;
-		}
-
-		public long getReportStartTime() {
-			return reportStartTime;
-		}
-
-		public SheetWriter setReportStartTime(long reportStartTime) {
-			this.reportStartTime = reportStartTime;
-			return this;
-		}
-
-		public long getReportEndTime() {
-			return reportEndTime;
-		}
-
-		public SheetWriter setReportEndTime(long reportEndTime) {
-			this.reportEndTime = reportEndTime;
-			return this;
-		}
 	}
 	
 	public static void main(String[] args) throws JobExecutionException {

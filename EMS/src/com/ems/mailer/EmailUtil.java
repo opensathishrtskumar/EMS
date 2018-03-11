@@ -40,6 +40,8 @@ public abstract class EmailUtil {
 		props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.host", "smtp.gmail.com");
 		props.put("mail.smtp.port", "25");
+		props.put("mail.smtp.socketFactory.class",
+			      "javax.net.ssl.SSLSocketFactory");
 
 		// Get the Session object.
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {

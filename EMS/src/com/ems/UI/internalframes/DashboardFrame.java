@@ -90,12 +90,12 @@ public class DashboardFrame extends JInternalFrame {
 		lblMarque.setBounds(277, 11, 282, 22);
 		panel.add(lblMarque);
 		
-		JLabel lblPolledOn = new JLabel("Refreshed on");
+		/*JLabel lblPolledOn = new JLabel("Refreshed on");
 		lblPolledOn.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblPolledOn.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblPolledOn.setBounds(603, 15, 94, 14);
 		panel.add(lblPolledOn);
-		
+		*/
 		String polled = getFormattedDate(DASHBOARD_POLLED_FMT);
 		lblTime = new JLabel(polled);
 		lblTime.setHorizontalAlignment(SwingConstants.LEFT);

@@ -166,9 +166,10 @@ public class LoginDialog extends JDialog {
  
         getContentPane().add(panel, BorderLayout.CENTER);
         getContentPane().add(bp, BorderLayout.PAGE_END);
- 
-        tfUsername.setText("");
-        pfPassword.setText("");
+        
+        //TODO : remove during deployment
+        //tfUsername.setText("admin");
+        //pfPassword.setText("admin");
         
         pack();
         initialize();

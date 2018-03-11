@@ -37,6 +37,7 @@ import javax.swing.event.InternalFrameEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ems.UI.dto.ChartDTO;
 import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.constants.EmsConstants;
 import com.ems.db.DBConnectionManager;
@@ -61,6 +62,7 @@ public class LiveChartIFrame extends JInternalFrame {
 		setTitle("Live Monitoring");
 		setClosable(true);
 		setBounds(100, 100, 949, 680);
+		setBackground(EMSSwingUtils.getBackGroundColor());
 		centerFrame(getMe());
 		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 
@@ -128,9 +130,8 @@ public class LiveChartIFrame extends JInternalFrame {
 
 				String[] memoryMapping = loadMemoryMapping(device);
 
-				ChartDTO dto = new ChartDTO().setDeviceName(device.getDeviceName()).setMaxAge(100000)
+				ChartDTO dto = new ChartDTO().setMaxAge(100000)
 						.setSeriesName(memoryMapping).setxAxisName("Readings").setyAxisName("Time")
-						.setDeviceUniqueId(device.getUniqueId())
 						.setInterval(ConfigHelper.getLiveRefreshFrequency() * 1000).setParameter(device);
 
 				monitorPanel = new MeterUsageChart(dto);

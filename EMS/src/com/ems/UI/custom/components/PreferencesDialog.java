@@ -249,6 +249,8 @@ public class PreferencesDialog extends JDialog {
 		List<DeviceDetailsDTO> deviceList = DBConnectionManager.getAvailableDevices(QueryConstants.SELECT_ENABLED_ENDEVICES);
 		String[] configDevice = config.getProperty(MessageConstants.DASHBOARD_DEVICES_KEY,"").split(SEMICOLON);
 		List<String> configDeviceList = Arrays.asList(configDevice);
+		System.out.println(deviceList+"thirumalai");
+		
 		for(DeviceDetailsDTO device : deviceList){
 			deviceRoot.add(new DefaultMutableTreeNode(device));
 			if(configDeviceList.contains(String.valueOf(device.getUniqueId()))){

@@ -6,6 +6,7 @@ import static com.ems.constants.EmsConstants.TIMEOUT;
 import static com.ems.util.EMSUtility.processRegistersForDashBoard;
 
 import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -41,7 +42,6 @@ import com.ems.UI.dto.GroupsDTO;
 import com.ems.UI.dto.PollingDetailDTO;
 import com.ems.UI.internalframes.PingInternalFrame;
 import com.ems.constants.EmsConstants;
-import com.ems.constants.QueryConstants;
 import com.ems.db.DBConnectionManager;
 
 public abstract class EMSSwingUtils {
@@ -195,30 +195,23 @@ public abstract class EMSSwingUtils {
 	public static JLabel getDeviceDetailLabel(ExtendedSerialParameter device) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(
-				"<html><head><style>body{background-color:#B3C4BC;}div{background-color:#B3C4BC;width:200px;border:3px solid darkgrey;padding:1px;");
+				"<html><head><style>body{background-color:#BBD2F7;}");
 		builder.append(
-				"margin: 1px;text-align:center;}table#table{width:100%;margin-left:20%;margin-right:15%;}tr{background-color: #B3B3C4;color: black;font-family: Times New Roman, Georgia, Serif; font-size: 16pt;}</style></head><body>");
-		builder.append("<div><h3>" + device.getDeviceName() + "</h3><hr><center><table id='table'>");
+				"table#table{width:100%;margin-left:20%;margin-right:15%;}tr{color: black;font-family: Times New Roman, Georgia, Serif; font-size: 16pt;}</style></head><body>");
+		builder.append("<div><center><table id='table'>");
 
 		Map<String, String> registerValue = null;
-		
-		//if request status is success then process else load from DB
-		if(device.isStatus() 
-				|| (device.isSplitJoin() 
-						&& EMSUtility.splitJoinStatus(device.getSplitJoinDTO().getStatus()))){//Modbus Request is success
-			registerValue = processRegistersForDashBoard(device);
-		} else {
-			//Load recent polling response from DB for the first time;
-			List<PollingDetailDTO> list = DBConnectionManager.
-					fetchRecentPollingDetails(device.getUniqueId());
-			if(list.size() > 0){
-				Properties props = EMSUtility.loadProperties(list.get(0).getUnitresponse());
-				registerValue = EMSUtility.convertProp2Map(props);
-			}
+
+		// Always load from DB only
+		// Load recent polling response from DB for the first time;
+		List<PollingDetailDTO> list = DBConnectionManager.fetchRecentPollingDetails(device.getUniqueId());
+		if (list.size() > 0) {
+			Properties props = EMSUtility.loadProperties(list.get(0).getUnitresponse());
+			registerValue = EMSUtility.convertProp2Map(props);
 		}
-		
+
 		Map<String, String> mappings = EMSUtility.getOrderedProperties(device);
-		
+
 		logger.trace("Processed register : {} Mapping : {}", registerValue, mappings);
 
 		for (Entry<String, String> memory : mappings.entrySet()) {
@@ -301,5 +294,9 @@ public abstract class EMSSwingUtils {
 		} catch (AWTException e) {
 			logger.error("{}", e);
 		}
+	}
+
+	public static Color getBackGroundColor() {
+		return new Color(187, 210, 247);
 	}
 }

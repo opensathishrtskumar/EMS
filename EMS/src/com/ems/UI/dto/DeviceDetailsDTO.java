@@ -1,6 +1,8 @@
 package com.ems.UI.dto;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Sathish Kumar
@@ -26,8 +28,101 @@ public class DeviceDetailsDTO implements Serializable{
 	private String registerMapping;
 	private String method;
 	private boolean splitJoin;
+	private String timeStamp;
+	
+	private Properties reportMapping;
+	private long startTime;
+	private long endTime;
+	private int recordCount;
+	
+	private boolean allDevice;
+	private boolean allMemory;
+	private Map<String, String> selectedMemory;
+	private String singleParamAddress;
+	private int coulmnIndex;
 	
 	public DeviceDetailsDTO() {
+	}
+	
+	public int getCoulmnIndex() {
+		return coulmnIndex;
+	}
+
+	public void setCoulmnIndex(int coulmnIndex) {
+		this.coulmnIndex = coulmnIndex;
+	}
+
+	public String getSingleParamAddress() {
+		return singleParamAddress;
+	}
+
+	public void setSingleParamAddress(String singleParamAddress) {
+		this.singleParamAddress = singleParamAddress;
+	}
+
+	public boolean isAllDevice() {
+		return allDevice;
+	}
+
+	public DeviceDetailsDTO setAllDevice(boolean allDevice) {
+		this.allDevice = allDevice;
+		return this;
+	}
+
+	public boolean isAllMemory() {
+		return allMemory;
+	}
+
+	public DeviceDetailsDTO setAllMemory(boolean allMemory) {
+		this.allMemory = allMemory;
+		return this;
+	}
+
+	public Map<String, String> getSelectedMemory() {
+		return selectedMemory;
+	}
+
+	public DeviceDetailsDTO setSelectedMemory(Map<String, String> selectedMemory) {
+		this.selectedMemory = selectedMemory;
+		return this;
+	}
+
+	public int getRecordCount() {
+		return recordCount;
+	}
+
+	public DeviceDetailsDTO setRecordCount(int recordCount) {
+		this.recordCount = recordCount;
+		return this;
+	}
+
+
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public DeviceDetailsDTO setStartTime(long startTime) {
+		this.startTime = startTime;
+		return this;
+	}
+
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public DeviceDetailsDTO setEndTime(long endTime) {
+		this.endTime = endTime;
+		return this;
+	}
+
+	public Properties getReportMapping() {
+		return reportMapping;
+	}
+
+	public DeviceDetailsDTO setReportMapping(Properties reportMapping) {
+		this.reportMapping = reportMapping;
+		return this;
 	}
 
 	public long getUniqueId() {
@@ -149,6 +244,14 @@ public class DeviceDetailsDTO implements Serializable{
 	public void setMethod(String method) {
 		this.method = method;
 	}
+	
+	public String getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(String timeStamp) {
+		this.timeStamp = timeStamp;
+	}
 
 	public String getGroupKey(){
 		StringBuilder builder = new StringBuilder();
@@ -162,6 +265,6 @@ public class DeviceDetailsDTO implements Serializable{
 	
 	@Override
 	public String toString() {
-		return deviceName + "(" + uniqueId + ")";
+		return deviceName;
 	}
 }

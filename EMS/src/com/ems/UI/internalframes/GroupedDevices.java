@@ -4,6 +4,8 @@ import static com.ems.util.EMSSwingUtils.getDeviceDetailLabel;
 import static com.ems.util.EMSUtility.groupDeviceForPolling;
 import static com.ems.util.EMSUtility.mapDevicesToSerialParams;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -29,7 +33,7 @@ import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.ExtendedSerialParameter;
 import com.ems.UI.dto.GroupDTO;
 import com.ems.UI.dto.GroupsDTO;
-import com.ems.UI.swingworkers.GroupedDeviceWorker;
+import com.ems.UI.swingworkers.DisplayDeviceWorker;
 import com.ems.concurrency.ConcurrencyUtils;
 import com.ems.response.handlers.DashboardResponseHandler;
 import com.ems.util.ConfigHelper;
@@ -39,7 +43,7 @@ import com.ems.util.EMSUtility;
 public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 	private static final Logger logger = LoggerFactory.getLogger(GroupedDevices.class);
 	private static final long serialVersionUID = 1L;
-	private GroupedDeviceWorker worker = null;
+	private DisplayDeviceWorker worker = null;
 
 	/**
 	 * Create the frame.
@@ -99,14 +103,15 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 				final List<ExtendedSerialParameter> mainList = new ArrayList<ExtendedSerialParameter>();
 				
 				for(GroupDTO group : groupList){
-					final JPanel panel_1 = new JPanel();
-					tabbedPane.addTab(group.getGroupName(), null, new JScrollPane(panel_1), group.getGroupDescription());
-					panel_1.setLayout(new GridLayout());
+					final JPanel parentDevicePanel = new JPanel();
+					tabbedPane.addTab(group.getGroupName(), null, new JScrollPane(parentDevicePanel), group.getGroupDescription());
 
 					List<DeviceDetailsDTO> deviceList = group.getDevices();
 					if(deviceList != null){
 						List<ExtendedSerialParameter> list = mapDevicesToSerialParams(deviceList);
 						List<Future<Object>> tasks = new ArrayList<>();
+						
+						parentDevicePanel.setLayout(new GridLayout(1, list.size()));
 						
 						for(final ExtendedSerialParameter device : list){
 							mainList.add(device);
@@ -117,8 +122,13 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 								public String call() throws Exception {
 									JScrollPane deviceDetail = getDeviceDetailJScrollPane(device);
 									device.setPanel(deviceDetail);
-									panel_1.add(deviceDetail);
-									panel_1.revalidate();
+									JPanel childPanel = new JPanel();
+									childPanel.add(deviceDetail);
+									childPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), device.getDeviceName(),
+											TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+									
+									parentDevicePanel.add(childPanel);
+									parentDevicePanel.revalidate();
 									logger.trace("Grouped device added {}" , device);
 									return "Grouped device added successfully...";
 								}
@@ -137,8 +147,8 @@ public class GroupedDevices extends JInternalFrame implements AbstractIFrame{
 				
 				Map<String, List<ExtendedSerialParameter>> groupedDevices = groupDeviceForPolling(mainList);
 				String refreshFreq = ConfigHelper.getDashboardFrequency();
-				worker = new GroupedDeviceWorker(groupedDevices);
-				worker.setRefreshFrequency(Integer.parseInt(refreshFreq) * 60 * 1000);
+				worker = new DisplayDeviceWorker(groupedDevices);
+				worker.setRefreshFrequency(Integer.parseInt(refreshFreq) * 30 * 500);
 				DashboardResponseHandler handler = new DashboardResponseHandler();
 				worker.setResponseHandler(handler);
 				worker.execute();
