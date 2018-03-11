@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!-- Maps '/' requests to the 'home' view -->
+	<mvc:view-controller path="/" view-name="home" />
+
+	<context:component-scan base-package="org.ems" />
+
+	<context:property-placeholder
+		system-properties-mode="OVERRIDE" location="classpath:/prop/application.properties" />
+
+	<bean class="org.springframework.jmx.export.MBeanExporter"
+		lazy-init="false">
+		<property name="beans">
+			<map>
+				<entry key="bean:name=EMSController" value-ref="emsController" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="emsController" class="org.ems.config.jmx.EMSJmxDTO"
+		lazy-init="false"></bean>
+
+	<!-- Database configuration -->
+	<bean id="basicDataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		lazy-init="false" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="${dburl}" />
+		<property name="defaultAutoCommit" value="true" />
+		<property name="initialSize" value="3" />
+		<property name="maxTotal" value="50" />
+		<property name="minIdle" value="10" />
+		<property name="validationQuery" value="select 1" />
+		<property name="testOnBorrow" value="true" />
+		<property name="minEvictableIdleTimeMillis" value="5000" />
+		<property name="removeAbandonedOnBorrow" value="true" />
+		<property name="removeAbandonedTimeout" value="10" />
+		<property name="timeBetweenEvictionRunsMillis" value="5000" />
+	</bean>
+
+	<bean id="deviceDetailDAO" class="org.ems.db.repo.DeviceDetailsDAO"
+		lazy-init="true" depends-on="pollingDetailsDAO" init-method="init" />
+
+</beans>

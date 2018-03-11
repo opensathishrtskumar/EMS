@@ -1,0 +1,7 @@
+#System variable Configuration
+dburl=jdbc:mysql://localhost:3306/?user=client&password=client&useSSL=false
+
+#configured in seconds
+pollingfrequency=10000
+
+
