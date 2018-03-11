@@ -20,7 +20,7 @@ public class PollingScheduler {
 
 	private GroupedDeviceWorker worker;
 
-	@Scheduled(fixedDelay = 86400000, initialDelay = 5000)
+	//@Scheduled(fixedDelay = 86400000, initialDelay = 5000)
 	public void pollingScheduler() {
 		logger.trace("Triggering polling to fetch Data...");
 

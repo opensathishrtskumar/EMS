@@ -8,6 +8,7 @@
 
 	<!-- Maps '/' requests to the 'home' view -->
 	<mvc:view-controller path="/" view-name="home" />
+	<mvc:view-controller path="/form" view-name="form" />
 
 	<context:component-scan base-package="org.ems" />
 

@@ -7,6 +7,8 @@
 <title>Energy Management System</title>
 </head>
 <body>
-
+	<center>
+		<h1>Energy Management System</h1>
+	</center>
 </body>
 </html>
