@@ -75,7 +75,16 @@ public class MeterUsageChart extends JPanel {
 		range.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 12));
 		domain.setLabelFont(new Font("SansSerif", Font.PLAIN, 14));
 		range.setLabelFont(new Font("SansSerif", Font.PLAIN, 14));
-
+		
+		//to set auto range not from zero
+		range.setAutoRangeIncludesZero(false);
+		range.setAutoRange(true);
+		range.setMinorTickMarksVisible(true);
+		
+		//enable chart control panel
+		this.dto.setControlPanelRequired(true);
+		
+		
 		this.dataset = new TimeSeriesCollection();
 		this.renderer = new XYLineAndShapeRenderer(true, false);
 		Random random = new Random();
