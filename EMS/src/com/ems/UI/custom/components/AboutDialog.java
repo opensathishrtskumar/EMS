@@ -19,19 +19,15 @@ public class AboutDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 
-	//String htmlString = "<html><head><style>body{background-color:#f2f2f2;}h1{color:black;text-align:center;}p{font-family:verdana;font-size: 13px;}</style></head><body><h1>Energy Management System</h1><p>version: v1.0.0</p><p>(c) Copyright <b><i><a href=\"#\">Saratha engineering.</a></i></b>  All rights reserved.</p></body></html>";
+	String htmlString = "<html><head><style>body{background-color:#f2f2f2;}h1{color:black;text-align:center;}h2{color:black;text-align:center;}p{font-family:verdana;font-size: 13px;}</style></head><body><h1>Energy Management System</h1><h1>Saratha Engineering & Services</h1><center><h>Electrical Engineers & Contractors<h><p> Adress:</p><p>No .81/153,Pillayer Kovil Street</p><p>Jafferkhanpet</p><p>Chennai-83</p><p>Ph:+91 7667941234</p><p>sarathaengg@gmail.com</p></p><p>version: v1.0.9</p><p>(c) Copyright <b><i><a href=\\\"#\\\">Saratha engineering.</a></i></b>  All rights reserved.</p></center></body></html>";
 
-	String htmlString = "<html><head><style>body{background-color:#f2f2f2;}h1{color:black;text-align:center;}h2{color:black;text-align:center;}p{font-family:verdana;font-size: 13px;}</style></head><body>,<h1>Energy Management System</h1><h1>Saratha Engineering & Services</h1><center><h>Electrical Engineers & Contractors<h><p> Adress:</p><p>No .81/153,Pillayer Kovil Street</p><p>Jafferkhanpet</p><p>Chennai-83</p><p>Ph:+91 7667941234</p><p>sarathaengg@gmail.com</p></p><p>version: v1.0.9</p><p>(c) Copyright <b><i><a href=\\\"#\\\">Saratha engineering.</a></i></b>  All rights reserved.</p></center></body></html>";
-			
-	
-	
 	/**
 	 * Create the dialog.
 	 */
 	public AboutDialog(Frame parent) {
 		setTitle("About");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(
-				AboutDialog.class.getResource("/com/ems/resources/about.png")));
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage(AboutDialog.class.getResource("/com/ems/resources/about.png")));
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModal(true);
 
