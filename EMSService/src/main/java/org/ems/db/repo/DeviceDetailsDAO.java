@@ -4,36 +4,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.SettingsDTO;
 import com.ems.constants.QueryConstants;
 
+@Component
+@Lazy(true)
+@DependsOn({ "pollingDetailsDAO" })
 public class DeviceDetailsDAO {
 
 	private static final Logger logger = LoggerFactory.getLogger(DeviceDetailsDAO.class);
 
 	@Autowired
 	PollingDetailsDAO pollingDao;
-	
+
 	private List<DeviceDetailsDTO> deviceDetails;
 	private Map<String, String> settings;
 
+	@PostConstruct
 	public void init() {
 		loadDeviceDetails();
 		loadSettings();
 	}
 
-	public void loadDeviceDetails() {
+	private void loadDeviceDetails() {
 		logger.debug("loading active devices...");
 		this.deviceDetails = pollingDao.fetchAllDeviceDetails(QueryConstants.SELECT_ENABLED_ENDEVICES, new Object[] {});
 		logger.debug("loaded active devices...");
 	}
 
-	public Map<String, String> loadSettings() {
+	private Map<String, String> loadSettings() {
 		logger.debug("loading settings...");
 		List<SettingsDTO> settingsList = pollingDao.fetchSettings();
 		this.settings = new HashMap<>();
@@ -50,15 +59,8 @@ public class DeviceDetailsDAO {
 		return deviceDetails;
 	}
 
-	public void setDeviceDetails(List<DeviceDetailsDTO> deviceDetails) {
-		this.deviceDetails = deviceDetails;
-	}
-
 	public Map<String, String> getSettings() {
 		return settings;
 	}
 
-	public void setSettings(Map<String, String> settings) {
-		this.settings = settings;
-	}
 }

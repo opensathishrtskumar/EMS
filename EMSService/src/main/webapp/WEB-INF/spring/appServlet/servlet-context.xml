@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:task="http://www.springframework.org/schema/task"	
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
@@ -26,15 +26,19 @@
 		package -->
 	<beans:bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
-
+	
+	
+	<annotation-driven/>
+	
 	<!-- Imports user-defined @Controller beans that process client requests -->
 	<beans:import resource="controllers.xml" />
 
 	<task:annotation-driven executor="taskExecutor"
 		scheduler="customScheduler" />
-	<task:executor id="taskExecutor" keep-alive="120"
-		pool-size="5-10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
-	<task:scheduler id="customScheduler" pool-size="10" />
 
+	<task:executor id="taskExecutor" keep-alive="120"
+		pool-size="5-10" queue-capacity="30" rejection-policy="CALLER_RUNS" />
+	
+	<task:scheduler id="customScheduler" pool-size="10" />
 
 </beans:beans>

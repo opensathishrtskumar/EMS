@@ -121,22 +121,21 @@ public abstract class QueryConstants {
 
 	// Query for Final Report ends
 	
-	public static final String DAILYSUMMARY_REPORT ="SELECT deviceuniqueid,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT  ,\r\n" + 
-			"	polledon,\r\n" + 
-			"	unitresponse\r\n" + 
-			"FROM monthly.pollingdetails  \r\n" + 
-			"WHERE deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?) \r\n" + 
-			"AND polledon BETWEEN ? AND ? \r\n" + 
-			"GROUP BY DT\r\n" + 
-			"UNION ALL \r\n" + 
-			"SELECT deviceuniqueid,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT  ,\r\n" + 
-			"	polledon,\r\n" + 
-			"	unitresponse\r\n" + 
-			"FROM polling.pollingdetails  \r\n" + 
-			"WHERE deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?) 	\r\n" + 
-			"AND polledon BETWEEN ? AND ? \r\n" + 
-			"GROUP BY DT";
-	
+	public static final String DAILYSUMMARY_REPORT ="(SELECT p.deviceuniqueid, p.polledon ,p.unitresponse   \r\n" + 
+			" FROM 	monthly.pollingdetails p, \r\n" + 
+			"			(SELECT MIN(polledon) AS minimum, deviceuniqueid AS deviceid ,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT\r\n" + 
+			"			FROM monthly.pollingdetails WHERE \r\n" + 
+			"			deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?)\r\n" + 
+			"			AND polledon BETWEEN ? AND ? GROUP BY DT )  AS temp  \r\n" + 
+			"			WHERE deviceuniqueid=temp.deviceid AND (p.polledon = temp.minimum) ORDER BY DT  ASC)\r\n" + 
+			"					UNION ALL\r\n" + 
+			"			(SELECT p.deviceuniqueid, p.polledon ,p.unitresponse \r\n" + 
+			" FROM 	polling.pollingdetails p, \r\n" + 
+			"			(SELECT MIN(polledon) AS minimum, deviceuniqueid AS deviceid ,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT\r\n" + 
+			"			FROM polling.pollingdetails WHERE \r\n" + 
+			"			deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?)\r\n" + 
+			"			AND polledon BETWEEN ? AND ? GROUP BY DT ) AS temp \r\n" + 
+			"			WHERE deviceuniqueid=temp.deviceid AND (p.polledon = temp.minimum) ORDER BY DT  ASC )";
 	
 	public static final String FAILED_DEVICES = "select d.devicealiasname from polling.recentpoll rp, setup.devicedetails d \r\n" + 
 			"	where rp.status = false and d.deviceuniqueid = rp.deviceuniqueid";

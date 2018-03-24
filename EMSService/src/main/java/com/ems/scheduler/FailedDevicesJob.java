@@ -33,7 +33,7 @@ public class FailedDevicesJob extends AbstractJob {
 	private EmailDTO emailDTO = null;
 
 	public FailedDevicesJob() {
-
+		// Do initialization here
 	}
 
 	@Override
@@ -50,13 +50,15 @@ public class FailedDevicesJob extends AbstractJob {
 
 		this.emailDTO.setDate(
 				EMSUtility.getFormattedTime(LocalDateTime.now().minusDays(1).toDate().getTime(), "dd-MMM-yyyy hh:mm"));
-		
-		List<String> devices = dao.loadFailedDevicesNames();
-		
-		String mailBody = html(body(table(tbody(tr(th("Device Names"))
-				, each(devices, device -> tr(td(device))))
-		).attr("border", "2"))).render();
 
+		List<String> devices = dao.loadFailedDevicesNames();
+
+		String mailBody = html(
+				body(table(tbody(tr(th("Device Names")), each(devices, device -> tr(td(device))))).attr("border", "2")))
+						.render();
+
+		// Send mail when there are some failed devices
+		this.emailDTO.setSendMail(!devices.isEmpty());
 		this.emailDTO.setBody(mailBody);
 
 		logger.debug("Initializing report preparation completed- Failed devices report...");
@@ -67,20 +69,22 @@ public class FailedDevicesJob extends AbstractJob {
 		logger.debug("Trigger mail for Failed devices report..");
 		// Set company name date and so on
 		EmailUtil.setEmailDetails(this.emailDTO);
-		// Trigger here mail
-		boolean sent = EmailUtil.sendEmail(this.emailDTO);
 
-		logger.debug("mail triggered  for Failed devices report.. {}",sent);
+		if (this.emailDTO.isSendMail()) {
+			boolean sent = EmailUtil.sendEmail(this.emailDTO);
+		}
+
+		logger.debug("mail triggered  for Failed devices report.. {}", this.emailDTO.isSendMail());
 	}
 
 	public static void main(String[] args) throws JobExecutionException {
 
-		  FileSystemXmlApplicationContext context = new
-		  FileSystemXmlApplicationContext(
-		  "D:/GitRepo/EMS_Repo/EMS/EMSService/src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml"
-		  ); AbstractJob job = new FailedDevicesJob(); job.execute(null);
-		  
-		  context.close();
+		FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(
+				"D:/GitRepo/EMS_Repo/EMS/EMSService/src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml");
+		AbstractJob job = new FailedDevicesJob();
+		job.execute(null);
+
+		context.close();
 	}
 
 }

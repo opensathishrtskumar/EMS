@@ -74,7 +74,7 @@ public abstract class ConfigHelper {
 	public static EmailDTO getEmailDetails() {
 		EmailDTO dto = new EmailDTO();
 		DeviceDetailsDAO dao = AppContextAware.getContext().getBean(DeviceDetailsDAO.class);
-		Map<String, String> settings = dao.loadSettings();
+		Map<String, String> settings = dao.getSettings();
 		dto.setBccEmail(settings.get(bccEmail));
 		dto.setCcEmail(settings.get(ccEmail));
 		dto.setFromEmail(settings.get(fromEmail));

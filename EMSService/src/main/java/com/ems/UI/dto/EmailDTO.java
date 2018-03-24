@@ -18,11 +18,20 @@ public class EmailDTO implements Serializable {
 	private String companyName;
 	private List<AttachmentDTO> attachments;
 	private String date;
+	private boolean sendMail;
 
-	// Set default empty so that it can be updated in props file directly
 	public EmailDTO() {
+		super();
 	}
-	
+
+	public boolean isSendMail() {
+		return sendMail;
+	}
+
+	public void setSendMail(boolean sendMail) {
+		this.sendMail = sendMail;
+	}
+
 	public String getCompanyName() {
 		return companyName;
 	}
@@ -94,7 +103,7 @@ public class EmailDTO implements Serializable {
 	public void setBccEmail(String bccEmail) {
 		this.bccEmail = bccEmail;
 	}
-	
+
 	public String getDate() {
 		return date;
 	}
@@ -102,7 +111,7 @@ public class EmailDTO implements Serializable {
 	public void setDate(String date) {
 		this.date = date;
 	}
-	
+
 	public String getSmtpHost() {
 		return smtpHost;
 	}

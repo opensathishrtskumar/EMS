@@ -7,13 +7,11 @@
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<!-- Maps '/' requests to the 'home' view -->
-	<mvc:view-controller path="/" view-name="home" />
-	<mvc:view-controller path="/form" view-name="form" />
-
-	<context:component-scan base-package="org.ems" />
-
+	
+	<context:component-scan base-package="org.ems,com.ems" />
+	
 	<context:property-placeholder
-		system-properties-mode="OVERRIDE" location="classpath:/prop/application.properties" />
+		system-properties-mode="OVERRIDE" location="classpath:prop/application.properties" />
 
 	<bean class="org.springframework.jmx.export.MBeanExporter"
 		lazy-init="false">
@@ -44,7 +42,8 @@
 		<property name="timeBetweenEvictionRunsMillis" value="5000" />
 	</bean>
 
-	<bean id="deviceDetailDAO" class="org.ems.db.repo.DeviceDetailsDAO"
-		lazy-init="true" depends-on="pollingDetailsDAO" init-method="init" />
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="basicDataSource" />
+	</bean>
 
 </beans>
