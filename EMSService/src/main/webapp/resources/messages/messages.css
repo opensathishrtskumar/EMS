@@ -1,4 +1,4 @@
-div.info, div.success, div.warning, div.error {
+div.info,div.success,div.warning,div.error {
 	border: 1px solid;
 	margin: 10px 0px;
 	padding: 15px 10px 15px 50px;
@@ -30,25 +30,10 @@ div.error {
 	background-image: url('error.png');
 }
 
-span {
-	margin: 5px 5px 5px 5px;
-}
-
 span.success {
 	color: #4F8A10;
 }
 
 span.error {
 	color: #D8000C;
-}
-
-body {
-	font-family: Lucida Grande, sans-serif;
-	font-size: .75em;
-	margin: 1em auto;
-	width: 763px;
-}
-
-ul li {
-	padding: 5px;
 }

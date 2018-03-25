@@ -1,12 +1,14 @@
 package org.ems.config.scheduler;
 
+import javax.annotation.PostConstruct;
+
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.ems.scheduler.AbstractJob;
 import com.ems.scheduler.CumulativeReportJob;
@@ -15,7 +17,7 @@ import com.ems.scheduler.FailedDevicesJob;
 import com.ems.scheduler.FinalReportJob;
 import com.ems.scheduler.MonthlySummaryReportJob;
 
-@Configuration
+@Component
 @EnableAsync
 @EnableScheduling
 public class ReportScheduler {
@@ -82,5 +84,10 @@ public class ReportScheduler {
 			logger.error("error creating monthly summary report", e);
 		}
 		logger.trace("monthly summary report cron ending...");
+	}
+
+	@PostConstruct
+	public void init() {
+		logger.info("Report Scheduler Initialized");
 	}
 }

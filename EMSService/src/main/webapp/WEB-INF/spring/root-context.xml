@@ -1,21 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- Root Context: defines shared resources visible to all other web components -->
+	<context:component-scan base-package="org.ems,com.ems" />
 
-	<!-- CSRF protection. Here we only include the CsrfFilter instead of all 
-		of Spring Security. See http://docs.spring.io/spring-security/site/docs/3.2.x/reference/htmlsingle/#csrf 
-		for more information on Spring Security's CSRF protection -->
-	<bean id="csrfFilter" class="org.springframework.security.web.csrf.CsrfFilter">
-		<constructor-arg>
-			<bean
-				class="org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository" />
-		</constructor-arg>
+	<context:property-placeholder location="classpath:/prop/application.properties"
+		system-properties-mode="OVERRIDE" />
+
+	<bean id="basicDataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		lazy-init="false" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="${dburl}" />
+		<property name="defaultAutoCommit" value="true" />
+		<property name="initialSize" value="3" />
+		<property name="maxTotal" value="50" />
+		<property name="minIdle" value="10" />
+		<property name="validationQuery" value="select 1" />
+		<property name="testOnBorrow" value="true" />
+		<property name="minEvictableIdleTimeMillis" value="5000" />
+		<property name="removeAbandonedOnBorrow" value="true" />
+		<property name="removeAbandonedTimeout" value="10" />
+		<property name="timeBetweenEvictionRunsMillis" value="5000" />
 	</bean>
-	<!-- Provides automatic CSRF token inclusion when using Spring MVC Form 
-		tags or Thymeleaf. See http://localhost:8080/#forms and form.jsp for examples -->
-	<bean id="requestDataValueProcessor"
-		class="org.springframework.security.web.servlet.support.csrf.CsrfRequestDataValueProcessor" />
+
+	<!-- Imports user-defined @Controller beans that process client requests -->
+
+	<task:annotation-driven executor="taskExecutor"
+		scheduler="customScheduler" />
+
+	<task:executor id="taskExecutor" keep-alive="120"
+		pool-size="5-10" queue-capacity="30" rejection-policy="CALLER_RUNS" />
+
+	<task:scheduler id="customScheduler" pool-size="10" />
+
 </beans>

@@ -1,18 +1,20 @@
 package org.ems.config.scheduler;
 
+import javax.annotation.PostConstruct;
+
 import org.ems.config.scheduler.worker.ArchiveCleanupTask;
 import org.ems.config.scheduler.worker.DailyBackUpTask;
 import org.ems.config.scheduler.worker.MonthlyBackupTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.ems.concurrency.ConcurrencyUtils;
 
-@Configuration
+@Component
 @EnableAsync
 @EnableScheduling
 public class BackupScheduler {
@@ -40,5 +42,10 @@ public class BackupScheduler {
 		logger.debug("archive backup initializing...");
 		ConcurrencyUtils.execute(new ArchiveCleanupTask());
 		logger.debug("archive backup initialized...");
+	}
+	
+	@PostConstruct
+	public void init() {
+		logger.info("BackUp Scheduler Initialized");
 	}
 }

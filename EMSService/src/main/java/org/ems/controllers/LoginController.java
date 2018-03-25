@@ -3,26 +3,38 @@ package org.ems.controllers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.ems.model.Login;
+import org.ems.model.SignupForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller()
+@Controller
 public class LoginController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public ModelAndView showLogin(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView home = new ModelAndView("login");
-		home.addObject("login", new Login());
-		return home;
+	@Autowired
+	private Environment environment;
+
+	@RequestMapping(value = "/signin", method = RequestMethod.GET)
+	public ModelAndView showSignIn(HttpServletRequest request, HttpServletResponse response) {
+		return new ModelAndView("signin");
 	}
 
-	
-	
+	@RequestMapping(value = "/signup", method = RequestMethod.GET)
+	public ModelAndView showRegistration(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView view = new ModelAndView("signup");
+		view.addObject("signupForm", new SignupForm());
+		return view;
+	}
+
+	@RequestMapping(value = "/ems/homeSignedIn", method = RequestMethod.GET)
+	public ModelAndView showHomeSignedIn(HttpServletRequest request, HttpServletResponse response) {
+		return new ModelAndView("homeSignedIn");
+	}
 }

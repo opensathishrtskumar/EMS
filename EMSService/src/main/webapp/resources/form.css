@@ -1,46 +1,39 @@
-@import url("messages/messages.css");
-
-/* CLEAN FORM
-/////////////////////////////*/
-
-/* General */
-.cleanform {
+form {
 	font-size: 1em;
 	width: 40em;
 	color: #1b1b1b;
 	text-align: left;
+	position: relative;
 	margin: 1em auto
 }
 
 /* Elements */
-.cleanform  label, .cleanform legend {
+form label, form legend {
 	padding: 0;
-	margin: 0.3em 0
+	margin: 0.3em 0;
 }
 
-.cleanform fieldset {
+form fieldset {
 	padding: 0.7em;
-	border: 1px solid #ddd;
-	margin: 0 0 0.5em 0
+	margin: 0 0 0.5em 0;
 }
 
-.cleanform label {
-	font-weight: bold
+div .checkbox {
+	padding: 0.7em;
+	margin: 0 0 0.5em 0;
 }
 
-.cleanform fieldset input {
+form label {
+	font-weight: bold;
+}
+
+form input {
 	width: 70%;
 	line-height: 1.5em;
-	padding: 0.15em
+	padding: 0.15em;
 }
 
-.cleanform .radio input, .cleanform .checkbox input {
-	width: auto;
-	border: none;
-	margin: 0 1.5em 0 0
-}
-
-.cleanform input, .cleanform textarea, .cleanform select {
+form input, form textarea, form select {
 	display: block;
 	margin-bottom: 1em;
 	font-size: 1em;
@@ -49,47 +42,82 @@
 	margin-right: 1em
 }
 
-.cleanform .radio label, .cleanform .radio input, .cleanform .checkbox label,
-	.cleanform .checkbox input {
+form .radio input, form .checkbox input {
+	width: auto;
+	border: none;
+}
+
+form .radio label, form .radio input, form .checkbox label, form .checkbox input {
 	display: inline;
 	margin: 0 1.5em 0 0
 }
 
-.cleanform .radio input, .cleanform .checkbox input {
+form .radio input, form .checkbox input {
 	margin: 0 0.3em 0 0
 }
 
-.cleanform .multiple label {
+form input[type='submit'], form input[type='image'] {
+	width: auto;
+}
+
+form .multiple label {
 	float: left;
 	width: 29%;
 	overflow: hidden;
-	padding-left: 1px
+	padding-left: 1px;
 }
 
-.cleanform .multiple input {
-	cursor: pointer
+form .multiple input {
+	cursor: pointer;
+}
+
+form .multiple select {
+	display: inline;
+	margin: 0 1.5em 0 0
+}
+
+/* Button */
+form button {
+	margin: 0.3em 0;
+	border: 1px solid #ccc;
+	background-color: #eee;
+	font-size: 1em;
+	cursor: pointer;
+	padding: 0.5em
+}
+
+form button:hover {
+	background-color: #E6EFC2;
+	border: 1px solid #C6D880;
+	color: #529214;
+}
+
+form button:active {
+	background-color: #333;
+	color: white;
+	border: 1px solid #000;
 }
 
 /* information */
-.cleanform .formInfo {
+form .formInfo {
 	margin-bottom: 1em;
 	padding-bottom: 0.5em;
-	border-bottom: 0.1em solid #ddd
+	border-bottom: 0.1em solid #ddd;
 }
 
-.cleanform .formInfo h2 {
-	color: #00889e;
+form .formInfo h2 {
+	color: #6DB33F;
 	font-weight: bold;
 	font-size: 1.2em;
 	margin-bottom: 1em
 }
 
-.cleanform .formInfo p {
+form .formInfo p {
 	text-align: justify
 }
 
-.cleanform .required {
+form .required {
 	color: #ff3838;
 	font-weight: bold;
-	font-size: 0.8em
+	font-size: 0.8em;
 }

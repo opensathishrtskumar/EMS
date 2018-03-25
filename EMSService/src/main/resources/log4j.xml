@@ -53,8 +53,8 @@
 
 	<root>
 		<priority value="debug" />
-<!-- 		  <appender-ref ref="console" />  
- -->		<appender-ref ref="FA" />
+		 <appender-ref ref="console" />  
+		<appender-ref ref="FA" />
 	</root>
 
 </log4j:configuration>

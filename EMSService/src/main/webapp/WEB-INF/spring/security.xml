@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+	<http use-expressions="true" authentication-manager-ref="authenticationManager">
+		<!-- Authentication policy -->
+		<form-login login-page="/signin" default-target-url="/ems/homeSignedIn" login-processing-url="/signin/authenticate" authentication-failure-url="/signin?error=1"  username-parameter="j_username" password-parameter="j_password"/>
+		<logout logout-url="/signout" delete-cookies="JSESSIONID" invalidate-session="true" />
+		
+		<csrf disabled="true"/>
+		<intercept-url pattern="/" access="permitAll" requires-channel="http" />
+		<intercept-url pattern="/favicon.ico" access="permitAll" />
+		<intercept-url pattern="/resources/**" access="permitAll" />
+		<intercept-url pattern="/signup" access="permitAll" requires-channel="http"  />	
+		<intercept-url pattern="/signin" access="permitAll" requires-channel="http" />
+		<intercept-url pattern="/signin/*" access="permitAll" requires-channel="http" />
+		
+		<intercept-url pattern="/admin/**" access="permitAll" />
+		           
+		<intercept-url pattern="/**" access="isAuthenticated()" requires-channel="http" />
+		
+	</http>
+	
+	<authentication-manager alias="authenticationManager">
+		<authentication-provider ref="usernamePasswordAuthenticationProvider" />
+	</authentication-manager>
+	
+	<beans:bean id="usernamePasswordAuthenticationProvider" class="org.ems.config.UsernamePasswordAuthenticationProvider">
+	</beans:bean>
+    
+</beans:beans>

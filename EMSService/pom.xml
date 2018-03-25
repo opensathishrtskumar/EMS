@@ -11,6 +11,7 @@
 		<java-version>1.8</java-version>
 		<org.springframework-version>4.2.2.RELEASE</org.springframework-version>
 		<org.springframework.security-version>4.0.1.RELEASE</org.springframework.security-version>
+		<org.springframework.security.oauth-version>2.3.0.RELEASE</org.springframework.security.oauth-version>
 		<org.aspectj-version>1.8.1</org.aspectj-version>
 		<org.slf4j-version>1.7.12</org.slf4j-version>
 	</properties>
@@ -45,6 +46,32 @@
 			<artifactId>spring-integration-mail</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
+
+		<!-- Spring security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${org.springframework.security-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework.security-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${org.springframework.security-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework.security-version}</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.springframework.security.oauth</groupId> 
+			<artifactId>spring-security-oauth2</artifactId> <version>${org.springframework.security.oauth-version}</version> 
+			</dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
 		<dependency>
@@ -148,6 +175,12 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
 		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time-jsptags</artifactId>
+			<version>1.1.1</version>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- File Upload -->
 		<dependency>
@@ -211,8 +244,8 @@
 			<artifactId>quartz</artifactId>
 			<version>2.2.3</version>
 		</dependency>
-			
-		<!-- JFreechar - remove once Swing code is removed -->	
+
+		<!-- JFreechar - remove once Swing code is removed -->
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
@@ -225,17 +258,17 @@
 			<artifactId>j2html</artifactId>
 			<version>1.2.2</version>
 		</dependency>
-		
+
 		<!-- Apache Tiles -->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-jsp</artifactId>
-			<version>2.2.2</version>
+			<version>3.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-el</artifactId>
-			<version>2.2.2</version>
+			<version>3.0.7</version>
 		</dependency>
 
 	</dependencies>
@@ -263,7 +296,7 @@
 		</repository>
 	</repositories>
 	<build>
-	
+
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
@@ -275,13 +308,17 @@
 					<target>${java-version}</target>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>3.1.0</version>
 				<configuration>
 					<failOnMissingWebXml>true</failOnMissingWebXml>
+					<packagingExcludes>
+						%regex[WEB-INF/lib/tiles-.*.2.2.2.jar],
+						%regex[WEB-INF/lib/tiles-.*.3.0.5.jar]
+					</packagingExcludes>
 				</configuration>
 			</plugin>
 
