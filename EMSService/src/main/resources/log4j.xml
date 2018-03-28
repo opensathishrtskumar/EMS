@@ -20,11 +20,11 @@
 	</appender>
 
 	<logger name="com.ems">
-		<level value="trace" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="org.ems">
-		<level value="trace" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="com.ghgande">
@@ -53,7 +53,7 @@
 
 	<root>
 		<priority value="debug" />
-		 <appender-ref ref="console" />  
+	<!-- <appender-ref ref="console" /> -->
 		<appender-ref ref="FA" />
 	</root>
 

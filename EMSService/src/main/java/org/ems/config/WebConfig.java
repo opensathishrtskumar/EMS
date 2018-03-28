@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -30,7 +29,6 @@ import org.springframework.web.servlet.view.tiles3.TilesView;
 
 @Configuration
 @EnableWebMvc
-@PropertySource("classpath:/prop/application.properties")
 public class WebConfig extends WebMvcConfigurerAdapter {
 
 	private static final Logger logger = LoggerFactory.getLogger(WebConfig.class);
@@ -45,20 +43,22 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
+		//Add if any controllers requried
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
+		//
 	}
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-
+		//
 	}
 
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-
+		//
 	}
 
 	@Override
