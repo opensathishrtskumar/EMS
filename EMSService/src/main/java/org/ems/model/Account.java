@@ -5,7 +5,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Account implements Serializable {
 
-	private final Long id;
+	private final long id;
 
 	private final String firstName;
 
@@ -14,6 +14,8 @@ public class Account implements Serializable {
 	private final String email;
 
 	private final String username;
+
+	private String encryptedPassword;
 
 	/**
 	 * Constructs an Account object. The profielUrl parameter is a UriTemplate to
@@ -75,7 +77,12 @@ public class Account implements Serializable {
 		return username;
 	}
 
-	public String toString() {
-		return id.toString();
+	public String getEncryptedPassword() {
+		return encryptedPassword;
+	}
+
+	public Account setEncryptedPassword(String encryptedPassword) {
+		this.encryptedPassword = encryptedPassword;
+		return this;
 	}
 }

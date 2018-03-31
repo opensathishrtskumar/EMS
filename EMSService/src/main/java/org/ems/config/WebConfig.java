@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.ems.config.interceptor.AccountExposingHandlerInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -43,12 +44,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		//Add if any controllers requried
+		// Add if any controllers requried
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		//
+		registry.addInterceptor(new AccountExposingHandlerInterceptor());
 	}
 
 	@Override
@@ -103,7 +104,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public MessageSource messageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("/WEB-INF/messages/messages");
+		messageSource.setBasename("/WEB-INF/messages/validation");
 		return messageSource;
 	}
 

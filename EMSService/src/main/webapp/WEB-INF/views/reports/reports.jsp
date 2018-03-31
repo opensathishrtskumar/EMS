@@ -7,6 +7,7 @@
 
 <ul id="connectedAccounts" class="listings">
 	<li class="listing">
-		<a href="<c:url value="/ems/changePassword" />">Change password</a>	
+		<a href="<c:url value="/ems/reports" />">Reports</a>	
 	</li>
+	
 </ul>

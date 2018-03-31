@@ -7,7 +7,7 @@
 		<put-attribute name="content" value="/WEB-INF/views/reset/reset.jsp" />
 	</definition>
 
-	<definition name="reset/changePassword" extends="page">
+	<definition name="reset/changePassword" extends="homeSignedIn">
 		<put-attribute name="content" value="/WEB-INF/views/reset/changePassword.jsp" />
 	</definition>
 

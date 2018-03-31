@@ -270,6 +270,27 @@
 			<artifactId>tiles-el</artifactId>
 			<version>3.0.7</version>
 		</dependency>
+		
+		<!-- JSR 303 with Hibernate Validator -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.0.0.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.2.0.Final</version>
+		</dependency>
+		
+		<!-- Encryption jar -->
+		<dependency>
+			<artifactId>security</artifactId>
+			<groupId>security</groupId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/security-1.0.jar</systemPath>
+		</dependency>
 
 	</dependencies>
 	<repositories>

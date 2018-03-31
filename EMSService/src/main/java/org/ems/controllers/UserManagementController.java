@@ -14,16 +14,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class LoginController {
+public class UserManagementController {
 
-	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserManagementController.class);
 
 	@Autowired
 	private Environment environment;
 
 	@RequestMapping(value = "/signin", method = RequestMethod.GET)
-	public ModelAndView showSignIn(HttpServletRequest request, HttpServletResponse response) {
-		return new ModelAndView("signin");
+	public void showSignIn() {
+		//
+	}
+
+	@RequestMapping(value = "/signout", method = RequestMethod.GET)
+	public void showSignout() {
+		//
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -37,4 +42,6 @@ public class LoginController {
 	public ModelAndView showHomeSignedIn(HttpServletRequest request, HttpServletResponse response) {
 		return new ModelAndView("homeSignedIn");
 	}
+
+	
 }
