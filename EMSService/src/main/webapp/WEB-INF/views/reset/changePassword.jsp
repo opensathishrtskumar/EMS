@@ -4,10 +4,10 @@
 
 <c:if test="${not empty message}">
 	
-	<c:if test="${message == 0}">
+	<c:if test="${message > 0}">
 		<div class="success">Password Changed Successfully</div>
 	</c:if>
-	<c:if test="${message > 0}">
+	<c:if test="${message == 0}">
 		<div class="error">Password updation failed, Try later</div>
 	</c:if>
 	

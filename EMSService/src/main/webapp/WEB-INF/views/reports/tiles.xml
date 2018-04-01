@@ -6,5 +6,9 @@
 	<definition name="reports" extends="homeSignedIn">
 		<put-attribute name="content" value="/WEB-INF/views/reports/reports.jsp" />
 	</definition>
-
+	
+	<definition name="reports/daterange" extends="homeSignedIn">
+		<put-attribute name="content" value="/WEB-INF/views/reports/daterange.jsp" />
+	</definition>
+	
 </tiles-definitions>
