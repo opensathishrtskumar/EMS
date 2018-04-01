@@ -24,7 +24,7 @@
 			</form:label>
 			<form:select path="deviceName" id="deviceNames" multiple="multiple" class="3col active">
 				<c:forEach items="${deviceNames}" var="device">
-					<form:option value="${device}">${device}</form:option>
+					<form:option value="${device.uniqueId}">${device}</form:option>
 				</c:forEach>
 			</form:select>
 		</span>
@@ -36,7 +36,7 @@
 			
 			<form:select path="memoryMappingDetails" id="memoryMappings" multiple="multiple" class="3col active">
 				<%-- <c:forEach items="${deviceNames}" var="device">
-					<form:option value="${device}">${device}</form:option>
+					<form:option value="${device.uniqueId}">${device}</form:option>
 				</c:forEach> --%>
 			</form:select>
 		</span>
