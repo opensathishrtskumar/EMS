@@ -4,13 +4,16 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.ems.cache.CacheUtil;
 import org.ems.model.DateRangeReportForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
@@ -25,6 +28,9 @@ public class ReportingController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportingController.class);
 
+	@Autowired
+	private CacheUtil cacheUtil;
+
 	@RequestMapping(value = "/ems/reports", method = RequestMethod.GET)
 	public ModelAndView showReportsPage() {
 		return new ModelAndView("reports");
@@ -32,19 +38,27 @@ public class ReportingController {
 
 	@RequestMapping(value = "/ems/reports/daterange", method = RequestMethod.GET)
 	public ModelAndView getDateRangeReportsPage() {
-		return new ModelAndView("reports/daterange","reportForm", new DateRangeReportForm());
+		ModelAndView view = new ModelAndView("reports/daterange", "reportForm", new DateRangeReportForm());
+
+		cacheUtil.putCacheEntry("test", "Welcome Sathish");
+		String welcome = cacheUtil.getCacheEntry("test", String.class);
+		logger.info(" Welcom text : {}", welcome);
+
+		view.addObject("deviceNames", Arrays.asList(new String[] { "Device One", "Device Two" }));
+
+		return view;
 	}
 
 	@RequestMapping(value = "/ems/reports/daterange", method = RequestMethod.POST)
 	public void postDateRangeReportsPage(@Valid DateRangeReportForm form, BindingResult formBinding,
 			HttpServletResponse response) {
-		
+
 		logger.debug("DateRange report request : {}", EMSUtility.convertObjectToJSONString(form));
-		
-		if(formBinding.hasErrors()) {
+
+		if (formBinding.hasErrors()) {
 			logger.error("Form has error !!!");
 		}
-		
+
 		File file = new File("C:\\Users\\RTS Sathish  Kumar\\Desktop\\RRB_1880091263.pdf");
 
 		response.setContentType("application/octet-stream");
@@ -55,6 +69,7 @@ public class ReportingController {
 		} catch (Exception e) {
 			logger.error("error downloading report file : {}", e);
 		}
+
 	}
 
 }

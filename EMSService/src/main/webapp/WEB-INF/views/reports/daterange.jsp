@@ -23,7 +23,11 @@
 			<form:label path="deviceName">Device Name <form:errors
 					path="deviceName" cssClass="error" />
 			</form:label>
-			<form:select path="deviceName" id="deviceName" />
+			<form:select path="deviceName" id="deviceName" >
+				<c:forEach items="${deviceNames}" var="device">
+					<form:option value="${device}"  id="${index}"/>
+				</c:forEach>
+			</form:select>
 		</span>
 		
 		<span class="oneline">
@@ -76,7 +80,7 @@
 
 	</fieldset>
 
-	<p>
+	<p align="center">
 		<button type="submit">Download</button>
 	</p>
 </form:form>
