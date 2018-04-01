@@ -19,7 +19,6 @@
 	<fieldset>
 	
 		<span class="oneline">
-			<form:hidden path="deviceUniqueId" />
 			<form:label path="deviceName">Device Name <form:errors
 					path="deviceName" cssClass="error" />
 			</form:label>
@@ -36,9 +35,9 @@
 			</form:label>
 			
 			<form:select path="memoryMappingDetails" id="memoryMappings" multiple="multiple" class="3col active">
-				<c:forEach items="${deviceNames}" var="device">
+				<%-- <c:forEach items="${deviceNames}" var="device">
 					<form:option value="${device}">${device}</form:option>
-				</c:forEach>
+				</c:forEach> --%>
 			</form:select>
 		</span>
 		

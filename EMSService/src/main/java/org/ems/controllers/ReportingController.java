@@ -4,13 +4,12 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.ems.cache.CacheUtil;
 import org.ems.model.DateRangeReportForm;
+import org.ems.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class ReportingController {
 	private static final Logger logger = LoggerFactory.getLogger(ReportingController.class);
 
 	@Autowired
-	private CacheUtil cacheUtil;
+	private ReportService reportService;
 
 	@RequestMapping(value = "/ems/reports", method = RequestMethod.GET)
 	public ModelAndView showReportsPage() {
@@ -39,13 +38,7 @@ public class ReportingController {
 	@RequestMapping(value = "/ems/reports/daterange", method = RequestMethod.GET)
 	public ModelAndView getDateRangeReportsPage() {
 		ModelAndView view = new ModelAndView("reports/daterange", "reportForm", new DateRangeReportForm());
-
-		cacheUtil.putCacheEntry("test", "Welcome Sathish");
-		String welcome = cacheUtil.getCacheEntry("test", String.class);
-		logger.info(" Welcom text : {}", welcome);
-
-		view.addObject("deviceNames", Arrays.asList(new String[] { "Device One", "Device Two" }));
-
+		view.addObject("deviceNames", reportService.fetchActiveDevices());
 		return view;
 	}
 
@@ -69,7 +62,6 @@ public class ReportingController {
 		} catch (Exception e) {
 			logger.error("error downloading report file : {}", e);
 		}
-
 	}
 
 }
