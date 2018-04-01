@@ -3,7 +3,7 @@ package org.ems.config.scheduler.worker;
 import java.util.concurrent.Callable;
 
 import org.ems.config.listener.AppContextAware;
-import org.ems.db.repo.PollingDetailsDAO;
+import org.ems.dao.PollingDetailsDAO;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

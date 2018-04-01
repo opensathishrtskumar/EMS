@@ -1,4 +1,4 @@
-package org.ems.db.repo;
+package org.ems.dao;
 
 import java.util.HashMap;
 import java.util.List;

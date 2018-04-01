@@ -12,7 +12,7 @@ import static j2html.TagCreator.tr;
 import java.util.List;
 
 import org.ems.config.listener.AppContextAware;
-import org.ems.db.repo.PollingDetailsDAO;
+import org.ems.dao.PollingDetailsDAO;
 import org.joda.time.LocalDateTime;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

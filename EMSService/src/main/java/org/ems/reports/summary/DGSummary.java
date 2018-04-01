@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.ems.config.listener.AppContextAware;
-import org.ems.db.repo.PollingDetailsDAO;
+import org.ems.dao.PollingDetailsDAO;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.ems.config.listener.AppContextAware;
-import org.ems.db.repo.DeviceDetailsDAO;
+import org.ems.dao.DeviceDetailsDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

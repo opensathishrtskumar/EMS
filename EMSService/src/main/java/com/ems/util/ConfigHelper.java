@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.ems.config.listener.AppContextAware;
-import org.ems.db.repo.DeviceDetailsDAO;
+import org.ems.dao.DeviceDetailsDAO;
 
 import com.ems.UI.dto.EmailDTO;
 import com.ems.constants.LimitConstants;

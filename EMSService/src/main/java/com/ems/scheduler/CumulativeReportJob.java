@@ -27,14 +27,13 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ems.config.listener.AppContextAware;
-import org.ems.db.repo.DeviceDetailsDAO;
-import org.ems.db.repo.PollingDetailsDAO;
+import org.ems.dao.DeviceDetailsDAO;
+import org.ems.dao.PollingDetailsDAO;
 import org.joda.time.LocalDateTime;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.ems.UI.dto.AttachmentDTO;
 import com.ems.UI.dto.DeviceDetailsDTO;
