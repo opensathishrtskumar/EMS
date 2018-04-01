@@ -25,3 +25,7 @@ form label {
 	width: 1.2em;
 	height: 1.2em;
 }
+
+.ms-options-wrap > button {
+	width: 60% !important;
+}

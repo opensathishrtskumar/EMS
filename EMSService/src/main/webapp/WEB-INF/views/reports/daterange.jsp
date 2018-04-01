@@ -23,37 +23,27 @@
 			<form:label path="deviceName">Device Name <form:errors
 					path="deviceName" cssClass="error" />
 			</form:label>
-			<form:select path="deviceName" id="deviceName" >
+			<form:select path="deviceName" id="deviceNames" multiple="multiple" class="3col active">
 				<c:forEach items="${deviceNames}" var="device">
-					<form:option value="${device}"  id="${index}"/>
+					<form:option value="${device}">${device}</form:option>
 				</c:forEach>
 			</form:select>
-		</span>
-		
-		<span class="oneline">
-			<form:label path="allDevices">All Devices <form:errors
-					path="allDevices" cssClass="error" />
-			</form:label>
-			<form:checkbox path="allDevices" id="allDevices" cssClass="checkbox" />
 		</span>
 		
 		<span class="oneline">
 			<form:label path="memoryMappingDetails">Memory Mappings <form:errors
 					path="memoryMappingDetails" cssClass="error" />
 			</form:label>
-			<form:select path="memoryMappingDetails" id="memoryMappingDetails" />
+			
+			<form:select path="memoryMappingDetails" id="memoryMappings" multiple="multiple" class="3col active">
+				<c:forEach items="${deviceNames}" var="device">
+					<form:option value="${device}">${device}</form:option>
+				</c:forEach>
+			</form:select>
 		</span>
 		
-		<div class="oneline">	
-			<form:label path="allMappings">All Parameters<form:errors
-					path="allMappings" cssClass="error" />
-			</form:label>
-			<form:checkbox path="allMappings" id="allMappings" />
-		</div>
-		
-		
 		<div class="oneline">
-			<form:label path="reportStartTime">Start Time <form:errors
+			<form:label path="reportStartTime">Report start time <form:errors
 					path="reportStartTime" cssClass="error" />
 			</form:label>
 			
@@ -66,7 +56,7 @@
 		</div>
 		
 		<div class="oneline">
-			<form:label path="reportEndTime">End Time <form:errors
+			<form:label path="reportEndTime">Report end time <form:errors
 					path="reportEndTime" cssClass="error" />
 			</form:label>
 	

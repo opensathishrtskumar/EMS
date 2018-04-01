@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.ems.UI.dto.DeviceDetailsDTO;
@@ -18,7 +17,6 @@ import com.ems.UI.dto.SettingsDTO;
 import com.ems.constants.QueryConstants;
 
 @Component
-@Lazy(true)
 @DependsOn({ "pollingDetailsDAO" })
 public class DeviceDetailsDAO {
 
