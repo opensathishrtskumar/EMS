@@ -2,10 +2,18 @@
 <!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 
 <tiles-definitions>
-	
+
 	<definition name="page" templateExpression="/WEB-INF/layouts/standard/page.jsp">
-		<put-attribute name="header" expression="/WEB-INF/layouts/standard/header.jsp" />
-		<put-attribute name="footer" expression="/WEB-INF/layouts/standard/footer.jsp" />
+		<put-attribute name="header"
+			expression="/WEB-INF/layouts/standard/header.jsp" />
+		<put-attribute name="footer"
+			expression="/WEB-INF/layouts/standard/footer.jsp" />
+
+		<put-list-attribute name="styles" inherit="true">
+		</put-list-attribute>
+
+		<put-list-attribute name="scripts" inherit="true">
+		</put-list-attribute>
 	</definition>
-	
+
 </tiles-definitions>
