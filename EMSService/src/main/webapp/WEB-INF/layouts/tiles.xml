@@ -10,9 +10,11 @@
 			expression="/WEB-INF/layouts/standard/footer.jsp" />
 
 		<put-list-attribute name="styles" inherit="true">
+			<add-attribute value="/resources/jquery/ui/css/jquery-ui.min.css"/>
 		</put-list-attribute>
 
 		<put-list-attribute name="scripts" inherit="true">
+			<add-attribute value="/resources/jquery/ui/js/jquery-ui.min.js"/>
 		</put-list-attribute>
 	</definition>
 

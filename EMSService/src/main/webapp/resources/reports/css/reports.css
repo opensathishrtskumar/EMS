@@ -1,0 +1,27 @@
+@charset "ISO-8859-1";
+
+form {
+	font-size: 1em;
+	width: 40em;
+	color: #1b1b1b;
+	text-align: left;
+	position: relative;
+	margin: 1em auto
+}
+
+fieldset .oneline {
+	display: inline-block;
+	width: 100%;
+}
+
+/* Elements */
+form label {
+	padding: 0px 50px 0px 0px;
+	float: left;
+	width: 25%
+}
+
+.oneline input[type="checkbox"] {
+	width: 1.2em;
+	height: 1.2em;
+}
