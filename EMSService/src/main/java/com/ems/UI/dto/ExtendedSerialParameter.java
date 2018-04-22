@@ -14,7 +14,7 @@ import com.ems.util.EMSUtility;
 import com.ghgande.j2mod.modbus.procimg.InputRegister;
 import com.ghgande.j2mod.modbus.util.SerialParameters;
 
-public class ExtendedSerialParameter  extends SerialParameters{
+public class ExtendedSerialParameter extends SerialParameters {
 
 	private int unitId;
 	private int retries;
@@ -25,7 +25,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private int pollDelay;
 	private long uniqueId;
 	private int rowIndex;
-	private Map<Long,String> memoryMappings;
+	private Map<Long, String> memoryMappings;
 	private int[] requiredRegisters;
 	private String deviceName;
 	private InputRegister[] registeres;
@@ -37,16 +37,24 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	private String method;
 	private boolean splitJoin;
 	private SplitJoinDTO splitJoinDTO;
-	
-	public ExtendedSerialParameter(String portName, int baudRate,
-			int flowControlIn, int flowControlOut, int databits, int stopbits,
-			int parity, boolean echo) {
-		super(portName, baudRate, flowControlIn, flowControlOut, databits,
-				stopbits, parity, echo);
+
+	private Map<String, String> headers;
+
+	public ExtendedSerialParameter(String portName, int baudRate, int flowControlIn, int flowControlOut, int databits,
+			int stopbits, int parity, boolean echo) {
+		super(portName, baudRate, flowControlIn, flowControlOut, databits, stopbits, parity, echo);
 	}
-	
+
 	public ExtendedSerialParameter() {
 		super();
+	}
+
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
 	}
 
 	public int getUnitId() {
@@ -121,23 +129,23 @@ public class ExtendedSerialParameter  extends SerialParameters{
 		this.rowIndex = rowIndex;
 	}
 
-	public Map<Long,String> getMemoryMappings() {
+	public Map<Long, String> getMemoryMappings() {
 		return memoryMappings;
 	}
 
-	public void setMemoryMappings(Map<Long,String> memoryMappings) {
+	public void setMemoryMappings(Map<Long, String> memoryMappings) {
 		this.memoryMappings = memoryMappings;
-		//Starting register from where to read
-		setReference((int)getRegisterReference(memoryMappings));
-		//Total number of registers to be read from Reference register
+		// Starting register from where to read
+		setReference((int) getRegisterReference(memoryMappings));
+		// Total number of registers to be read from Reference register
 		setCount(getRegisterCount(memoryMappings));
-		//Contains sorted registers to be persisted
+		// Contains sorted registers to be persisted
 		Integer[] registerList = getPersistRegisters(memoryMappings.keySet());
 		setRequiredRegisters(EMSUtility.convertWrapper2Int(registerList));
 	}
-	
-	//Creates key for grouped polling - single connection with  multiple requests
-	public String getGroupKey(){
+
+	// Creates key for grouped polling - single connection with multiple requests
+	public String getGroupKey() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getPort());
 		builder.append(getBaudRate());
@@ -146,7 +154,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 		builder.append(getStopbits());
 		return builder.toString();
 	}
-	
+
 	public int[] getRequiredRegisters() {
 		return requiredRegisters;
 	}
@@ -208,7 +216,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	}
 
 	public void setPort(String port) {
-		//set current port name to super object's property to get connect with
+		// set current port name to super object's property to get connect with
 		super.setPortName(port);
 		this.port = port;
 	}
@@ -220,7 +228,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	public void setMethod(String method) {
 		this.method = method;
 	}
-	
+
 	public boolean isSplitJoin() {
 		return splitJoin;
 	}
@@ -228,7 +236,7 @@ public class ExtendedSerialParameter  extends SerialParameters{
 	public void setSplitJoin(boolean splitJoin) {
 		this.splitJoin = splitJoin;
 	}
-	
+
 	public SplitJoinDTO getSplitJoinDTO() {
 		return splitJoinDTO;
 	}
@@ -247,4 +255,3 @@ public class ExtendedSerialParameter  extends SerialParameters{
 				+ registerMapping + ", port=" + port + ", method=" + method + "]";
 	}
 }
-

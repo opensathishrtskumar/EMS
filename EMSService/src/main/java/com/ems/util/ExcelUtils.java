@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.UI.dto.ExtendedSerialParameter;
+import com.ems.UI.dto.PollingDetailDTO;
 import com.ems.constants.EmsConstants;
 import com.ems.db.DBConnectionManager;
 
@@ -48,6 +50,23 @@ public abstract class ExcelUtils {
 	public static HSSFWorkbook createWorkBook() {
 		HSSFWorkbook workBook = new HSSFWorkbook();
 		return workBook;
+	}
+
+	public static HSSFSheet createWorkSheet(HSSFWorkbook workBook, String sheetName) {
+
+		HSSFFont font = workBook.createFont();
+		font.setFontHeightInPoints((short) 9);
+		font.setFontName("Arial");
+		font.setColor(IndexedColors.BLACK.getIndex());
+		font.setBold(true);
+		font.setItalic(false);
+
+		HSSFCellStyle headerStyle = workBook.createCellStyle();
+		headerStyle.setFont(font);
+
+		HSSFSheet sheet = workBook.createSheet(sheetName);
+
+		return sheet;
 	}
 
 	public static HSSFSheet createWorkSheet(HSSFWorkbook workBook, String sheetName, Map<String, String> headers) {
@@ -117,6 +136,36 @@ public abstract class ExcelUtils {
 					HSSFRow row = sheet.createRow(rowIndex);
 					writeReadingsRow(row, result.getString("formatteddate"), result.getString("unitresponse"),
 							memoryMap);
+				}
+			} catch (Exception e) {
+				logger.error("Report write to excel failed for device {} : {}", device, e);
+			}
+		}
+
+		return sheet;
+	}
+
+	public static HSSFSheet writeResultToSheet(ExtendedSerialParameter device, List<PollingDetailDTO> unitData,
+			HSSFSheet sheet) {
+		// Keep the order of properties
+		Map<String, String> memoryMap = getOrderedProperties(device);
+		Map<String, String> deviceHeaders = device.getHeaders();
+		if (deviceHeaders != null) {
+			memoryMap = deviceHeaders;
+		}
+
+		// All the values becomes header of column
+		Map<String, String> headers = new LinkedHashMap<>();
+		headers.put("Polled on", "Time");
+		headers.putAll(memoryMap);
+
+		if (unitData != null) {
+			try {
+				// Firt row reserved for headers so start with 1
+				for (int rowIndex = 1; rowIndex < unitData.size(); rowIndex++) {
+					HSSFRow row = sheet.createRow(rowIndex);
+					writeReadingsRow(row, unitData.get(rowIndex - 1).getFormattedDate(),
+							unitData.get(rowIndex - 1).getUnitresponse(), memoryMap);
 				}
 			} catch (Exception e) {
 				logger.error("Report write to excel failed for device {} : {}", device, e);

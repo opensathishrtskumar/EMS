@@ -30,6 +30,8 @@ import com.ems.UI.dto.DeviceDetailsDTO;
 import com.ems.util.EMSUtility;
 import com.ems.util.MemoryMappingParser;
 
+import static com.ems.util.EMSUtility.*;
+
 @Controller
 public class ReportingController {
 
@@ -74,7 +76,7 @@ public class ReportingController {
 
 	@RequestMapping(value = "/ems/reports/daterange", method = RequestMethod.POST)
 	public void postDateRangeReportsPage(@Valid DateRangeReportForm form, BindingResult formBinding,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws Exception {
 
 		logger.debug("DateRange report requested with input {}", EMSUtility.convertObjectToJSONString(form));
 
@@ -82,19 +84,13 @@ public class ReportingController {
 			logger.error("Form has error !!!");
 		}
 
-		String deviceNames = form.getDeviceName();
-		String memoryMappings = form.getMemoryMappingDetails();
-		form.getReportStartTime();
-		form.getReportEndTime();
+		try (InputStream stream = reportService.createReport(form)) {
 
-		File file = new File("C:\\Users\\RTS Sathish  Kumar\\Desktop\\RRB_1880091263.pdf");
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", "REPORT.xls"));
+			response.setContentLength((int) stream.available());
 
-		response.setContentType("application/octet-stream");
-		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		response.setContentLength((int) file.length());
-
-		try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file));) {
-			FileCopyUtils.copy(inputStream, response.getOutputStream());
+			FileCopyUtils.copy(stream, response.getOutputStream());
 		} catch (Exception e) {
 			logger.error("error downloading report file : {}", e);
 		}

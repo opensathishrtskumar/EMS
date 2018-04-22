@@ -33,8 +33,8 @@ $(document).ready(
 						$(memoryMappings).empty();
 						var options = "";
 						$.map(data, function(key, value) {
-							options = options + "<option id=" + key + " value="
-									+ key + ">" + key + "</option>";
+							options = options + "<option id='" + key + "' value='"
+									+ key + "'>" + key + "</option>";
 						});
 						$(memoryMappings).html(options);
 						reloadMemoryMappings();

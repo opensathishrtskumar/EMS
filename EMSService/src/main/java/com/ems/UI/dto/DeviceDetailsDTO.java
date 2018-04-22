@@ -1,6 +1,8 @@
 package com.ems.UI.dto;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Sathish Kumar
@@ -27,7 +29,103 @@ public class DeviceDetailsDTO implements Serializable {
 	private String method;
 	private boolean splitJoin;
 
+	private String timeStamp;
+
+	private Properties reportMapping;
+	private long startTime;
+	private long endTime;
+	private int recordCount;
+
+	private boolean allDevice;
+	private boolean allMemory;
+	private Map<String, String> selectedMemory;
+	private String singleParamAddress;
+	private int coulmnIndex;
+
 	public DeviceDetailsDTO() {
+	}
+
+	public String getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(String timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
+	public Properties getReportMapping() {
+		return reportMapping;
+	}
+
+	public void setReportMapping(Properties reportMapping) {
+		this.reportMapping = reportMapping;
+	}
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public DeviceDetailsDTO setStartTime(long startTime) {
+		this.startTime = startTime;
+		return this;
+	}
+
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public DeviceDetailsDTO setEndTime(long endTime) {
+		this.endTime = endTime;
+		return this;
+	}
+
+	public int getRecordCount() {
+		return recordCount;
+	}
+
+	public DeviceDetailsDTO setRecordCount(int recordCount) {
+		this.recordCount = recordCount;
+		return this;
+	}
+
+	public boolean isAllDevice() {
+		return allDevice;
+	}
+
+	public void setAllDevice(boolean allDevice) {
+		this.allDevice = allDevice;
+	}
+
+	public boolean isAllMemory() {
+		return allMemory;
+	}
+
+	public void setAllMemory(boolean allMemory) {
+		this.allMemory = allMemory;
+	}
+
+	public Map<String, String> getSelectedMemory() {
+		return selectedMemory;
+	}
+
+	public void setSelectedMemory(Map<String, String> selectedMemory) {
+		this.selectedMemory = selectedMemory;
+	}
+
+	public String getSingleParamAddress() {
+		return singleParamAddress;
+	}
+
+	public void setSingleParamAddress(String singleParamAddress) {
+		this.singleParamAddress = singleParamAddress;
+	}
+
+	public int getCoulmnIndex() {
+		return coulmnIndex;
+	}
+
+	public void setCoulmnIndex(int coulmnIndex) {
+		this.coulmnIndex = coulmnIndex;
 	}
 
 	public long getUniqueId() {

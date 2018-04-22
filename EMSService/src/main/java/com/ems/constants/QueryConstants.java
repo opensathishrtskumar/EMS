@@ -120,23 +120,41 @@ public abstract class QueryConstants {
 			+ "		AND (p.polledon = temp.minimum  OR   p.polledon = temp.maximum)) AS res ORDER BY polledon DESC";
 
 	// Query for Final Report ends
-	
-	public static final String DAILYSUMMARY_REPORT ="(SELECT p.deviceuniqueid, p.polledon ,p.unitresponse   \r\n" + 
-			" FROM 	monthly.pollingdetails p, \r\n" + 
-			"			(SELECT MIN(polledon) AS minimum, deviceuniqueid AS deviceid ,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT\r\n" + 
-			"			FROM monthly.pollingdetails WHERE \r\n" + 
-			"			deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?)\r\n" + 
-			"			AND polledon BETWEEN ? AND ? GROUP BY DT )  AS temp  \r\n" + 
-			"			WHERE deviceuniqueid=temp.deviceid AND (p.polledon = temp.minimum) ORDER BY DT  ASC)\r\n" + 
-			"					UNION ALL\r\n" + 
-			"			(SELECT p.deviceuniqueid, p.polledon ,p.unitresponse \r\n" + 
-			" FROM 	polling.pollingdetails p, \r\n" + 
-			"			(SELECT MIN(polledon) AS minimum, deviceuniqueid AS deviceid ,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT\r\n" + 
-			"			FROM polling.pollingdetails WHERE \r\n" + 
-			"			deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?)\r\n" + 
-			"			AND polledon BETWEEN ? AND ? GROUP BY DT ) AS temp \r\n" + 
-			"			WHERE deviceuniqueid=temp.deviceid AND (p.polledon = temp.minimum) ORDER BY DT  ASC )";
-	
-	public static final String FAILED_DEVICES = "select d.devicealiasname from polling.recentpoll rp, setup.devicedetails d \r\n" + 
-			"	where rp.status = false and d.deviceuniqueid = rp.deviceuniqueid";
+
+	public static final String DAILYSUMMARY_REPORT = "(SELECT p.deviceuniqueid, p.polledon ,p.unitresponse   \r\n"
+			+ " FROM 	monthly.pollingdetails p, \r\n"
+			+ "			(SELECT MIN(polledon) AS minimum, deviceuniqueid AS deviceid ,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT\r\n"
+			+ "			FROM monthly.pollingdetails WHERE \r\n"
+			+ "			deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?)\r\n"
+			+ "			AND polledon BETWEEN ? AND ? GROUP BY DT )  AS temp  \r\n"
+			+ "			WHERE deviceuniqueid=temp.deviceid AND (p.polledon = temp.minimum) ORDER BY DT  ASC)\r\n"
+			+ "					UNION ALL\r\n" + "			(SELECT p.deviceuniqueid, p.polledon ,p.unitresponse \r\n"
+			+ " FROM 	polling.pollingdetails p, \r\n"
+			+ "			(SELECT MIN(polledon) AS minimum, deviceuniqueid AS deviceid ,DATE_FORMAT(FROM_UNIXTIME(polledon/1000),'%d%m%y') AS DT\r\n"
+			+ "			FROM polling.pollingdetails WHERE \r\n"
+			+ "			deviceuniqueid = (SELECT CAST(svalue AS UNSIGNED) FROM setup.settings WHERE skey=?)\r\n"
+			+ "			AND polledon BETWEEN ? AND ? GROUP BY DT ) AS temp \r\n"
+			+ "			WHERE deviceuniqueid=temp.deviceid AND (p.polledon = temp.minimum) ORDER BY DT  ASC )";
+
+	public static final String FAILED_DEVICES = "select d.devicealiasname from polling.recentpoll rp, setup.devicedetails d "
+			+ "	where rp.status = false and d.deviceuniqueid = rp.deviceuniqueid";
+
+	// Fetch record from all three schma and combine
+	public static final String NEW_EXCEL_REPORT = "SELECT * FROM (SELECT p.unitresponse,DATE_FORMAT(FROM_UNIXTIME(p.polledon/1000),'%d-%b-%y %h:%i%p') AS"
+			+ " formatteddate FROM archive.pollingdetails p WHERE p.deviceuniqueid = ? AND p.polledon >  ? AND p.polledon < ? AND  "
+			+ "DATE_FORMAT(FROM_UNIXTIME(p.polledon/1000),'%k%i') % ? = 0 ORDER BY p.polledon DESC) AS X UNION ALL SELECT * FROM "
+			+ "(SELECT p.unitresponse,DATE_FORMAT(FROM_UNIXTIME(p.polledon/1000),'%d-%b-%y %h:%i%p') AS formatteddate	"
+			+ "FROM monthly.pollingdetails p WHERE p.deviceuniqueid = ? AND p.polledon >  ? AND p.polledon < ? AND  "
+			+ "DATE_FORMAT(FROM_UNIXTIME(p.polledon/1000),'%k%i') % ? = 0 ORDER BY p.polledon DESC) AS Y UNION ALL "
+			+ "SELECT * FROM (SELECT a.unitresponse,DATE_FORMAT(FROM_UNIXTIME(a.polledon/1000),'%d-%b-%y %h:%i%p') AS "
+			+ "formatteddate FROM polling.pollingdetails a  WHERE a.deviceuniqueid = ? AND a.polledon >  ? AND a.polledon < ? "
+			+ "AND  DATE_FORMAT(FROM_UNIXTIME(a.polledon/1000),'%k%i') % ? = 0  ORDER BY a.polledon DESC) AS Z";
+
+	// Fetch record from all three schma and combine for summary ONLY ONE DAY DATA
+	// ALLOWED
+	public static final String NEW_SUMMARY_REPORT = "SELECT p.unitresponse,DATE_FORMAT(FROM_UNIXTIME(p.polledon/1000),'%d-%b-%y %h:%i:%s%p') "
+			+ "AS formatteddate FROM archive.pollingdetails p WHERE p.deviceuniqueid = ? AND p.polledon BETWEEN ? AND ? UNION ALL SELECT "
+			+ "p.unitresponse,DATE_FORMAT(FROM_UNIXTIME(p.polledon/1000),'%d-%b-%y %h:%i:%s%p') AS formatteddate FROM monthly.pollingdetails p "
+			+ " WHERE p.deviceuniqueid = ? AND p.polledon BETWEEN ? AND ?  UNION ALL SELECT p.unitresponse,DATE_FORMAT(FROM_UNIXTIME(p.polledon/1000),'%d-%b-%y %h:%i:%s%p') "
+			+ "AS formatteddate	 FROM polling.pollingdetails p  WHERE p.deviceuniqueid = ? AND p.polledon BETWEEN ? AND ? ";
 }

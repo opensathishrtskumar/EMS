@@ -59,6 +59,9 @@ public abstract class EMSUtility {
 	public static final String SUMMARY_FMT = "HH:mm";
 	public static final String DD_MM_YY = "dd/MMM/yy";
 
+	public static final String DD_MM_YYYY_HH_MM_S = "dd/MM/yyyy HH:mm:s";
+	public static final String EXCEL_REPORTNAME_FORMAT = "ddMMMyyyyHHmm";
+
 	/**
 	 * return Available Serial ports as array
 	 */
@@ -116,7 +119,7 @@ public abstract class EMSUtility {
 	 * @returns Properties with keys in order which it is loaded
 	 */
 	public static Properties loadProperties(String propertiesString) {
-		Properties mappings = new OrderedProperties();
+		/*Properties mappings = new OrderedProperties();
 
 		try {
 			if (propertiesString != null)
@@ -124,11 +127,11 @@ public abstract class EMSUtility {
 		} catch (Exception e) {
 			logger.error("error loading memory mapping : {}", e.getLocalizedMessage());
 			logger.error("{}", e);
-		}
+		}*/
 
-		return mappings;
+		return MemoryMappingParser.loadProperties(propertiesString);
 	}
-
+	
 	public static Map<Long, String> loadMemoryMappingDetails(String mappingDetails) {
 		long startingRegister = EmsConstants.DEFAULTREGISTER;
 		int count = EmsConstants.REGISTERCOUNT;
@@ -362,7 +365,7 @@ public abstract class EMSUtility {
 		parameters.setMethod(devices.getMethod());
 
 		if (!parameters.isSplitJoin()) {
-			Properties memoryProps = loadProperties(devices.getMemoryMapping());
+			Properties memoryProps = MemoryMappingParser.loadProperties(devices.getMemoryMapping());
 			parameters.setProps(memoryProps);
 			parameters.setMemoryMappings(loadMemoryMappingDetails(devices.getMemoryMapping()));
 		} else {
@@ -851,5 +854,10 @@ public abstract class EMSUtility {
 		}
 
 		return builder.toString();
+	}
+
+	public static long parseDateTime(String dateTime, String format) throws Exception {
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		return formatter.parse(dateTime).getTime();
 	}
 }
