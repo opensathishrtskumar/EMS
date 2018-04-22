@@ -62,7 +62,9 @@ public class PollingDetailsDAO {
 				details.setRegisterMapping(resultSet.getString("registermapping"));// MSRF/LSRF
 				details.setPort(resultSet.getString("port"));
 				details.setMethod(resultSet.getString("method"));
-
+				
+				//Load Memory Mappings and its revers into Tree Map
+				
 				return details;
 			}
 		}, params);

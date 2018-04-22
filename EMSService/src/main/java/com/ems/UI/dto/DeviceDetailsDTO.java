@@ -6,9 +6,9 @@ import java.io.Serializable;
  * @author Sathish Kumar
  *
  */
-public class DeviceDetailsDTO implements Serializable{
+public class DeviceDetailsDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private long uniqueId;
 	private int deviceId;
 	private String deviceName;
@@ -18,15 +18,15 @@ public class DeviceDetailsDTO implements Serializable{
 	private int stopbit;
 	private String memoryMapping;
 	private String enabled;
-	
+
 	private String port;
 	private int pollDelay;
 	private int rowIndex;
-	//Set default mapping as "MSRF"
+	// Set default mapping as "MSRF"
 	private String registerMapping;
 	private String method;
 	private boolean splitJoin;
-	
+
 	public DeviceDetailsDTO() {
 	}
 
@@ -125,7 +125,7 @@ public class DeviceDetailsDTO implements Serializable{
 	public void setRowIndex(int rowIndex) {
 		this.rowIndex = rowIndex;
 	}
-	
+
 	public String getRegisterMapping() {
 		return registerMapping;
 	}
@@ -133,7 +133,7 @@ public class DeviceDetailsDTO implements Serializable{
 	public void setRegisterMapping(String registerMapping) {
 		this.registerMapping = registerMapping;
 	}
-	
+
 	public boolean isSplitJoin() {
 		return splitJoin;
 	}
@@ -150,7 +150,7 @@ public class DeviceDetailsDTO implements Serializable{
 		this.method = method;
 	}
 
-	public String getGroupKey(){
+	public String getGroupKey() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getPort());
 		builder.append(getBaudRate());
@@ -159,7 +159,7 @@ public class DeviceDetailsDTO implements Serializable{
 		builder.append(getStopbit());
 		return builder.toString();
 	}
-	
+
 	@Override
 	public String toString() {
 		return deviceName + "(" + uniqueId + ")";

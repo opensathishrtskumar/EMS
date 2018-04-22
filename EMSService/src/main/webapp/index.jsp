@@ -4,5 +4,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <!-- Redirect to login page -->
-<c:redirect url="/signin?login" />
+<c:redirect url="/ems/homeSignedIn" />
 

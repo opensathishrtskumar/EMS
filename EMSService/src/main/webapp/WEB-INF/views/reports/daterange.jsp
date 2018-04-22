@@ -10,7 +10,7 @@
 </c:if>
 
 <form:form id="daterangereport" method="post"
-	modelAttribute="reportForm">
+	modelAttribute="reportForm" >
 	<div class="formInfo">
 		<h2>Select Report Criteria</h2>
 		<s:bind path="*">
@@ -24,7 +24,7 @@
 			</form:label>
 			<form:select path="deviceName" id="deviceNames" multiple="multiple" class="3col active">
 				<c:forEach items="${deviceNames}" var="device">
-					<form:option value="${device.uniqueId}">${device}</form:option>
+					<form:option value="${device.uniqueId}" id="${device.uniqueId}">${device}</form:option>
 				</c:forEach>
 			</form:select>
 		</span>
@@ -35,9 +35,6 @@
 			</form:label>
 			
 			<form:select path="memoryMappingDetails" id="memoryMappings" multiple="multiple" class="3col active">
-				<%-- <c:forEach items="${deviceNames}" var="device">
-					<form:option value="${device.uniqueId}">${device}</form:option>
-				</c:forEach> --%>
 			</form:select>
 		</span>
 		
