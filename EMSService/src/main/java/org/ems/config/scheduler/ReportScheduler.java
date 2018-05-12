@@ -16,6 +16,7 @@ import com.ems.scheduler.DailyReportJob;
 import com.ems.scheduler.FailedDevicesJob;
 import com.ems.scheduler.FinalReportJob;
 import com.ems.scheduler.MonthlySummaryReportJob;
+import com.ems.scheduler.MonthlySummaryReportKvahJob;
 
 @Component
 @EnableAsync
@@ -79,6 +80,19 @@ public class ReportScheduler {
 		logger.trace("monthly summary report cron triggering...");
 		try {
 			AbstractJob job = new MonthlySummaryReportJob();
+			job.execute(null);
+		} catch (JobExecutionException e) {
+			logger.error("error creating monthly summary report", e);
+		}
+		logger.trace("monthly summary report cron ending...");
+	}
+
+	// Monthly Summary Report Kvah only for ISUZU
+	@Scheduled(cron = "${monthlysummaryreportkwahcron}")
+	public void monthlySummaryReportTaskKwah() {
+		logger.trace("monthly summary report cron triggering...");
+		try {
+			AbstractJob job = new MonthlySummaryReportKvahJob();
 			job.execute(null);
 		} catch (JobExecutionException e) {
 			logger.error("error creating monthly summary report", e);
