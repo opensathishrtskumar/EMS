@@ -2,6 +2,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+
 <c:if test="${not empty message}">
 	<div class="${message.type.cssClass}">${message.text}</div>
 </c:if>
@@ -13,7 +14,7 @@
 		<c:if test="${not empty param['error']}">
 			<c:set var="error" scope="page" value="${param['error']}" />
 			<c:choose>
-				<c:when test="${error == 1} }">
+				<c:when test="${error == 1}">
 					<div class="error">Your sign in information was incorrect.
 						Please try again.</div>
 				</c:when>
