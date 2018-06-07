@@ -7,8 +7,8 @@
 </h1>
 <div id="nav">
 	<ul>
-		<li><a href="#">Dashboard</a></li>
-		<li><a href="#">Device Mangement</a></li>
+		<li><a href="<c:url value="/ems/homeSignedIn" />">Dashboard</a></li>
+		<li><a href="<c:url value="/ems/devicemanagement" />">Device Mangement</a></li>
 		<li><a href="<c:url value="/ems/reports" />">Reports</a></li>
 		<li><a href="<c:url value="/ems/settings" />">Settings</a></li>
 		<li><a href="<c:url value="/signout" />">Sign out</a></li>
